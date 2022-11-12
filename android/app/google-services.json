@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "405848644264",
+    "project_id": "universe-c9714",
+    "storage_bucket": "universe-c9714.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405848644264:android:a36626ebc4de22d030009d",
+        "android_client_info": {
+          "package_name": "com.example.wwe_universe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "405848644264-7podh2c5300q65ej0r1tvlptl0u9ajc9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXTSiOht5l3HGCiIX2EmBZ7gYOm6aM1FA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "405848644264-7podh2c5300q65ej0r1tvlptl0u9ajc9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "405848644264-om7i0er8h25pmlmuer63p9thmmgns1rt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wweUniverse"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
