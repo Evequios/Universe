@@ -13,7 +13,6 @@ class IRLNewsPage extends StatefulWidget{
 }
 
 class _IRLNewsPageState extends State<IRLNewsPage> {
-  bool isLoading = false;
 
   @override
   void initState() {
@@ -66,9 +65,9 @@ class _IRLNewsPageState extends State<IRLNewsPage> {
   Widget buildIRLNews(IRLNews irlNews) {
   return Card(
             shape:RoundedRectangleBorder(
-              side: new BorderSide(color: Colors.blueGrey),
+              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
-              elevation : 8,
+              elevation : 2,
               child: ListTile(
               onTap: () async {
                 
@@ -76,12 +75,14 @@ class _IRLNewsPageState extends State<IRLNewsPage> {
                 builder: (context) => IRLNewsDetailPage(irlNews: irlNews),
               ));
               },
-              title: Text(irlNews.titre, style: TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(irlNews.titre, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               subtitle: Row(
                 children: [
-                  Text('${irlNews.createdTime.toDate().day}/${irlNews.createdTime.toDate().month}/${irlNews.createdTime.toDate().year}  ${irlNews.createdTime.toDate().hour}h${irlNews.createdTime.toDate().minute.toString().padLeft(2, '0')}'),
+                  Text('${irlNews.createdTime.toDate().day}/${irlNews.createdTime.toDate().month}/${irlNews.createdTime.toDate().year}  ${irlNews.createdTime.toDate().hour}h${irlNews.createdTime.toDate().minute.toString().padLeft(2, '0')}',
+                  style: TextStyle(color:Colors.blueGrey)
+                  ),
                   const Spacer(),
-                  Text(irlNews.categorie, textAlign: TextAlign.right,),
+                  Text(irlNews.categorie, textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color:Colors.blueGrey)),
                 ]),
               // subtitle: Text('${irlNews.createdTime.toDate().day}/${irlNews.createdTime.toDate().month}/${irlNews.createdTime.toDate().year}  ${irlNews.createdTime.toDate().hour}h${irlNews.createdTime.toDate().minute.toString().padLeft(2, '0')}                                      ${irlNews.categorie}'),
               ));

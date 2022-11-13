@@ -23,7 +23,6 @@ class _IRLNewsDetailPage extends State<IRLNewsDetailPage> {
   @override
   void initState() {
     super.initState();
-
   }
 
   @override

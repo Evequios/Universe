@@ -62,7 +62,10 @@ class _IRLStorylinesPage extends State<IRLStorylinesPage> {
 
   Widget buildIRLStorylines(IRLStorylines irlStorylines) {
             return Card(
-              elevation : 4,
+              shape:RoundedRectangleBorder(
+              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              borderRadius: BorderRadius.circular(4.0)),
+              elevation : 2,
               child: ListTile(
               onTap: () async {
                 
@@ -70,8 +73,13 @@ class _IRLStorylinesPage extends State<IRLStorylinesPage> {
                 builder: (context) => IRLStorylinesDetailPage(irlStorylines: irlStorylines),
               ));
               },
-              title: Text(irlStorylines.titre, style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('Début : ${irlStorylines.debut}       Fin : ${irlStorylines.fin}'),
+              title: Text(irlStorylines.titre, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              subtitle: Row(
+                children: [
+                Text('Début : ${irlStorylines.debut}',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
+                const Spacer(),
+                Text('Fin : ${irlStorylines.fin}', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
+              ])
             ));
   }
 
