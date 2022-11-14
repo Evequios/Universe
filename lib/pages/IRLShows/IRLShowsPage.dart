@@ -62,6 +62,7 @@ class _IRLShowsPage extends State<IRLShowsPage> {
         ),
       );
 
+
       Widget buildIRLShows(IRLShows irlShows) {
         String image = 'assets/${irlShows.nom.toLowerCase()}.png';
         return GestureDetector(
@@ -72,63 +73,73 @@ class _IRLShowsPage extends State<IRLShowsPage> {
             child:  Container( 
               height: 100,
               child:Card(
+              shape:RoundedRectangleBorder(
+              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              borderRadius: BorderRadius.circular(4.0)),
               margin: EdgeInsets.all(12),
-              elevation: 4,
-              child: Padding(
+              elevation: 2,
+              
+              child: Container(child: Padding(
                 padding:  const EdgeInsets.symmetric(vertical:8.0, horizontal: 16),
                 child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('${irlShows.nom} du ${irlShows.date}', style: TextStyle(fontWeight: FontWeight.bold),)
-                        ],),
-                        Spacer(),
+                    children: [Flexible(child:
+                      irlShows.nom.toLowerCase() == 'raw' || 
+                        irlShows.nom.toLowerCase() == 'smackdown' ||
+                        irlShows.nom.toLowerCase() == 'nxt' ?
                         Image(image: AssetImage(image))
+                        : Text(irlShows.nom, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    ),
+                      Spacer(),
+                      Container(
+                      child:
+                      Text('${irlShows.date}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18), )
+                      ),
+                        Spacer(),
+                        
                     ],)
-            )
+            ))
             )
           )
         );
   }
-  // Widget buildShows() => ListView.builder(
-  //       padding: EdgeInsets.all(8),
-  //       itemCount: showsList.length,
-  //       itemBuilder: (context, index) {
-  //         final show = showsList[index];
-  //         String image = 'assets/${show.nom.toLowerCase()}.png';
-
-  //         return GestureDetector(
+  //     Widget buildIRLShows(IRLShows irlShows) {
+  //       String image = 'assets/${irlShows.nom.toLowerCase()}.png';
+  //       return GestureDetector(
   //           onTap: () async {
   //             await Navigator.of(context).push(MaterialPageRoute(
-  //             builder: (context) => IRLShowsDetailPage(IRLShowsId: show.id!),
-  //             ));
-  //             refreshShows();},
-  //           child: Container(
+  //             builder: (context) => IRLShowsDetailPage(irlShows: irlShows),
+  //             ));},
+  //           child:  Container( 
   //             height: 100,
-  //             child: Card(
-  //               margin: EdgeInsets.all(12),
-  //               elevation: 4,
-  //               child: Padding(
-  //                 padding: const EdgeInsets.symmetric(vertical:8.0, horizontal: 16),
-  //                 child: Row(
+  //             child:Card(
+  //               clipBehavior: Clip.antiAlias,
+  //             shape:RoundedRectangleBorder(
+  //             side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+  //             borderRadius: BorderRadius.circular(4.0)),
+  //             margin: EdgeInsets.all(12),
+  //             elevation: 2,
+              
+  //             child: Container(child: Padding(
+  //               padding:  const EdgeInsets.symmetric(vertical:8.0, horizontal: 16),
+  //               child: Row(
   //                   children: [
+  //                     Container(
+  //                     child:
   //                     Column(
   //                       crossAxisAlignment: CrossAxisAlignment.start,
   //                       mainAxisSize: MainAxisSize.min,
   //                       children: [
-  //                         Text('${show.nom} du ${show.date}', style: TextStyle(fontWeight: FontWeight.bold),)
+  //                         Text('${irlShows.nom} du ${irlShows.date}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),)
   //                       ],),
+  //                     ),
   //                       Spacer(),
   //                       Image(image: AssetImage(image))
-  //                       // CircleAvatar(backgroundImage: AssetImage('assets/raw.png'),)
-  //                   ],))
-  //           ),
+  //                   ],)
+  //           ))
   //           )
-  //         );
-  //       },
-  //     );
+  //         )
+  //       );
+  // }
 
   Stream<List<IRLShows>> readAllIRLShows() => 
     FirebaseFirestore.instance.collection('IRLShows').orderBy('date', descending: true).snapshots().map((snapshot) => 

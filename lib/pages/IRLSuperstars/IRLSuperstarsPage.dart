@@ -73,19 +73,17 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
             child :Container(
             height: 100,
             child : Card(
+              shape:RoundedRectangleBorder(
+              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              borderRadius: BorderRadius.circular(4.0)),
               margin: EdgeInsets.all(12),
-              elevation: 4,
+              elevation: 2,
               child: Padding(
                 
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
                 child: Row(
                   children: [
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold),)
-                        ],),
+                        Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
                         Spacer(),
                         Image(image: AssetImage('assets/${irlSuperstars.show.toLowerCase()}.png'))
                   ],
