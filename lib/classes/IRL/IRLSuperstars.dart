@@ -1,16 +1,3 @@
-class IRLSuperstarsFields {
-  static final List<String> values = [
-    /// Add all fields
-    id, prenom, nom, show, orientation
-  ];
-
-  static final String id = '_id';
-  static final String prenom = 'prenom';
-  static final String nom = 'nom';
-  static final String show = 'show';
-  static final String orientation = 'orientation';
-}
-
 class IRLSuperstars{
   final String id;
   final String prenom;

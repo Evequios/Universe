@@ -1,14 +1,3 @@
-class IRLShowsFields {
-  static final List<String> values = [
-    /// Add all fields
-    id, nom, date
-  ];
-
-  static final String id = '_id';
-  static final String nom = 'nom';
-  static final String date = 'date';
-}
-
 class IRLShows{
   final String id;
   final String nom;

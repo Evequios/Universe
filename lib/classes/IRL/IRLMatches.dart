@@ -1,24 +1,4 @@
-class IRLMatchesFields {
-  static final List<String> values = [
-    /// Add all fields
-    id, stipulation, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, gagnant, showId
-  ];
-
-  static final String id = '_id';
-  static final String stipulation = 'stipulation';
-  static final String s1 = 's1';
-  static final String s2 = 's2';
-  static final String s3 = 's3';
-  static final String s4 = 's4';
-  static final String s5 = 's5';
-  static final String s6 = 's6';
-  static final String s7 = 's7';
-  static final String s8 = 's8';
-  static final String s9 = 's9';
-  static final String s10 = 's10';
-  static final String gagnant = 'gagnant';
-  static final String showId = 'showId';
-}
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class IRLMatches{
   final String id;

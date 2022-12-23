@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRLStorylines.dart';
-import 'package:wwe_universe/classes/IRLNews.dart';
-import 'package:wwe_universe/pages/IRLNews/AddEditIRLNewsPage.dart';
-import 'package:wwe_universe/pages/IRLStorylines/AddEditIRLStorylinesPage.dart';
+import 'package:wwe_universe/classes/IRL/IRLStorylines.dart';
+import 'package:wwe_universe/classes/IRL/IRLNews.dart';
+import 'package:wwe_universe/pages/IRL/IRLNews/AddEditIRLNewsPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLStorylines/AddEditIRLStorylinesPage.dart';
 // import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class IRLStorylinesDetailPage extends StatefulWidget {

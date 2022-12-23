@@ -1,16 +1,3 @@
-class IRLStorylinesFields {
-  static final List<String> values = [
-    /// Add all fields
-    id, titre, texte, debut, fin
-  ];
-
-  static final String id = '_id';
-  static final String titre = 'titre';
-  static final String texte = 'texte';
-  static final String debut = 'debut';
-  static final String fin = 'fin';
-}
-
 class IRLStorylines{
   final String id;
   final String titre;

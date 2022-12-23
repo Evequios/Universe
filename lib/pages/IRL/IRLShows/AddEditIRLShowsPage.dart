@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRLShows.dart';
-import 'package:wwe_universe/classes/IRLNews.dart';
-import 'package:wwe_universe/widget/IRLNewsFormWidget.dart';
-import 'package:wwe_universe/widget/IRLShowsFormWidget.dart';
+import 'package:wwe_universe/classes/IRL/IRLShows.dart';
+import 'package:wwe_universe/classes/IRL/IRLNews.dart';
+import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
+import 'package:wwe_universe/widget/IRL/IRLShowsFormWidget.dart';
 import 'package:intl/intl.dart';
 
 class AddEditIRLShowsPage extends StatefulWidget {

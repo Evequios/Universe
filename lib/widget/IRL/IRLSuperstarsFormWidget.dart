@@ -53,7 +53,7 @@ class IRLSuperstarsFormWidget extends StatelessWidget {
           hintText: 'Prénom',
           hintStyle: TextStyle(color: Colors.black),
         ),
-        // validator: (prenom) => prenom != null && prenom.isEmpty ? 'Le prénom ne peut pas être vide' : null,
+        validator: (prenom) => prenom != null && prenom.isEmpty ? 'Le prénom ne peut pas être vide' : null,
         onChanged: onChangedPrenom,
       );
 
@@ -66,28 +66,30 @@ class IRLSuperstarsFormWidget extends StatelessWidget {
           hintText: 'Nom',
           hintStyle: TextStyle(color: Colors.black),
         ),
-        validator: (nom) => nom != null && nom.isEmpty ? 'Le nom ne peut pas être vide': null,
+        // validator: (nom) => nom != null && nom.isEmpty ? 'Le nom ne peut pas être vide': null,
         onChanged: onChangedNom,
       );
 
     Widget buildShow() => Container(child: DropdownButton(
-      value: show != '' && show != null ? show : listShows[0],
+      hint: Text("Show"),
+      value: show == "" ? null : show,
       onChanged : onChangedShow, 
       items: listShows.map((show){
         return DropdownMenuItem<String>(
           child: Text(show),
-          value: show != '' && show != null ? show : listShows[0],);
+          value: show == "" ? null : show,);
       }).toList(),
     ),
     alignment: Alignment.bottomLeft);
 
     Widget buildOrientation() => Container(alignment: Alignment.bottomLeft,child: DropdownButton(
-      value: orientation != '' && orientation != null ? orientation : listOrientations[0],
+      hint: Text("Orientation"),
+      value: orientation == "" ? null : orientation,
       onChanged : onChangedOrientation, 
       items: listOrientations.map((orientation){
         return DropdownMenuItem<String>(
-          value: orientation != '' && orientation != null ? orientation : listOrientations[0],
-          child: Text(orientation),);
+          value: orientation == "" ? null : orientation,
+          child: Text(orientation));
       }).toList(),
     ),);
   

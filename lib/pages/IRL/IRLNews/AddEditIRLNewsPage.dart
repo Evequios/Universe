@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRLNews.dart';
-import 'package:wwe_universe/widget/IRLNewsFormWidget.dart';
+import 'package:wwe_universe/classes/IRL/IRLNews.dart';
+import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
 
 class AddEditIRLNewsPage extends StatefulWidget {
   final IRLNews? irlNews;

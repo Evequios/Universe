@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRLStorylines.dart';
-import 'package:wwe_universe/widget/IRLStorylinesFormWidget.dart';
+import 'package:wwe_universe/classes/IRL/IRLStorylines.dart';
+import 'package:wwe_universe/widget/IRL/IRLStorylinesFormWidget.dart';
 
 class AddEditIRLStorylinesPage extends StatefulWidget {
   final IRLStorylines? irlStorylines;

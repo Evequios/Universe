@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wwe_universe/classes/IRLNews.dart';
-import 'package:wwe_universe/classes/IRLShows.dart';
+import 'package:wwe_universe/classes/IRL/IRLNews.dart';
+import 'package:wwe_universe/classes/IRL/IRLShows.dart';
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/IRLNews/AddEditIRLNewsPage.dart';
-import 'package:wwe_universe/pages/IRLNews/IRLNewsDetailPage.dart';
-import 'package:wwe_universe/pages/IRLShows/AddEditIRLShowsPage.dart';
-import 'package:wwe_universe/pages/IRLShows/IRLShowsDetailPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLNews/AddEditIRLNewsPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsDetailPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLShows/AddEditIRLShowsPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLShows/IRLShowsDetailPage.dart';
 
 class IRLShowsPage extends StatefulWidget{
   @override
@@ -102,44 +102,6 @@ class _IRLShowsPage extends State<IRLShowsPage> {
           )
         );
   }
-  //     Widget buildIRLShows(IRLShows irlShows) {
-  //       String image = 'assets/${irlShows.nom.toLowerCase()}.png';
-  //       return GestureDetector(
-  //           onTap: () async {
-  //             await Navigator.of(context).push(MaterialPageRoute(
-  //             builder: (context) => IRLShowsDetailPage(irlShows: irlShows),
-  //             ));},
-  //           child:  Container( 
-  //             height: 100,
-  //             child:Card(
-  //               clipBehavior: Clip.antiAlias,
-  //             shape:RoundedRectangleBorder(
-  //             side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
-  //             borderRadius: BorderRadius.circular(4.0)),
-  //             margin: EdgeInsets.all(12),
-  //             elevation: 2,
-              
-  //             child: Container(child: Padding(
-  //               padding:  const EdgeInsets.symmetric(vertical:8.0, horizontal: 16),
-  //               child: Row(
-  //                   children: [
-  //                     Container(
-  //                     child:
-  //                     Column(
-  //                       crossAxisAlignment: CrossAxisAlignment.start,
-  //                       mainAxisSize: MainAxisSize.min,
-  //                       children: [
-  //                         Text('${irlShows.nom} du ${irlShows.date}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),)
-  //                       ],),
-  //                     ),
-  //                       Spacer(),
-  //                       Image(image: AssetImage(image))
-  //                   ],)
-  //           ))
-  //           )
-  //         )
-  //       );
-  // }
 
   Stream<List<IRLShows>> readAllIRLShows() => 
     FirebaseFirestore.instance.collection('IRLShows').orderBy('date', descending: true).snapshots().map((snapshot) => 

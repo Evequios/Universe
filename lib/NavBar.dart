@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/main.dart';
-import 'package:wwe_universe/pages/IRLNews/IRLNewsPage.dart';
-import 'package:wwe_universe/pages/IRLShows/IRLShowsPage.dart';
-import 'package:wwe_universe/pages/IRLStorylines/IRLStorylinesPage.dart';
-import 'package:wwe_universe/pages/IRLSuperstars/IRLSuperstarsPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLShows/IRLShowsPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLStorylines/IRLStorylinesPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLSuperstars/IRLSuperstarsPage.dart';
 
 class Navbar extends StatelessWidget{
   @override
@@ -68,7 +68,15 @@ class Navbar extends StatelessWidget{
                 }
               ),
             ],
-            )
+          ),
+          const SizedBox(height: 10,),
+          const Divider(thickness: 1, height: 10, color: Colors.grey,),
+          ListTile(
+            title : Icon(Icons.settings),
+            onTap:() {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => IRLSuperstarsPage(),));
+            }
+          ),
         ]
       )
     );

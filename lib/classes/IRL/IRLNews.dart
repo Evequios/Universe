@@ -1,18 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class IRLNewsFields {
-  static final List<String> values = [
-    /// Add all fields
-    id, titre, texte, time, categorie
-  ];
-
-  static final String id = '_id';
-  static final String titre = 'titre';
-  static final String texte = 'texte';
-  static final String time = 'time';
-  static final String categorie = 'categorie';
-}
-
 class IRLNews{
   final String? id;
   final String titre;

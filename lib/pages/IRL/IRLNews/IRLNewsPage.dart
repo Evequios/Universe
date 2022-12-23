@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wwe_universe/classes/IRLNews.dart';
+import 'package:wwe_universe/classes/IRL/IRLNews.dart';
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/IRLNews/AddEditIRLNewsPage.dart';
-import 'package:wwe_universe/pages/IRLNews/IRLNewsDetailPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLNews/AddEditIRLNewsPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsDetailPage.dart';
 
 
 
@@ -71,7 +71,6 @@ class _IRLNewsPageState extends State<IRLNewsPage> {
               elevation : 2,
               child: ListTile(
               onTap: () async {
-                
                 await Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => IRLNewsDetailPage(irlNews: irlNews),
               ));

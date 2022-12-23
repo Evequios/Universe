@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wwe_universe/classes/IRLNews.dart';
-import 'package:wwe_universe/classes/IRLSuperstars.dart';
+import 'package:wwe_universe/classes/IRL/IRLNews.dart';
+import 'package:wwe_universe/classes/IRL/IRLSuperstars.dart';
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/IRLNews/AddEditIRLNewsPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLNews/AddEditIRLNewsPage.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:wwe_universe/pages/IRLNews/IRLNewsDetailPage.dart';
-import 'package:wwe_universe/pages/IRLSuperstars/AddEditIRLSuperstarsPage.dart';
-import 'package:wwe_universe/pages/IRLSuperstars/IRLSuperstarsDetailPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsDetailPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLSuperstars/AddEditIRLSuperstarsPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLSuperstars/IRLSuperstarsDetailPage.dart';
 
 class IRLSuperstarsPage extends StatefulWidget{
   @override

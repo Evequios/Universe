@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRLMatches.dart';
-import 'package:wwe_universe/classes/IRLShows.dart';
-import 'package:wwe_universe/classes/IRLNews.dart';
-import 'package:wwe_universe/widget/IRLMatchesFormWidget.dart';
-import 'package:wwe_universe/widget/IRLNewsFormWidget.dart';
+import 'package:wwe_universe/classes/IRL/IRLMatches.dart';
+import 'package:wwe_universe/classes/IRL/IRLShows.dart';
+import 'package:wwe_universe/classes/IRL/IRLNews.dart';
+import 'package:wwe_universe/widget/IRL/IRLMatchesFormWidget.dart';
+import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
 
 class AddEditIRLMatchesPage extends StatefulWidget {
   final IRLMatches? irlMatches;

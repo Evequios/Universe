@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wwe_universe/classes/IRLStorylines.dart';
+import 'package:wwe_universe/classes/IRL/IRLStorylines.dart';
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/IRLStorylines/AddEditIRLStorylinesPage.dart';
-import 'package:wwe_universe/pages/IRLStorylines/IRLStorylinesDetailPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLStorylines/AddEditIRLStorylinesPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLStorylines/IRLStorylinesDetailPage.dart';
 
 class IRLStorylinesPage extends StatefulWidget{
   @override

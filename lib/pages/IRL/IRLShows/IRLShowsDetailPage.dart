@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRLMatches.dart';
-import 'package:wwe_universe/classes/IRLShows.dart';
-import 'package:wwe_universe/pages/IRLMatches/AddEditIRLMatchesPage.dart';
-import 'package:wwe_universe/pages/IRLMatches/IRLMatchesDetailPage.dart';
-import 'package:wwe_universe/pages/IRLShows/AddEditIRLShowsPage.dart';
+import 'package:wwe_universe/classes/IRL/IRLMatches.dart';
+import 'package:wwe_universe/classes/IRL/IRLShows.dart';
+import 'package:wwe_universe/pages/IRL/IRLMatches/AddEditIRLMatchesPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLMatches/IRLMatchesDetailPage.dart';
+import 'package:wwe_universe/pages/IRL/IRLShows/AddEditIRLShowsPage.dart';
 
 class IRLShowsDetailPage extends StatefulWidget {
   final IRLShows irlShows;
@@ -48,7 +48,7 @@ class _IRLShowsDetailPage extends State<IRLShowsDetailPage> {
               final irlMatches = snapshot.data!;
 
               return ListView(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(12),
                 children: irlMatches.map(buildIRLMatches).toList()
               ,);
             }
@@ -69,7 +69,10 @@ class _IRLShowsDetailPage extends State<IRLShowsDetailPage> {
   
   Widget buildIRLMatches(IRLMatches irlMatches) {
             return Card(
-              elevation : 4,
+              shape:RoundedRectangleBorder(
+              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              borderRadius: BorderRadius.circular(4.0)),
+              elevation : 2,
               child: ListTile(
               onTap: () async {
                 await Navigator.of(context).push(MaterialPageRoute(

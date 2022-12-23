@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRLSuperstars.dart';
-import 'package:wwe_universe/classes/IRLNews.dart';
-import 'package:wwe_universe/widget/IRLNewsFormWidget.dart';
-import 'package:wwe_universe/widget/IRLSuperstarsFormWidget.dart';
+import 'package:wwe_universe/classes/IRL/IRLSuperstars.dart';
+import 'package:wwe_universe/classes/IRL/IRLNews.dart';
+import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
+import 'package:wwe_universe/widget/IRL/IRLSuperstarsFormWidget.dart';
 
 class AddEditIRLSuperstarsPage extends StatefulWidget {
   final IRLSuperstars? irlSuperstars;
