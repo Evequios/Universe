@@ -1,24 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRL/IRLMatches.dart';
-import 'package:wwe_universe/classes/IRL/IRLShows.dart';
-import 'package:wwe_universe/classes/IRL/IRLNews.dart';
-import 'package:wwe_universe/widget/IRL/IRLMatchesFormWidget.dart';
-import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
+import 'package:wwe_universe/classes/Universe/UniverseMatches.dart';
+import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
+import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
+import 'package:wwe_universe/widget/Universe/UniverseMatchesFormWidget.dart';
+import 'package:wwe_universe/widget/Universe/UniverseNewsFormWidget.dart';
 
-class AddEditIRLMatchesPage extends StatefulWidget {
-  final IRLMatches? irlMatches;
-  final IRLShows? irlShows;
-  const AddEditIRLMatchesPage({
+class AddEditUniverseMatchesPage extends StatefulWidget {
+  final UniverseMatches? universeMatches;
+  final UniverseShows? universeShows;
+  const AddEditUniverseMatchesPage({
     Key? key,
-    this.irlMatches,
-    this.irlShows,
+    this.universeMatches,
+    this.universeShows,
   }) : super(key: key);
   @override
-  _AddEditIRLMatchesPage createState() => _AddEditIRLMatchesPage();
+  _AddEditUniverseMatchesPage createState() => _AddEditUniverseMatchesPage();
 }
 
-class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
+class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
   final _formKey = GlobalKey<FormState>();
   late String stipulation;
   late String s1;
@@ -39,20 +39,20 @@ class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
   void initState() {
     super.initState();
 
-    stipulation = widget.irlMatches?.stipulation ?? '';
-    s1 = widget.irlMatches?.s1 ?? '';
-    s2 = widget.irlMatches?.s2 ?? '';
-    s3 = widget.irlMatches?.s3 ?? '';
-    s4 = widget.irlMatches?.s4 ?? '';
-    s5 = widget.irlMatches?.s5 ?? '';
-    s6 = widget.irlMatches?.s6 ?? '';
-    s7 = widget.irlMatches?.s7 ?? '';
-    s8 = widget.irlMatches?.s8 ?? '';
-    s9 = widget.irlMatches?.s9 ?? '';
-    s10 = widget.irlMatches?.s10 ?? '';
-    gagnant = widget.irlMatches?.gagnant ?? '';
-    ordre = widget.irlMatches?.ordre ?? '';
-    showId = widget.irlMatches?.showId ?? widget.irlShows!.id;
+    stipulation = widget.universeMatches?.stipulation ?? '';
+    s1 = widget.universeMatches?.s1 ?? '';
+    s2 = widget.universeMatches?.s2 ?? '';
+    s3 = widget.universeMatches?.s3 ?? '';
+    s4 = widget.universeMatches?.s4 ?? '';
+    s5 = widget.universeMatches?.s5 ?? '';
+    s6 = widget.universeMatches?.s6 ?? '';
+    s7 = widget.universeMatches?.s7 ?? '';
+    s8 = widget.universeMatches?.s8 ?? '';
+    s9 = widget.universeMatches?.s9 ?? '';
+    s10 = widget.universeMatches?.s10 ?? '';
+    gagnant = widget.universeMatches?.gagnant ?? '';
+    ordre = widget.universeMatches?.ordre ?? '';
+    showId = widget.universeMatches?.showId ?? widget.universeShows!.id;
   }
 
   @override
@@ -62,7 +62,7 @@ class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
         ),
         body: Form(
           key: _formKey,
-          child: IRLMatchesFormWidget(
+          child: UniverseMatchesFormWidget(
             stipulation: stipulation,
             s1 : s1,
             s2 : s2,
@@ -76,7 +76,7 @@ class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
             s10 : s10,
             gagnant : gagnant,
             ordre : ordre,
-            showId : widget.irlShows!.id,
+            showId : widget.universeShows!.id,
             onChangedStipulation: (stipulation) => setState(() => this.stipulation = stipulation!),
             onChangedS1: (s1) => setState(() => this.s1 = s1!),
             onChangedS2: (s2) => setState(() => this.s2 = s2!),
@@ -105,31 +105,31 @@ class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
           onPrimary: Colors.white,
           primary: isFormValid ? null : Colors.grey.shade700,
         ),
-        onPressed: addOrUpdateIRLMatches,
+        onPressed: addOrUpdateUniverseMatches,
         child: Text('Save'),
       ),
     );
   }
 
-  void addOrUpdateIRLMatches() async {
+  void addOrUpdateUniverseMatches() async {
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
-      final isUpdating = widget.irlMatches != null;
+      final isUpdating = widget.universeMatches != null;
 
       if (isUpdating) {
-        await updateIRLMatches();
+        await updateUniverseMatches();
       } else {
-        await addIRLMatches();
+        await addUniverseMatches();
       }
 
       Navigator.of(context).pop();
     }
   }
 
-  Future updateIRLMatches() async {
-    final docIRLMatches = FirebaseFirestore.instance.collection('IRLMatches').doc(widget.irlMatches!.id);
-    docIRLMatches.update({
+  Future updateUniverseMatches() async {
+    final docUniverseMatches = FirebaseFirestore.instance.collection('UniverseMatches').doc(widget.universeMatches!.id);
+    docUniverseMatches.update({
       'stipulation': stipulation,
       's1' : s1,
       's2' : s2,
@@ -143,14 +143,14 @@ class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
       's10' : s10,
       'gagnant' : gagnant,
       'ordre' : ordre,
-      'showId' : widget.irlShows!.id,
+      'showId' : widget.universeShows!.id,
     });
   }
 
-  Future addIRLMatches() async {
-    final docIRLMatches = FirebaseFirestore.instance.collection('IRLMatches').doc();
-    final irlMatches = IRLMatches(
-      id: docIRLMatches.id,
+  Future addUniverseMatches() async {
+    final docUniverseMatches = FirebaseFirestore.instance.collection('UniverseMatches').doc();
+    final universeMatches = UniverseMatches(
+      id: docUniverseMatches.id,
       stipulation: stipulation,
       s1 : s1,
       s2 : s2,
@@ -164,10 +164,10 @@ class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
       s10 : s10,
       gagnant : gagnant,
       ordre : ordre,
-      showId : widget.irlShows!.id,
+      showId : widget.universeShows!.id,
     );
 
-    final json = irlMatches.toJson();
-    await docIRLMatches.set(json);
+    final json = universeMatches.toJson();
+    await docUniverseMatches.set(json);
   }
 }

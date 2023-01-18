@@ -1,22 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRL/IRLSuperstars.dart';
-import 'package:wwe_universe/classes/IRL/IRLNews.dart';
-import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
-import 'package:wwe_universe/widget/IRL/IRLSuperstarsFormWidget.dart';
+import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
+import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
+import 'package:wwe_universe/widget/Universe/UniverseNewsFormWidget.dart';
+import 'package:wwe_universe/widget/Universe/UniverseSuperstarsFormWidget.dart';
 
-class AddEditIRLSuperstarsPage extends StatefulWidget {
-  final IRLSuperstars? irlSuperstars;
+class AddEditUniverseSuperstarsPage extends StatefulWidget {
+  final UniverseSuperstars? universeSuperstars;
 
-  const AddEditIRLSuperstarsPage({
+  const AddEditUniverseSuperstarsPage({
     Key? key,
-    this.irlSuperstars,
+    this.universeSuperstars,
   }) : super(key: key);
   @override
-  _AddEditIRLSuperstarsPage createState() => _AddEditIRLSuperstarsPage();
+  _AddEditUniverseSuperstarsPage createState() => _AddEditUniverseSuperstarsPage();
 }
 
-class _AddEditIRLSuperstarsPage extends State<AddEditIRLSuperstarsPage> {
+class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage> {
   final _formKey = GlobalKey<FormState>();
   late String prenom;
   late String nom;
@@ -28,11 +28,11 @@ class _AddEditIRLSuperstarsPage extends State<AddEditIRLSuperstarsPage> {
   void initState() {
     super.initState();
 
-    prenom = widget.irlSuperstars?.prenom ?? '';
-    nom = widget.irlSuperstars?.nom ?? '';
-    show = widget.irlSuperstars?.show ?? '';
-    orientation = widget.irlSuperstars?.orientation ?? '';
-    titre = widget.irlSuperstars?.titre ?? '';
+    prenom = widget.universeSuperstars?.prenom ?? '';
+    nom = widget.universeSuperstars?.nom ?? '';
+    show = widget.universeSuperstars?.show ?? '';
+    orientation = widget.universeSuperstars?.orientation ?? '';
+    titre = widget.universeSuperstars?.titre ?? '';
   }
 
   @override
@@ -42,7 +42,7 @@ class _AddEditIRLSuperstarsPage extends State<AddEditIRLSuperstarsPage> {
         ),
         body: Form(
           key: _formKey,
-          child: IRLSuperstarsFormWidget(
+          child: UniverseSuperstarsFormWidget(
             prenom: prenom,
             nom: nom,
             show: show,
@@ -67,31 +67,31 @@ class _AddEditIRLSuperstarsPage extends State<AddEditIRLSuperstarsPage> {
           onPrimary: Colors.white,
           primary: isFormValid ? null : Colors.grey.shade700,
         ),
-        onPressed: addOrUpdateIRLSuperstars,
+        onPressed: addOrUpdateUniverseSuperstars,
         child: Text('Save'),
       ),
     );
   }
 
-  void addOrUpdateIRLSuperstars() async {
+  void addOrUpdateUniverseSuperstars() async {
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
-      final isUpdating = widget.irlSuperstars != null;
+      final isUpdating = widget.universeSuperstars != null;
 
       if (isUpdating) {
-        await updateIRLSuperstars();
+        await updateUniverseSuperstars();
       } else {
-        await addIRLSuperstars();
+        await addUniverseSuperstars();
       }
 
       Navigator.of(context).pop();
     }
   }
 
-  Future updateIRLSuperstars() async {
-    final docIRLSuperstars = FirebaseFirestore.instance.collection('IRLSuperstars').doc(widget.irlSuperstars!.id);
-    docIRLSuperstars.update({
+  Future updateUniverseSuperstars() async {
+    final docUniverseSuperstars = FirebaseFirestore.instance.collection('UniverseSuperstars').doc(widget.universeSuperstars!.id);
+    docUniverseSuperstars.update({
       'nom': nom,
       'prenom': prenom,
       'show': show,
@@ -101,11 +101,11 @@ class _AddEditIRLSuperstarsPage extends State<AddEditIRLSuperstarsPage> {
     );
   }
 
-  Future addIRLSuperstars() async {
-    final docIRLSuperstars = FirebaseFirestore.instance.collection('IRLSuperstars').doc();
+  Future addUniverseSuperstars() async {
+    final docUniverseSuperstars = FirebaseFirestore.instance.collection('UniverseSuperstars').doc();
     
-    final irlSuperstars = IRLSuperstars(
-      id : docIRLSuperstars.id,
+    final universeSuperstars = UniverseSuperstars(
+      id : docUniverseSuperstars.id,
       nom: nom,
       prenom: prenom,
       show: show,
@@ -113,7 +113,7 @@ class _AddEditIRLSuperstarsPage extends State<AddEditIRLSuperstarsPage> {
       titre: titre
     );
 
-    final json = irlSuperstars.toJson();
-    await docIRLSuperstars.set(json);
+    final json = universeSuperstars.toJson();
+    await docUniverseSuperstars.set(json);
   }
 }

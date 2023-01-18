@@ -1,6 +1,6 @@
-import 'package:wwe_universe/classes/IRL/IRLShows.dart';
+import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
 
-class IRLSuperstars{
+class UniverseSuperstars{
   final String id;
   final String prenom;
   final String nom;
@@ -8,7 +8,7 @@ class IRLSuperstars{
   final String orientation;
   final String titre;
 
-  const IRLSuperstars({
+  const UniverseSuperstars({
     required this.id,
     required this.prenom,
     required this.nom,
@@ -17,7 +17,7 @@ class IRLSuperstars{
     required this.titre
   });
 
-  IRLSuperstars copy({
+  UniverseSuperstars copy({
     String? id,
     String? prenom,
     String? nom,
@@ -25,7 +25,7 @@ class IRLSuperstars{
     String? orientation,
     String? titre
   }) =>
-      IRLSuperstars(
+      UniverseSuperstars(
         id: id ?? this.id,
         prenom: prenom ?? this.prenom,
         nom: nom ?? this.nom,
@@ -34,7 +34,7 @@ class IRLSuperstars{
         titre: titre ?? this.titre,
       );
 
-  static IRLSuperstars fromJson(Map<String, dynamic> json) => IRLSuperstars(
+  static UniverseSuperstars fromJson(Map<String, dynamic> json) => UniverseSuperstars(
         id: json['id'],
         nom: json['nom'],
         prenom: json['prenom'],

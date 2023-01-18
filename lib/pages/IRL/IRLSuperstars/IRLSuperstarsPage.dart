@@ -69,7 +69,8 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
             onTap: () async {
               await Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => IRLSuperstarsDetailPage(irlSuperstars: irlSuperstars),
-            ));},
+            ));
+            },
             child :Container(
             height: 100,
             child : Card(
@@ -83,9 +84,13 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
                 child: Row(
                   children: [
-                        Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-                        Spacer(),
-                        Image(image: AssetImage('assets/${irlSuperstars.show.toLowerCase()}.png'))
+                    irlSuperstars.titre == null ? 
+                    Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),)
+                    //  : Text('${irlSuperstars.titre} champion ${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                    : Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                    // Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                    Spacer(),
+                    Image(image: AssetImage('assets/${irlSuperstars.show.toLowerCase()}.png'))
                   ],
                 )
               )

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class IRLMatchesFormWidget extends StatelessWidget {
+class UniverseMatchesFormWidget extends StatelessWidget {
   final String? stipulation;
   final String? s1;
   final String? s2;
@@ -31,7 +31,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
   final ValueChanged<String?> onChangedOrdre;
 
 
-  const IRLMatchesFormWidget({
+  const UniverseMatchesFormWidget({
     Key? key,
     this.stipulation = '',
     this.s1= '',
@@ -107,7 +107,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
   //   );
 
   Widget buildStipulation() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLStipulations').orderBy('stipulation').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseStipulations').orderBy('stipulation').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Stipulation'),
@@ -124,7 +124,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
   });
 
   Widget buildS1() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 1'),
@@ -141,7 +141,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
 
       Widget buildS2() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 2'),
@@ -158,7 +158,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
 
     Widget buildS3() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 3'),
@@ -175,7 +175,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
   
     Widget buildS4() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 4'),
@@ -192,7 +192,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
 
     Widget buildS5() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 5'),
@@ -209,7 +209,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
 
     Widget buildS6() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 6'),
@@ -226,7 +226,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
 
     Widget buildS7() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 7'),
@@ -243,7 +243,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
 
     Widget buildS8() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 8'),
@@ -260,7 +260,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
 
   Widget buildS9() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 9'),
@@ -277,7 +277,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
 
     Widget buildS10() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Superstar 10'),
@@ -294,7 +294,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       });
 
     Widget buildGagnant() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
           hint: Text('Gagnant'),

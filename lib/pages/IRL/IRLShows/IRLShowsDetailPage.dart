@@ -103,7 +103,7 @@ class _IRLShowsDetailPage extends State<IRLShowsDetailPage> {
   );
 
   Stream<List<IRLMatches>> readAllIRLMatches() => 
-    FirebaseFirestore.instance.collection('IRLMatches').where('showId', isEqualTo: irlShows!.id).snapshots().map((snapshot) => 
+    FirebaseFirestore.instance.collection('IRLMatches').where('showId', isEqualTo: irlShows!.id).orderBy('ordre').snapshots().map((snapshot) => 
       snapshot.docs.map((doc) => IRLMatches.fromJson(doc.data())).toList());
 }
 

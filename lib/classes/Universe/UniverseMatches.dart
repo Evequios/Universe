@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class IRLMatches{
+class UniverseMatches{
   final String id;
   final String stipulation;
   final String s1;
@@ -17,7 +17,7 @@ class IRLMatches{
   final String ordre;
   final String showId;
 
-  const IRLMatches({
+  const UniverseMatches({
     required this.id,
     required this.stipulation,
     required this.s1,
@@ -35,7 +35,7 @@ class IRLMatches{
     required this.showId
   });
 
-  IRLMatches copy({
+  UniverseMatches copy({
     String? id,
     String? stipulation,
     String? s1,
@@ -52,7 +52,7 @@ class IRLMatches{
     String? ordre,
     String? showId
   }) =>
-      IRLMatches(
+      UniverseMatches(
         id: id ?? this.id,
         stipulation: stipulation ?? this.stipulation,
         s1: s1 ?? this.s1,
@@ -70,7 +70,7 @@ class IRLMatches{
         showId: showId ?? this.showId
       );
 
-  static IRLMatches fromJson(Map<String, dynamic> json) => IRLMatches(
+  static UniverseMatches fromJson(Map<String, dynamic> json) => UniverseMatches(
         id: json['id'],
         stipulation: json['stipulation'],
         s1: json['s1'],

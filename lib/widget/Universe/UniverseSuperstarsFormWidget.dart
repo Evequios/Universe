@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 const List<String> listOrientations = <String>['Face', 'Tweener', 'Heel'];
 const List<String> listShows = <String>['Raw', 'SmackDown', 'NXT'];
 
-class IRLSuperstarsFormWidget extends StatelessWidget {
+class UniverseSuperstarsFormWidget extends StatelessWidget {
   final String? prenom;
   final String? nom;
   final String? show;
@@ -15,7 +15,7 @@ class IRLSuperstarsFormWidget extends StatelessWidget {
   final ValueChanged<String?> onChangedOrientation;
   final ValueChanged<String?> onChangedTitre;
 
-  const IRLSuperstarsFormWidget({
+  const UniverseSuperstarsFormWidget({
     Key? key,
     this.prenom = '',
     this.nom = '',
