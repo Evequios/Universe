@@ -64,7 +64,10 @@ class _SettingsPage extends State<SettingsPage> {
 
           GestureDetector( 
             onTap: () async {
-              await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseStipulationsPage(),));
+              // await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseStipulationsPage(),));
+              await Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => UniverseStipulationsPage()),
+            );
             },
             child :Container(
               height: 100,

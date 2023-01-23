@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wwe_universe/classes/IRL/IRLStipulations.dart';
 
 class IRLMatches{
   final String id;

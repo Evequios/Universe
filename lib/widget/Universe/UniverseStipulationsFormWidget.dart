@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
 
 
 class UniverseStipulationsFormWidget extends StatelessWidget {
@@ -12,7 +13,7 @@ class UniverseStipulationsFormWidget extends StatelessWidget {
   const UniverseStipulationsFormWidget({
     Key? key,
     this.type = '',
-    this.stipulation = '',
+    this.stipulation,
     required this.onChangedType,
     required this.onChangedStipulation,
   }) : super(key: key);

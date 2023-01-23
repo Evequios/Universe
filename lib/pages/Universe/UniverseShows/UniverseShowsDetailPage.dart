@@ -68,7 +68,9 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
   );
   
   Widget buildUniverseMatches(UniverseMatches universeMatches) {
-            return Card(
+            return Container(
+              height: 80,
+              child: Card(
               shape:RoundedRectangleBorder(
               side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
@@ -80,7 +82,9 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
               ));
               },
               title: Text(universeMatches.stipulation, style: TextStyle(fontWeight: FontWeight.bold)),
-            ));
+              subtitle: Text(universeMatches.stipulation, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+
+            )));
   }
 
   Widget editButton() => IconButton(

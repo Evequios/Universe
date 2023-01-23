@@ -68,7 +68,9 @@ class _IRLShowsDetailPage extends State<IRLShowsDetailPage> {
   );
   
   Widget buildIRLMatches(IRLMatches irlMatches) {
-            return Card(
+            return Container(
+              height: 80,
+              child :Card(
               shape:RoundedRectangleBorder(
               side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
@@ -79,8 +81,28 @@ class _IRLShowsDetailPage extends State<IRLShowsDetailPage> {
                 builder: (context) => IRLMatchesDetailPage(irlMatches: irlMatches, irlShows: irlShows!,),
               ));
               },
-              title: Text(irlMatches.stipulation, style: TextStyle(fontWeight: FontWeight.bold)),
-            ));
+              title: (() {
+                if(irlMatches.stipulation.contains("1v1")){
+                  return Text('${irlMatches.s1} vs ${irlMatches.s2}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                }
+                if(irlMatches.stipulation.contains("2v2")){
+                  return Text('${irlMatches.s1} & ${irlMatches.s2} vs ${irlMatches.s3} & ${irlMatches.s4}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                }
+                if(irlMatches.stipulation.contains("3v3")){
+                  return Text('${irlMatches.s1}, ${irlMatches.s2}, ${irlMatches.s3} vs ${irlMatches.s4}, ${irlMatches.s5}, ${irlMatches.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                }
+                if(irlMatches.stipulation.contains("4v4")){
+                  return Text('Team ${irlMatches.s1} vs Team ${irlMatches.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                }
+                if(irlMatches.stipulation.contains("5v5")){
+                  return Text('Team ${irlMatches.s1} vs Team ${irlMatches.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                }
+                if(irlMatches.stipulation.contains("Triple Threat")){
+                  return Text('${irlMatches.s1} vs ${irlMatches.s2} vs ${irlMatches.s3}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                }
+              }()),
+              subtitle: Text(irlMatches.stipulation, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+            )));
   }
 
   Widget editButton() => IconButton(
@@ -102,9 +124,10 @@ class _IRLShowsDetailPage extends State<IRLShowsDetailPage> {
         },
   );
 
-  Stream<List<IRLMatches>> readAllIRLMatches() => 
-    FirebaseFirestore.instance.collection('IRLMatches').where('showId', isEqualTo: irlShows!.id).orderBy('ordre').snapshots().map((snapshot) => 
+  Stream<List<IRLMatches>> readAllIRLMatches() {
+    return FirebaseFirestore.instance.collection('IRLMatches').where('showId', isEqualTo: irlShows!.id).orderBy('ordre').snapshots().map((snapshot) => 
       snapshot.docs.map((doc) => IRLMatches.fromJson(doc.data())).toList());
+  }
 }
 
 

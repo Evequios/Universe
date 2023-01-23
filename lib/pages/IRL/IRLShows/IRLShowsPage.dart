@@ -82,13 +82,13 @@ class _IRLShowsPage extends State<IRLShowsPage> {
               child: Container(child: Padding(
                 padding:  const EdgeInsets.symmetric(vertical:8.0, horizontal: 16),
                 child: Row(
-                    children: [Flexible(child:
+                    children: [Flexible(child: FittedBox(fit: BoxFit.fill, child:
                       irlShows.nom.toLowerCase() == 'raw' || 
                         irlShows.nom.toLowerCase() == 'smackdown' ||
                         irlShows.nom.toLowerCase() == 'nxt' ?
                         Image(image: AssetImage(image))
                         : Text(irlShows.nom, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                    ),
+                    )),
                       Spacer(),
                       Container(
                       child:

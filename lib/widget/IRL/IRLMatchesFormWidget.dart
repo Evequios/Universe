@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/classes/IRL/IRLStipulations.dart';
 
 class IRLMatchesFormWidget extends StatelessWidget {
   final String? stipulation;
@@ -33,7 +34,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
 
   const IRLMatchesFormWidget({
     Key? key,
-    this.stipulation = '',
+    this.stipulation,
     this.s1= '',
     this.s2= '',
     this.s3= '',

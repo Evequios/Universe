@@ -44,6 +44,7 @@ class _IRLMatchesDetailPage extends State<IRLMatchesDetailPage> {
                   children: [
                     Text(
                       irlMatches!.stipulation,
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 22,
@@ -51,10 +52,35 @@ class _IRLMatchesDetailPage extends State<IRLMatchesDetailPage> {
                       ),
                     ),
                     SizedBox(height: 8),
-                    SizedBox(height: 8),
-                    Text(
-                      irlMatches!.gagnant,
-                      style: TextStyle(color: Colors.black, fontSize: 18),
+                    Container(child:(() {
+                    if(irlMatches!.stipulation.contains("1v1")){
+                      return Text('${irlMatches!.s1} vs ${irlMatches!.s2}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                    }
+                    if(irlMatches!.stipulation.contains("2v2")){
+                      return Text('${irlMatches!.s1} & ${irlMatches!.s2} vs ${irlMatches!.s3} & ${irlMatches!.s4}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                    }
+                    if(irlMatches!.stipulation.contains("3v3")){
+                      return Text('${irlMatches!.s1}, ${irlMatches!.s2}, ${irlMatches!.s3} vs ${irlMatches!.s4}, ${irlMatches!.s5}, ${irlMatches!.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                    }
+                    if(irlMatches!.stipulation.contains("4v4")){
+                      return Text('Team ${irlMatches!.s1} vs Team ${irlMatches!.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                    }
+                    if(irlMatches!.stipulation.contains("5v5")){
+                      return Text('Team ${irlMatches!.s1} vs Team ${irlMatches!.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                    }
+                    if(irlMatches!.stipulation.contains("Triple Threat")){
+                      return Text('${irlMatches!.s1} vs ${irlMatches!.s2} vs ${irlMatches!.s3}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+                    }
+                  }())
+                ),
+                SizedBox(height: 30,),
+                    Text('Gagnant : ${irlMatches!.gagnant}',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center
                     )
                     
                   ],

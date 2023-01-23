@@ -43,7 +43,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
               final universeSuperstars = snapshot.data!;
 
               return ListView(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(12),
                 children: universeSuperstars.map(buildUniverseSuperstars).toList()
               ,);
             }
@@ -77,7 +77,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
               shape:RoundedRectangleBorder(
               side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
-              margin: EdgeInsets.all(12),
+              // margin: EdgeInsets.all(12),
               elevation: 2,
               child: Padding(
                 

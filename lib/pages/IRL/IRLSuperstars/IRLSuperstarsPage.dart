@@ -77,7 +77,7 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
               shape:RoundedRectangleBorder(
               side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
-              margin: EdgeInsets.all(12),
+              // margin: EdgeInsets.all(12),
               elevation: 2,
               child: Padding(
                 

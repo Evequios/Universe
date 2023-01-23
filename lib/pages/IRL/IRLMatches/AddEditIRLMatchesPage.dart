@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/IRL/IRLMatches.dart';
 import 'package:wwe_universe/classes/IRL/IRLShows.dart';
 import 'package:wwe_universe/classes/IRL/IRLNews.dart';
+import 'package:wwe_universe/classes/IRL/IRLStipulations.dart';
 import 'package:wwe_universe/widget/IRL/IRLMatchesFormWidget.dart';
 import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
 
@@ -96,7 +97,8 @@ class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
       );
 
   Widget buildButton() {
-    final isFormValid = stipulation.isNotEmpty;
+    // final isFormValid = stipulation.isNotEmpty;
+    final isFormValid = (stipulation == null);
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
