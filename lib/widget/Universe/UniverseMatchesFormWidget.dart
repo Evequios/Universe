@@ -1,51 +1,84 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
+import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
+import 'package:wwe_universe/database.dart';
+
+UniverseStipulations defaultStip = UniverseStipulations(type: 'type', stipulation: 'stipulation');
+UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', show: 'show', orientation: 'orientation');
+late UniverseStipulations stip = UniverseStipulations(type: 'type', stipulation: 'stipulation');
+Future getDetails(id) async {
+  stip = await UniverseDatabase.instance.readStipulation(id);
+  
+}
+
+bool disable(int nb){
+  switch(nb){
+    case 1 : 
+      return false;
+    case 2 :
+      return false;
+    case 3 :
+      return stip.type == '1v1' ? true : false;
+    case 4 :
+      return stip.type == '1v1' || stip.type == 'Triple Threat' ? true : false;
+    case 5 :
+      return stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' ? true : false;
+    case 6 :
+      return stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' ? true : false;
+    case 7 :
+      return stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == '3v3' || stip.type == '2v2v2' || stip.type == '6-Way' ? true : false;
+    case 8 :
+      return stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == '3v3' || stip.type == '2v2v2' || stip.type == '6-Way' ? true : false;
+    default :
+      return true;
+    
+  }
+}
+
 
 class UniverseMatchesFormWidget extends StatelessWidget {
-  final String? stipulation;
-  final String? s1;
-  final String? s2;
-  final String? s3;
-  final String? s4;
-  final String? s5;
-  final String? s6;
-  final String? s7;
-  final String? s8;
-  final String? s9;
-  final String? s10;
-  final String? gagnant;
-  final String? ordre;
-  final String? showId;
-  final ValueChanged<String?> onChangedStipulation;
-  final ValueChanged<String?> onChangedS1;
-  final ValueChanged<String?> onChangedS2;
-  final ValueChanged<String?> onChangedS3;
-  final ValueChanged<String?> onChangedS4;
-  final ValueChanged<String?> onChangedS5;
-  final ValueChanged<String?> onChangedS6;
-  final ValueChanged<String?> onChangedS7;
-  final ValueChanged<String?> onChangedS8;
-  final ValueChanged<String?> onChangedS9;
-  final ValueChanged<String?> onChangedS10;
-  final ValueChanged<String?> onChangedGagnant;
+  final List<UniverseStipulations>? listStipulations;
+  final List<UniverseSuperstars>? listSuperstars;
+  final int? stipulation;
+  final int? s1;
+  final int? s2;
+  final int? s3;
+  final int? s4;
+  final int? s5;
+  final int? s6;
+  final int? s7;
+  final int? s8;
+  int? gagnant;
+  final int? ordre;
+  final int? showId;
+  final ValueChanged<int?> onChangedStipulation;
+  final ValueChanged<int?> onChangedS1;
+  final ValueChanged<int?> onChangedS2;
+  final ValueChanged<int?> onChangedS3;
+  final ValueChanged<int?> onChangedS4;
+  final ValueChanged<int?> onChangedS5;
+  final ValueChanged<int?> onChangedS6;
+  final ValueChanged<int?> onChangedS7;
+  final ValueChanged<int?> onChangedS8;
+  final ValueChanged<int?> onChangedGagnant;
   final ValueChanged<String?> onChangedOrdre;
 
-
-  const UniverseMatchesFormWidget({
+  UniverseMatchesFormWidget({
     Key? key,
-    this.stipulation = '',
-    this.s1= '',
-    this.s2= '',
-    this.s3= '',
-    this.s4= '',
-    this.s5= '',
-    this.s6= '',
-    this.s7= '',
-    this.s8= '',
-    this.s9= '',
-    this.s10= '',
-    this.gagnant= '',
-    this.ordre= '',
+    required this.listStipulations,
+    required this.listSuperstars,
+    this.stipulation,
+    this.s1,
+    this.s2,
+    this.s3,
+    this.s4,
+    this.s5,
+    this.s6,
+    this.s7,
+    this.s8,
+    this.gagnant,
+    this.ordre,
     this.showId,
 
     required this.onChangedStipulation,
@@ -57,16 +90,68 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     required this.onChangedS6,
     required this.onChangedS7,
     required this.onChangedS8,
-    required this.onChangedS9,
-    required this.onChangedS10,
     required this.onChangedGagnant,
     required this.onChangedOrdre,
-
   }) : super(key: key);
   
-
+  bool validateWinner() {
+    switch (stip.type){
+    case '1v1' : 
+      if(gagnant != s1 && gagnant != s2)
+          return false;
+      else
+          return true;
+    case 'Triple Threat':
+      if(gagnant != s1 && gagnant != s2 && gagnant != s3)
+          return false;
+      else
+          return true;
+    case '2v2' :
+      if(gagnant != s1 && gagnant != s2 && gagnant != s3 && gagnant != s4)
+          return false;
+      else
+          return true;
+    case 'Fatal 4-Way' :
+      if(gagnant != s1 && gagnant != s2 && gagnant != s3 && gagnant != s4)
+          return false;
+      else
+          return true;
+    case '5-Way' :
+      if(gagnant != s1 && gagnant != s2 && gagnant != s3 && gagnant != s4 && gagnant != s5)
+          return false;
+      else
+          return true;
+    case '3v3' :
+      if(gagnant != s1 && gagnant != s2 && gagnant != s3 && gagnant != s4 && gagnant != s5 && gagnant != s6)
+          return false;
+      else
+          return true;
+    case '2v2v2' :
+      if(gagnant != s1 && gagnant != s2 && gagnant != s3 && gagnant != s4 && gagnant != s5 && gagnant != s6)
+          return false;
+      else
+          return true;
+    case '6-Way' :
+      if(gagnant != s1 && gagnant != s2 && gagnant != s3 && gagnant != s4 && gagnant != s5 && gagnant != s6)
+          return false;
+      else
+          return true;
+    case '8-Way' :
+      if(gagnant != s1 && gagnant != s2 && gagnant != s3 && gagnant != s4 && gagnant != s5 && gagnant != s6 && gagnant != s7 && gagnant != s8)
+          return false;
+      else
+          return true;
+    default :
+      return false;
+    }
+  }
+  
   @override
   Widget build(BuildContext context){
+  print("S1 : " + s1.toString());
+  print("S2 : " + s2.toString());
+  print("stipulation : " + stipulation.toString());
+  print("Gagnant : " + gagnant.toString());
   return Scaffold(
     body: SingleChildScrollView(
       child: Center(
@@ -76,17 +161,25 @@ class UniverseMatchesFormWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               buildStipulation(),
+              SizedBox(height: 8,),
               buildS1(),
+              SizedBox(height: 8,),
               buildS2(),
+              SizedBox(height: 8,),
               buildS3(),
+              SizedBox(height: 8,),
               buildS4(),
+              SizedBox(height: 8,),
               buildS5(),
+              SizedBox(height: 8,),
               buildS6(),
+              SizedBox(height: 8,),
               buildS7(),
+              SizedBox(height: 8,),
               buildS8(),
-              buildS9(),
-              buildS10(),
+              SizedBox(height: 8,),
               buildGagnant(),
+              SizedBox(height: 8,),
               buildOrdre(),
             ],
           ),
@@ -96,222 +189,213 @@ class UniverseMatchesFormWidget extends StatelessWidget {
   );
   }
 
-  // Widget buildStipulation() => DropdownButton(
-  //     value: stipulation != '' && stipulation != null ? stipulation : listStipulations[0],
-  //     onChanged : onChangedStipulation,
-  //     items: listStipulations.map((stipulation){
-  //       return DropdownMenuItem<String>(
-  //         value: stipulation != '' && stipulation != null ? stipulation : listStipulations[0],
-  //         child: Text(stipulation),);
-  //     }).toList(),
-  //   );
-
-  Widget buildStipulation() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseStipulations').orderBy('stipulation').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Stipulation'),
-          value: stipulation == "" ? null : stipulation,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['type']} ${document['stipulation']}',
-              child: Text('${document['type']} ${document['stipulation']}'),
-            );
-          }).toList(),
-          onChanged: onChangedStipulation,
+  Widget buildStipulation() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Stipulation: ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Stipulation"),
+        value: stipulation != 0 ? stipulation : defaultStip.id,
+        onChanged: onChangedStipulation,
+        items: listStipulations!.map((stipulation){
+        return DropdownMenuItem(
+          value: stipulation.id,
+          child: Text('${stipulation.type} ${stipulation.stipulation}'),
         );
-  });
+      }).toList(),
+      validator: (stipulation) =>
+           stipulation == null ? "Please choose a match type" : null
+      ),);
 
-  Widget buildS1() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 1'),
-          value: s1 == "" ? null : s1,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS1,
-        );
-      });
 
-      Widget buildS2() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 2'),
-          value: s2 == "" ? null : s2,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS2,
-        );
-      });
+  Widget buildS1() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Superstar 1 : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Superstar 1"),
+        value: s1 != 0 ? s1 : defaultSup.id,
+        // value: s1 != 0 ? s1 : listSuperstars![0].id,
+        onChanged: onChangedS1,
+        items: disable(1) ? null : listSuperstars!.map((s1){
+        return DropdownMenuItem(
+          // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
+          value: s1.id,
+          child: Text(s1.nom));
+      }).toList(),
+      validator: (s1) =>
+           s1 == null ? "Please choose a superstar" : null
+      ),);
 
-    Widget buildS3() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 3'),
-          value: s3 == "" ? null : s3,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS3,
-        );
-      });
-  
-    Widget buildS4() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 4'),
-          value: s4 == "" ? null : s4,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS4,
-        );
-      });
+  Widget buildS2() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Superstar 2 : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Superstar 2"),
+        value: s2 != 0 ? s2 : defaultSup.id,
+        // value: s2 != 0 ? s2 : listSuperstars![0].id,
+        onChanged: onChangedS2,
+        items: disable(2) ? null : listSuperstars!.map((s2){
+        return DropdownMenuItem(
+          // value: s2.id != 0 ? s2.id : listSuperstars![1].id,
+          value: s2.id,
+          child: Text(s2.nom));
+      }).toList(),
+      validator: (s2) =>
+           s2 == null ? "Please choose a superstar" : null
+      ),);
 
-    Widget buildS5() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 5'),
-          value: s5 == "" ? null : s5,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS5,
-        );
-      });
 
-    Widget buildS6() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 6'),
-          value: s6 == "" ? null : s6,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS6,
-        );
-      });
+    Widget buildS3() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Superstar 3 : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Superstar 3"),
+        // value: s3 != 0 ? s3 : listSuperstars![0].id,
+        onChanged: onChangedS3,
+        items: disable(3) ? null : listSuperstars!.map((s3){
+        return DropdownMenuItem(
+          value: s3.id,
+          child: Text(s3.nom));
+      }).toList(),
+      ),);
 
-    Widget buildS7() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 7'),
-          value: s7 == "" ? null : s7,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS7,
-        );
-      });
+    Widget buildS4() {
+      return
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Superstar 4 : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Superstar 4"),
+        // value: s4 != 0 ? s4 : listSuperstars![0].id,
+        onChanged: onChangedS4,
+        items: disable(4) ? null : listSuperstars!.map((s4){
+        return DropdownMenuItem(
+          value: s4.id,
+          child: Text(s4.nom));
+      }).toList(),
+      ),);
+    }
 
-    Widget buildS8() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 8'),
-          value: s8 == "" ? null : s8,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS8,
-        );
-      });
+  Widget buildS5() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Superstar 5 : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Superstar 5"),
+        // value: s4 != 0 ? s4 : listSuperstars![0].id,
+        onChanged: onChangedS5,
+        items: disable(5) ? null : listSuperstars!.map((s5){
+        return DropdownMenuItem(
+          value: s5.id,
+          child: Text(s5.nom));
+      }).toList(),
+      ),);
 
-  Widget buildS9() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 9'),
-          value: s9 == "" ? null : s9,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS9,
-        );
-      });
+      Widget buildS6() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Superstar 6 : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Superstar 6"),
+        // value: s4 != 0 ? s4 : listSuperstars![0].id,
+        onChanged: onChangedS6,
+        items: disable(6) ? null : listSuperstars!.map((s6){
+        return DropdownMenuItem(
+          value: s6.id,
+          child: Text(s6.nom));
+      }).toList(),
+      ),);
 
-    Widget buildS10() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 10'),
-          value: s10 == "" ? null : s10,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS10,
-        );
-      });
+    Widget buildS7() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Superstar 7 : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Superstar 7"),
+        // value: s4 != 0 ? s4 : listSuperstars![0].id,
+        onChanged: onChangedS7,
+        items: disable(7) ? null : listSuperstars!.map((s7){
+        return DropdownMenuItem(
+          value: s7.id,
+          child: Text(s7.nom));
+      }).toList(),
+      ),);
 
-    Widget buildGagnant() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('UniverseSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Gagnant'),
-          value: gagnant == "" ? null : gagnant,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedGagnant,
-        );
-      });
+    Widget buildS8() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Superstar 8 : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Superstar 8"),
+        // value: s4 != 0 ? s4 : listSuperstars![0].id,
+        onChanged: onChangedS8,
+        items: disable(8) ? null : listSuperstars!.map((s8){
+        return DropdownMenuItem(
+          value: s8.id,
+          child: Text(s8.nom));
+      }).toList(),
+      ),);
 
-      Widget buildOrdre() => TextFormField(
-        // maxLines: 1,
+Widget buildGagnant() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Gagnant : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Gagnant"),
+        value: gagnant != 0 ? gagnant : defaultSup.id,
+        // value: gagnant != 0 ? gagnant : listSuperstars![0].id,
+        onChanged: onChangedGagnant,
+        items: listSuperstars!.map((gagnant){
+        return DropdownMenuItem(
+          value: gagnant.id,
+          child: Text(gagnant.nom));
+      }).toList(),
+      validator: (gagnant) => validateWinner() ? null : "The winner must be in the match",
+      // validator: (gagnant) {
+      //     //  (gagnant != s1 && gagnant != s2
+      //     //   && gagnant != s3 && gagnant != s4
+      //     //   && gagnant != s5 && gagnant != s6
+      //     //   && gagnant != s7 && gagnant != s8) || 
+      //     gagnant == 0
+      //       ? "Le gagnant doit être un participant du match" : null;
+      //   }
+      ),);
+      //check si le gagnant peut pas être dans un champ disabled
+
+   Widget buildOrdre() => TextFormField(
         initialValue: ordre.toString(),
         style: const TextStyle(
           // color: Colors.white70,
@@ -319,12 +403,14 @@ class UniverseMatchesFormWidget extends StatelessWidget {
           fontSize: 18
         ),
         decoration: const InputDecoration(
+          labelText: 'Ordre : ',
+          labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           border: InputBorder.none,
           hintText: 'Match n°',
           // hintStyle: TextStyle(color: Colors.white70),
         ),
         validator: (ordre) =>
-            ordre != null && ordre.isEmpty ? "L'ordre" : null,
+            int.parse(ordre!) != null && ordre.isEmpty ? "L'ordre" : null,
         onChanged: onChangedOrdre,
       );
 }

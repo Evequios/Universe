@@ -1,37 +1,39 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/database.dart';
+import 'package:wwe_universe/pages/Universe/UniverseBrands/AddEditUniverseBrandsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseNews/AddEditUniverseNewsPage.dart';
 // import 'package:sqflite_database_example/page/edit_note_page.dart';
 
-class UniverseNewsDetailPage extends StatefulWidget {
-  final int newsId;
+class UniverseBrandsDetailPage extends StatefulWidget {
+  final int brandId;
 
-  const UniverseNewsDetailPage({
+  const UniverseBrandsDetailPage({
     Key? key,
-    required this.newsId,
+    required this.brandId,
   }) : super(key: key);
 
   @override
-  _UniverseNewsDetailPage createState() => _UniverseNewsDetailPage();
+  _UniverseBrandsDetailPage createState() => _UniverseBrandsDetailPage();
 }
 
-class _UniverseNewsDetailPage extends State<UniverseNewsDetailPage> {
-  late UniverseNews news;
+class _UniverseBrandsDetailPage extends State<UniverseBrandsDetailPage> {
+  late UniverseBrands brand;
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
 
-    refreshNews();
+    refreshBrand();
   }
 
-  Future refreshNews() async {
+  Future refreshBrand() async {
     setState(() => isLoading = true);
 
-    this.news = await UniverseDatabase.instance.readNews(widget.newsId);
+    this.brand = await UniverseDatabase.instance.readBrand(widget.brandId);
 
     setState(() => isLoading = false);  
   }
@@ -49,7 +51,7 @@ class _UniverseNewsDetailPage extends State<UniverseNewsDetailPage> {
                   padding: EdgeInsets.symmetric(vertical: 8),
                   children: [
                     Text(
-                      news.titre,
+                      brand.nom,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 22,
@@ -58,10 +60,6 @@ class _UniverseNewsDetailPage extends State<UniverseNewsDetailPage> {
                     ),
                     SizedBox(height: 8),
                     SizedBox(height: 8),
-                    Text(
-                      news.texte,
-                      style: TextStyle(color: Colors.black, fontSize: 18),
-                    ),
                   ],
                 ),
               ),
@@ -73,16 +71,16 @@ class _UniverseNewsDetailPage extends State<UniverseNewsDetailPage> {
         // if (isLoading) return;
 
         await Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => AddEditUniverseNewsPage(news: news),)
+          MaterialPageRoute(builder: (context) => AddEditUniverseBrandsPage(brand: brand),)
         );
 
-        refreshNews();
+        refreshBrand();
       });
 
   Widget deleteButton() => IconButton(
         icon: Icon(Icons.delete),
         onPressed: () async {
-          await UniverseDatabase.instance.deleteNews(widget.newsId);
+          await UniverseDatabase.instance.deleteBrand(widget.brandId);
           Navigator.of(context).pop();
         },
       );

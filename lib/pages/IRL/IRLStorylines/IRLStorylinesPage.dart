@@ -25,7 +25,7 @@ class _IRLStorylinesPage extends State<IRLStorylinesPage> {
           title: const Text(
             'Storylines',
           ),
-          actions: const [Icon(Icons.search), SizedBox(width: 12)],
+          // actions: const [Icon(Icons.search), SizedBox(width: 12)],
         ),
         body: Center(
           child: StreamBuilder<List<IRLStorylines>>(
@@ -62,6 +62,7 @@ class _IRLStorylinesPage extends State<IRLStorylinesPage> {
 
   Widget buildIRLStorylines(IRLStorylines irlStorylines) {
             return Card(
+              color : irlStorylines.fin != '' ? Colors.white70 : Colors.white,
               shape:RoundedRectangleBorder(
               side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),

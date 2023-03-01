@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/widget/Universe/UniverseNewsFormWidget.dart';
 
 class AddEditUniverseNewsPage extends StatefulWidget {
-  final UniverseNews? universeNews;
+  final UniverseNews? news;
 
   const AddEditUniverseNewsPage({
     Key? key,
-    this.universeNews,
+    this.news,
   }) : super(key: key);
   @override
   _AddEditUniverseNewsPage createState() => _AddEditUniverseNewsPage();
@@ -24,9 +25,11 @@ class _AddEditUniverseNewsPage extends State<AddEditUniverseNewsPage> {
   void initState() {
     super.initState();
 
-    titre = widget.universeNews?.titre ?? '';
-    texte = widget.universeNews?.texte ?? '';
-    categorie = widget.universeNews?.categorie ?? '';
+    titre = widget.news?.titre ?? '';
+    texte = widget.news?.texte ?? '';
+    categorie = widget.news?.categorie ?? '';
+
+    
   }
 
   @override
@@ -67,7 +70,7 @@ class _AddEditUniverseNewsPage extends State<AddEditUniverseNewsPage> {
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
-      final isUpdating = widget.universeNews != null;
+      final isUpdating = widget.news != null;
 
       if (isUpdating) {
         await updateUniverseNews();
@@ -80,25 +83,23 @@ class _AddEditUniverseNewsPage extends State<AddEditUniverseNewsPage> {
   }
 
   Future updateUniverseNews() async {
-    final docUniverseNews = FirebaseFirestore.instance.collection('UniverseNews').doc(widget.universeNews!.id);
-    docUniverseNews.update({
-      'titre': titre,
-      'texte': texte,
-      'categorie': categorie != '' ? categorie : "Annonce",
-    });
+    final news = widget.news!.copy(
+      titre: titre,
+      texte: texte,
+      categorie: categorie != '' ? categorie : "Annonce",
+    );
+
+    await UniverseDatabase.instance.updateNews(news);
   }
 
   Future addUniverseNews() async {
-    final docUniverseNews = FirebaseFirestore.instance.collection('UniverseNews').doc();
-    final universeNews = UniverseNews(
-      id : docUniverseNews.id,
+    final news = UniverseNews(
       titre: titre,
       texte: texte,
-      createdTime: Timestamp.now(),
+      createdTime: DateTime.now(),
       categorie: categorie != '' ? categorie : "Annonce" 
     );
 
-    final json = universeNews.toJson();
-    await docUniverseNews.set(json);
+    await UniverseDatabase.instance.createNews(news);
   }
 }

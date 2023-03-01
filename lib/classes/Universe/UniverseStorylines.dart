@@ -1,12 +1,27 @@
+final String tableStorylines = 'storylines';
+
+class StorylinesFields {
+  static final List<String> values = [
+    id, titre, texte, debut, fin
+  ];
+
+  static final String id = '_id';
+  static final String titre = 'titre';
+  static final String texte = 'texte';
+  static final String debut = 'debut';
+  static final String fin = 'fin';
+
+}
+
 class UniverseStorylines{
-  final String id;
+  final int? id;
   final String titre;
   final String texte;
   final String debut;
   final String fin;
 
   const UniverseStorylines({
-    required this.id,
+    this.id,
     required this.titre,
     required this.texte,
     required this.debut,
@@ -14,7 +29,7 @@ class UniverseStorylines{
   });
 
   UniverseStorylines copy({
-    String? id,
+    int? id,
     String? titre,
     String? texte,
     String? debut,
@@ -29,18 +44,18 @@ class UniverseStorylines{
       );
 
   static UniverseStorylines fromJson(Map<String, dynamic> json) => UniverseStorylines(
-        id: json['id'],
-        titre: json['titre'],
-        texte: json['texte'],
-        debut: json['debut'],
-        fin: json['fin'],
+        id: json[StorylinesFields.id] as int ?,
+        titre: json[StorylinesFields.titre] as String,
+        texte: json[StorylinesFields.texte] as String,
+        debut: json[StorylinesFields.debut] as String,
+        fin: json[StorylinesFields.fin] as String,
       );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'titre': titre,
-        'texte': texte,
-        'debut': debut,
-        'fin': fin,
+        StorylinesFields.id: id,
+        StorylinesFields.titre: titre,
+        StorylinesFields.texte: texte,
+        StorylinesFields.debut: debut,
+        StorylinesFields.fin: fin,
       };
 }

@@ -1,14 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
+import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/widget/Universe/UniverseTitlesFormWidget.dart';
 
 class AddEditUniverseTitlesPage extends StatefulWidget {
-  final UniverseTitles? universeTitles;
+  final UniverseTitles? title;
+  final List<UniverseBrands>? listBrands;
+  final List<UniverseSuperstars>? listSuperstars;
 
   const AddEditUniverseTitlesPage({
     Key? key,
-    this.universeTitles,
+    this.title,
+    this.listBrands,
+    this.listSuperstars
   }) : super(key: key);
   @override
   _AddEditUniverseTitlesPage createState() => _AddEditUniverseTitlesPage();
@@ -16,21 +23,25 @@ class AddEditUniverseTitlesPage extends StatefulWidget {
 
 class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
   final _formKey = GlobalKey<FormState>();
+  late List<UniverseBrands> listBrands = [];
+  late List<UniverseSuperstars> listSuperstars = [];
   late String nom;
-  late String show;
-  late String tag;
-  late String holder1;
-  late String holder2;
+  late int brand;
+  late int tag;
+  late int holder1;
+  late int holder2;
 
   @override
   void initState() {
     super.initState();
 
-    nom = widget.universeTitles?.nom ?? '';
-    show = widget.universeTitles?.show ?? '';
-    tag = widget.universeTitles?.tag ?? '';
-    holder1 = widget.universeTitles?.holder1 ?? '';
-    holder2 = widget.universeTitles?.holder2 ?? '';
+    nom = widget.title?.nom ?? '';
+    brand = widget.title?.brand ?? 0;
+    tag = widget.title?.tag ?? 0;
+    holder1 = widget.title?.holder1 ?? 0;
+    holder2 = widget.title?.holder2 ?? 0;
+    listSuperstars = widget.listSuperstars!;
+    listBrands = widget.listBrands!;
   }
 
   @override
@@ -41,16 +52,18 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
         body: Form(
           key: _formKey,
           child: UniverseTitlesFormWidget(
+            listBrands: listBrands,
+            listSuperstars: listSuperstars,
             nom: nom,
-            show: show,
+            brand: brand,
             tag: tag,
             holder1 : holder1,
             holder2 : holder2,
-            onChangedNom: (nom) => setState(() => this.nom = nom),
-            onChangedShow: (show) => setState(() => this.show = show),
-            onChangedTag: (tag) => setState(() => this.tag = tag.toString()),
-            onChangedHolder1: (holder1) => setState(() => this.holder1 = holder1.toString()),
-            onChangedHolder2: (holder2) => setState(() => this.holder2 = holder2.toString()),
+            onChangedNom: (nom) => setState(() => this.nom = nom!),
+            onChangedBrand: (brand) => setState(() => this.brand = brand!),
+            onChangedTag: (tag) => setState(() => this.tag = tag!),
+            onChangedHolder1: (holder1) => setState(() => this.holder1 = holder1!),
+            onChangedHolder2: (holder2) => setState(() => this.holder2 = holder2!),
           ),
         ),
       );
@@ -75,7 +88,7 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
-      final isUpdating = widget.universeTitles != null;
+      final isUpdating = widget.title != null;
 
       if (isUpdating) {
         await updateUniverseTitles();
@@ -88,28 +101,26 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
   }
 
   Future updateUniverseTitles() async {
-    final docUniverseTitles = FirebaseFirestore.instance.collection('UniverseTitles').doc(widget.universeTitles!.id);
-    docUniverseTitles.update({
-      'nom': nom,
-      'show': show,
-      'tag': tag,
-      'holder1': holder1,
-      'holder2': holder2,
-    });
-  }
-
-  Future addUniverseTitles() async {
-    final docUniverseTitles = FirebaseFirestore.instance.collection('UniverseTitles').doc();
-    final universeTitles = UniverseTitles(
-      id : docUniverseTitles.id,
+    final title = widget.title!.copy(
       nom: nom,
-      show: show,
+      brand: brand,
       tag: tag,
       holder1: holder1,
       holder2: holder2,
     );
 
-    final json = universeTitles.toJson();
-    await docUniverseTitles.set(json);
+    await UniverseDatabase.instance.updateTitle(title);
+  }
+
+  Future addUniverseTitles() async {
+    final title = UniverseTitles(
+      nom: nom,
+      brand: brand,
+      tag: tag,
+      holder1: holder1,
+      holder2: holder2,
+    );
+
+    await UniverseDatabase.instance.createTitle(title);
   }
 }

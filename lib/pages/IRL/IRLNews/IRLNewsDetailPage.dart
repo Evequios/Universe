@@ -51,6 +51,13 @@ class _IRLNewsDetailPage extends State<IRLNewsDetailPage> {
                       irlNews!.texte,
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
+                    SizedBox(height: 20,),
+                    Row(children: [
+                      Text('${irlNews!.createdTime.toDate().day}/${irlNews!.createdTime.toDate().month}/${irlNews!.createdTime.toDate().year}  ${irlNews!.createdTime.toDate().hour}h${irlNews!.createdTime.toDate().minute.toString().padLeft(2, '0')}'
+                      , style: TextStyle(color:Colors.blueGrey, fontWeight: FontWeight.bold)),
+                      Spacer(),
+                      Text(irlNews!.categorie, textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color:Colors.blueGrey)),
+                    ],)
                   ],
                 ),
               ),

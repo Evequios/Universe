@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const List<String> listOrientations = <String>['Face', 'Tweener', 'Heel'];
-const List<String> listShows = <String>['Raw', 'SmackDown', 'NXT'];
+const List<String> listShows = <String>['Aucun', 'Raw', 'SmackDown', 'NXT'];
 
 class IRLSuperstarsFormWidget extends StatelessWidget {
   final String? prenom;
@@ -32,21 +32,22 @@ class IRLSuperstarsFormWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context){ 
   return Scaffold(
-    body: Center(
-        child: Padding(
+    body: 
+        Padding(
           padding: EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               buildPrenom(),
+              SizedBox(height: 8,),
               buildNom(),
+              SizedBox(height: 8,),
               buildShow(),
+              SizedBox(height: 16,),
               buildOrientation(),
-              buildTitre(),
             ],
           ),
         ),
-      )
   );
   }
   Widget buildPrenom() => TextFormField(
@@ -57,6 +58,8 @@ class IRLSuperstarsFormWidget extends StatelessWidget {
           border: InputBorder.none,
           hintText: 'Prénom',
           hintStyle: TextStyle(color: Colors.black),
+          labelText: 'Prénom : ',
+          labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black)
         ),
         validator: (prenom) => prenom != null && prenom.isEmpty ? 'Le prénom ne peut pas être vide' : null,
         onChanged: onChangedPrenom,
@@ -70,13 +73,18 @@ class IRLSuperstarsFormWidget extends StatelessWidget {
           border: InputBorder.none,
           hintText: 'Nom',
           hintStyle: TextStyle(color: Colors.black),
+          labelText: 'Nom : ',
+          labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black)
         ),
         // validator: (nom) => nom != null && nom.isEmpty ? 'Le nom ne peut pas être vide': null,
         onChanged: onChangedNom,
       );
 
-    Widget buildShow() => Container(child: DropdownButton(
-      hint: Text("Show"),
+    Widget buildShow() => Container(alignment: Alignment.bottomLeft, child: DropdownButtonFormField(
+      decoration: const InputDecoration(
+        labelText: 'Show : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black)),
+      // hint: Text("Show"),
       value: show == "" ? null : show,
       onChanged : onChangedShow, 
       items: listShows.map((show){
@@ -84,29 +92,19 @@ class IRLSuperstarsFormWidget extends StatelessWidget {
           child: Text(show),
           value: show == "" ? null : show,);
       }).toList(),
-    ),
-    alignment: Alignment.bottomLeft);
+    ));
 
-    Widget buildOrientation() => Container(alignment: Alignment.bottomLeft,child: DropdownButton(
-      hint: Text("Orientation"),
+    Widget buildOrientation() => Container(alignment: Alignment.bottomLeft,child: DropdownButtonFormField(
+      decoration : const InputDecoration(
+        labelText: 'Orientation : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black)),
+      // hint: Text("Orientation"),
       value: orientation == "" ? null : orientation,
       onChanged : onChangedOrientation, 
       items: listOrientations.map((orientation){
         return DropdownMenuItem<String>(
           value: orientation == "" ? null : orientation,
           child: Text(orientation));
-      }).toList(),
-    ),);
-  
-
-    Widget buildTitre() => Container(alignment: Alignment.bottomLeft,child: DropdownButton(
-      hint: Text("Titre"),
-      value: titre == "" ? null : titre,
-      onChanged : onChangedTitre, 
-      items: listOrientations.map((titre){
-        return DropdownMenuItem<String>(
-          value: titre == "" ? null : titre,
-          child: Text(titre));
       }).toList(),
     ),);
 }

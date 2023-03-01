@@ -109,8 +109,8 @@ class UniverseStorylinesFormWidget extends StatelessWidget {
           hintText: 'Numéro de la semaine de fin',
           // hintStyle: TextStyle(color: Colors.white70),
         ),
-        validator: (fin) =>
-            fin != null && fin.isEmpty ? 'La semaine de fin ne peut pas être vide' : null,
+        // validator: (fin) =>
+        //     fin != null && fin.isEmpty ? 'La semaine de fin ne peut pas être vide' : null,
         onChanged: onChangedFin,
       );
 }

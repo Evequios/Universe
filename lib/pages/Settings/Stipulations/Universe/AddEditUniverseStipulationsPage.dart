@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/widget/Universe/UniverseStipulationsFormWidget.dart';
 
 class AddEditUniverseStipulationsPage extends StatefulWidget {
-  final UniverseStipulations? universeStipulations;
+  final UniverseStipulations? stipulation;
 
   const AddEditUniverseStipulationsPage({
     Key? key,
-    this.universeStipulations,
+    this.stipulation,
   }) : super(key: key);
   @override
   _AddEditUniverseStipulationsPage createState() => _AddEditUniverseStipulationsPage();
@@ -23,8 +24,8 @@ class _AddEditUniverseStipulationsPage extends State<AddEditUniverseStipulations
   void initState() {
     super.initState();
 
-    type = widget.universeStipulations?.type ?? '';
-    stipulation = widget.universeStipulations?.stipulation ?? '';
+    type = widget.stipulation?.type ?? '';
+    stipulation = widget.stipulation?.stipulation ?? '';
   }
 
   @override
@@ -63,7 +64,7 @@ class _AddEditUniverseStipulationsPage extends State<AddEditUniverseStipulations
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
-      final isUpdating = widget.universeStipulations != null;
+      final isUpdating = widget.stipulation != null;
 
       if (isUpdating) {
         await updateUniverseStipulations();
@@ -76,22 +77,20 @@ class _AddEditUniverseStipulationsPage extends State<AddEditUniverseStipulations
   }
 
   Future updateUniverseStipulations() async {
-    final docUniverseStipulations = FirebaseFirestore.instance.collection('UniverseStipulations').doc(widget.universeStipulations!.id);
-    docUniverseStipulations.update({
-      'type': type,
-      'stipulation': stipulation,
-    });
+    final stipulation = widget.stipulation!.copy(
+      type: type,
+      stipulation: this.stipulation,
+    );
+
+    await UniverseDatabase.instance.updateStipulation(stipulation);
   }
 
   Future addUniverseStipulations() async {
-    final docUniverseStipulations = FirebaseFirestore.instance.collection('UniverseStipulations').doc();
-    final universeStipulations = UniverseStipulations(
-      id : docUniverseStipulations.id,
-      type: type,
-      stipulation: stipulation
+    final stipulation = UniverseStipulations(
+      type: type, 
+      stipulation: this.stipulation
     );
 
-    final json = universeStipulations.toJson();
-    await docUniverseStipulations.set(json);
+    await UniverseDatabase.instance.createStipulation(stipulation);
   }
 }

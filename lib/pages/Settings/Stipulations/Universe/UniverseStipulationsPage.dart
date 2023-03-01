@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Settings/Stipulations/Universe/AddEditUniverseStipulationsPage.dart';
 import 'package:wwe_universe/pages/Settings/Stipulations/Universe/UniverseStipulationsDetailPage.dart';
 
@@ -13,10 +14,22 @@ class UniverseStipulationsPage extends StatefulWidget{
 }
 
 class _UniverseStipulationsPageState extends State<UniverseStipulationsPage> {
+  late List<UniverseStipulations> stipulationsList;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
+
+    refreshStipulations();
+  }
+
+  Future refreshStipulations() async {
+    setState(() => isLoading = true);
+
+    this.stipulationsList = await UniverseDatabase.instance.readAllStipulations();
+
+    setState(() => isLoading = false);
   }
 
   @override
@@ -32,25 +45,13 @@ class _UniverseStipulationsPageState extends State<UniverseStipulationsPage> {
           
         ),
         body: Center(
-          child: StreamBuilder<List<UniverseStipulations>>(
-            stream: readAllUniverseStipulations(),
-            builder: (BuildContext context, snapshot) {
-            if (snapshot.hasError) {
-              return Text('Something went wrong');
-            }
-
-            else if(snapshot.hasData){
-              final universeStipulations = snapshot.data!;
-
-              return ListView(
-                padding: EdgeInsets.all(12),
-                children: universeStipulations.map(buildUniverseStipulations).toList()
-              ,);
-            }
-            else{
-              return CircularProgressIndicator();
-            }
-          }),
+          child: isLoading
+            ? const CircularProgressIndicator()
+            : stipulationsList.isEmpty
+              ? const Text(
+                'No created stipulations'
+              )
+            : buildUniverseStipulations(),
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.black,
@@ -59,11 +60,17 @@ class _UniverseStipulationsPageState extends State<UniverseStipulationsPage> {
             await Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => AddEditUniverseStipulationsPage()),
             );
+
+            refreshStipulations();
           },
         ),
       );
 
-  Widget buildUniverseStipulations(UniverseStipulations universeStipulations) {
+  Widget buildUniverseStipulations() => ListView.builder(
+    padding: EdgeInsets.all(8),
+    itemCount: stipulationsList.length,
+    itemBuilder: (context, index) {
+      final stipulation = stipulationsList[index];
   return Card(
             shape:RoundedRectangleBorder(
               side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
@@ -72,15 +79,11 @@ class _UniverseStipulationsPageState extends State<UniverseStipulationsPage> {
               child: ListTile(
               onTap: () async {
                 await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => UniverseStipulationsDetailPage(universeStipulations: universeStipulations),
-              ));
+                builder: (context) => UniverseStipulationsDetailPage(stipulationId: stipulation.id!),
+              )).then((value) => refreshStipulations());;
               },
-              title: Text('${universeStipulations.type} ${universeStipulations.stipulation}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              title: Text('${stipulation.type} ${stipulation.stipulation}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               // subtitle: Text('${universeStipulations.createdTime.toDate().day}/${universeStipulations.createdTime.toDate().month}/${universeStipulations.createdTime.toDate().year}  ${universeStipulations.createdTime.toDate().hour}h${universeStipulations.createdTime.toDate().minute.toString().padLeft(2, '0')}                                      ${universeStipulations.categorie}'),
               ));
-  }
-
-  Stream<List<UniverseStipulations>> readAllUniverseStipulations() => 
-  FirebaseFirestore.instance.collection('UniverseStipulations').orderBy('type').snapshots().map((snapshot) => 
-    snapshot.docs.map((doc) => UniverseStipulations.fromJson(doc.data())).toList());
+  });
 }

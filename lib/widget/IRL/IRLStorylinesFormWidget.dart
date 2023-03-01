@@ -109,8 +109,6 @@ class IRLStorylinesFormWidget extends StatelessWidget {
           hintText: 'Date de fin en format DD/MM/YYYY',
           // hintStyle: TextStyle(color: Colors.white70),
         ),
-        validator: (fin) =>
-            fin != null && fin.isEmpty ? 'La date de début ne peut pas être vide' : null,
         onChanged: onChangedFin,
       );
 }

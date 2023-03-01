@@ -15,7 +15,6 @@ class IRLSuperstarsPage extends StatefulWidget{
 }
 
 class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
-  bool isLoading = false;
 
   @override
   void initState() {
@@ -29,9 +28,10 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
           title: const Text(
             'Superstars',
           ),
-          actions: const [Icon(Icons.search), SizedBox(width: 12)],
+          // actions: const [Icon(Icons.search), SizedBox(width: 12)],
         ),
-        body: Center(
+        body: Column(children : [
+          Flexible(
           child: StreamBuilder<List<IRLSuperstars>>(
             stream: readAllIRLSuperstars(),
             builder: (BuildContext context, snapshot) {
@@ -41,7 +41,6 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
 
             else if(snapshot.hasData){
               final irlSuperstars = snapshot.data!;
-
               return ListView(
                 padding: EdgeInsets.all(8),
                 children: irlSuperstars.map(buildIRLSuperstars).toList()
@@ -51,7 +50,7 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
               return CircularProgressIndicator();
             }
           }),
-        ),
+        )]),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.black,
           child: const Icon(Icons.add),
@@ -72,7 +71,7 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
             ));
             },
             child :Container(
-            height: 100,
+            height: 80,
             child : Card(
               shape:RoundedRectangleBorder(
               side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
@@ -84,13 +83,15 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
                 child: Row(
                   children: [
-                    irlSuperstars.titre == null ? 
-                    Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),)
-                    //  : Text('${irlSuperstars.titre} champion ${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-                    : Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-                    // Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown, 
+                        child: Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                        alignment: Alignment.centerLeft, 
+                      )
+                    ),
                     Spacer(),
-                    Image(image: AssetImage('assets/${irlSuperstars.show.toLowerCase()}.png'))
+                    Container(child : ((){ if(irlSuperstars.show != 'Aucun') return Image(image: AssetImage('assets/${irlSuperstars.show.toLowerCase()}.png'));}()))
                   ],
                 )
               )

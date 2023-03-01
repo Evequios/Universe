@@ -1,54 +1,53 @@
-import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
+final String tableSuperstars = 'superstars';
+
+class SuperstarsFields{
+  static final List<String> values = [
+    id, nom, show, orientation
+  ];
+
+  static final String id = '_id';
+  static final String nom = 'nom';
+  static final String show = 'show';
+  static final String orientation = 'orientation';
+}
 
 class UniverseSuperstars{
-  final String id;
-  final String prenom;
+  final int? id;
   final String nom;
   final String show;
   final String orientation;
-  final String titre;
 
   const UniverseSuperstars({
-    required this.id,
-    required this.prenom,
+    this.id,
     required this.nom,
     required this.show,
-    required this.orientation,
-    required this.titre
+    required this.orientation
   });
 
   UniverseSuperstars copy({
-    String? id,
-    String? prenom,
+    int? id,
     String? nom,
     String? show,
-    String? orientation,
-    String? titre
+    String? orientation
   }) =>
       UniverseSuperstars(
         id: id ?? this.id,
-        prenom: prenom ?? this.prenom,
         nom: nom ?? this.nom,
         show: show ?? this.show,
         orientation: orientation ?? this.orientation,
-        titre: titre ?? this.titre,
       );
 
   static UniverseSuperstars fromJson(Map<String, dynamic> json) => UniverseSuperstars(
-        id: json['id'],
-        nom: json['nom'],
-        prenom: json['prenom'],
-        show: json['show'],
-        orientation: json['orientation'],
-        titre: json['titre'],
+        id: json[SuperstarsFields.id] as int ?,
+        nom: json[SuperstarsFields.nom] as String,
+        show: json[SuperstarsFields.show] as String,
+        orientation: json[SuperstarsFields.orientation] as String,
       );
 
   Map<String, Object?> toJson() => {
-        'id': id,
-        'prenom': prenom,
-        'nom': nom,
-        'show': show,
-        'orientation': orientation,
-        'titre': titre,
+        SuperstarsFields.id: id,
+        SuperstarsFields.nom : nom,
+        SuperstarsFields.show: show,
+        SuperstarsFields.orientation: orientation,
       };
 }

@@ -1,10 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+final String tableNews = 'news';
+
+class NewsFields {
+  static final List<String> values = [
+    id, titre, texte, createdTime, categorie
+  ];
+
+  static final String id = '_id';
+  static final String titre = 'titre';
+  static final String texte = 'texte';
+  static final String createdTime = 'createdTime';
+  static final String categorie = 'categorie';
+}
 
 class UniverseNews{
-  final String? id;
+  final int? id;
   final String titre;
   final String texte;
-  final Timestamp createdTime;
+  final DateTime createdTime;
   final String categorie;
 
   const UniverseNews({
@@ -15,21 +27,36 @@ class UniverseNews{
     required this.categorie,
   });
 
+  UniverseNews copy ({
+    int? id,
+    String? titre,
+    String? texte,
+    DateTime? createdTime,
+    String? categorie
+  }) =>
+    UniverseNews(
+      id : id ?? this.id,
+      titre: titre ?? this.titre,
+      texte: texte ?? this.texte,
+      createdTime: createdTime ?? this.createdTime,
+      categorie: categorie ?? this.categorie
+    );
+
   static UniverseNews fromJson(Map<String, dynamic> json) => UniverseNews(
-        id: json['id'],
-        titre: json['titre'],
-        texte: json['texte'],
+        id: json[NewsFields.id] as int ?,
+        titre: json[NewsFields.titre] as String,
+        texte: json[NewsFields.texte] as String, 
         // createdTime: DateTime.parse(json['time']),
-        createdTime: json['time'],
-        categorie: json['categorie']
+        createdTime: DateTime.parse(json[NewsFields.createdTime] as String),
+        categorie: json[NewsFields.categorie] as String
       );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'titre': titre,
-        'texte': texte,
+        NewsFields.id: id,
+        NewsFields.titre: titre,
+        NewsFields.texte: texte,
         // 'time': createdTime.toIso8601String(),
-        'time': createdTime,
-        'categorie': categorie
+        NewsFields.createdTime: createdTime.toIso8601String(),
+        NewsFields.categorie: categorie
       };
 }

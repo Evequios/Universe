@@ -2,16 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseNews/AddEditUniverseNewsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseSuperstars/AddEditUniverseSuperstarsPage.dart';
 // import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class UniverseSuperstarsDetailPage extends StatefulWidget {
-  final UniverseSuperstars? universeSuperstars;
+  final int superstarId;
 
   const UniverseSuperstarsDetailPage({
     Key? key,
-    required this.universeSuperstars,
+    required this.superstarId,
   }) : super(key: key);
 
   @override
@@ -19,12 +20,22 @@ class UniverseSuperstarsDetailPage extends StatefulWidget {
 }
 
 class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> {
-  late UniverseSuperstars? universeSuperstars = widget.universeSuperstars;
+  late UniverseSuperstars superstar;
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
+
+    refreshSuperstars();
+  }
+
+  Future refreshSuperstars() async {
+    setState(() => isLoading = true);
+
+    this.superstar = await UniverseDatabase.instance.readSuperstar(widget.superstarId);
+
+    setState(() => isLoading = false);  
   }
 
   @override
@@ -40,22 +51,17 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
                   padding: EdgeInsets.symmetric(vertical: 8),
                   children: [
                     Text(
-                      'Prénom : ${universeSuperstars!.prenom}',
-                      style: TextStyle(color: Colors.black, fontSize: 18,),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Nom : ${universeSuperstars!.nom}',
+                      'Nom : ${superstar.nom}',
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Show : ${universeSuperstars!.show}',
+                      'Show : ${superstar.show}',
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Orientation : ${universeSuperstars!.orientation}',
+                      'Orientation : ${superstar.orientation}',
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     )
                   ],
@@ -69,15 +75,17 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
         if (isLoading) return;
 
         await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddEditUniverseSuperstarsPage(universeSuperstars: universeSuperstars),
+          builder: (context) => AddEditUniverseSuperstarsPage(superstar: superstar),
         ));
+
+        refreshSuperstars();
       });
 
   Widget deleteButton() => IconButton(
         icon: Icon(Icons.delete),
-        onPressed: () {
-          final docUniverseSuperstars= FirebaseFirestore.instance.collection('UniverseSuperstars').doc(universeSuperstars!.id);
-          docUniverseSuperstars.delete();
+        onPressed: () async {
+          await UniverseDatabase.instance.deleteSuperstar(widget.superstarId);
+
           Navigator.of(context).pop();
         },
   );

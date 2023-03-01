@@ -28,7 +28,7 @@ class _IRLNewsPageState extends State<IRLNewsPage> {
             'News',
             // style : TextStyle(fontWeight: FontWeight.bold,fontSize: 22)
           ),
-          actions: const [Icon(Icons.search), SizedBox(width: 12)],
+          // actions: const [Icon(Icons.search), SizedBox(width: 12)],
           
         ),
         body: Center(

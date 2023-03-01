@@ -2,16 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/widget/Universe/UniverseNewsFormWidget.dart';
 import 'package:wwe_universe/widget/Universe/UniverseShowsFormWidget.dart';
 import 'package:intl/intl.dart';
 
 class AddEditUniverseShowsPage extends StatefulWidget {
-  final UniverseShows? universeShows;
+  final UniverseShows? show;
 
   const AddEditUniverseShowsPage({
     Key? key,
-    this.universeShows
+    this.show,
   }) : super(key: key);
   @override
   _AddEditUniverseShowsPage createState() => _AddEditUniverseShowsPage();
@@ -20,31 +21,39 @@ class AddEditUniverseShowsPage extends StatefulWidget {
 class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
   final _formKey = GlobalKey<FormState>();
   late String nom;
-  late String date;
+  late int annee;
+  late int semaine;
+  late String resume;
 
   @override
   void initState() {
     super.initState();
 
-    nom = widget.universeShows?.nom ?? '';
-    date = widget.universeShows?.date ?? '';
+    nom = widget.show?.nom ?? '';
+    annee = widget.show?.annee ?? 0;
+    semaine = widget.show?.semaine ?? 0;
+    resume = widget.show?.resume ?? '';
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          actions: [buildButton()],
-        ),
-        body: Form(
-          key: _formKey,
-          child: UniverseShowsFormWidget(
-            nom: nom,
-            date: date,
-            onChangedNom: (nom) => setState(() => this.nom = nom),
-            onChangedDate: (date) => setState(() => this.date = date) ,
-          ),
-        ),
-      );
+    appBar: AppBar(
+      actions: [buildButton()],
+    ),
+    body: Form(
+      key: _formKey,
+      child: UniverseShowsFormWidget(
+        nom: nom,
+        annee : annee,
+        semaine: semaine,
+        resume: resume,
+        onChangedNom: (nom) => setState(() => this.nom = nom),
+        onChangedAnnee: (annee) => setState(() => this.annee = int.parse(annee)),
+        onChangedSemaine: (semaine) => setState(() => this.semaine = int.parse(semaine)),
+        onChangedResume: (resume) => setState(() => this.resume = resume),
+      ),
+    ),
+  );
 
   Widget buildButton() {
     final isFormValid = nom.isNotEmpty && nom.isNotEmpty;
@@ -66,7 +75,7 @@ class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
-      final isUpdating = widget.universeShows != null;
+      final isUpdating = widget.show != null;
 
       if (isUpdating) {
         await updateUniverseShows();
@@ -79,22 +88,23 @@ class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
   }
 
   Future updateUniverseShows() async {
-    final docUniverseShows = FirebaseFirestore.instance.collection('UniverseShows').doc(widget.universeShows!.id);
-    docUniverseShows.update({
-      'nom': nom,
-      'date': date,
-    });
+    final show = widget.show!.copy(
+      nom: nom,
+      annee: annee,
+      semaine: semaine,
+      resume: resume,
+    );
+
+    await UniverseDatabase.instance.updateShow(show);
   }
 
   Future addUniverseShows() async {
-    final docUniverseShows = FirebaseFirestore.instance.collection('UniverseShows').doc();
-    final universeShows = UniverseShows(
-      id: docUniverseShows.id,
+    final show = UniverseShows(
       nom: nom,
-      date: date
+      annee: annee,
+      semaine: semaine,
+      resume: resume
     );
-    final json = universeShows.toJson();
-    await docUniverseShows.set(json);
-
+    await UniverseDatabase.instance.createShow(show);
   }
 }

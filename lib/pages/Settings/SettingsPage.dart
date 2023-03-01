@@ -9,7 +9,7 @@ import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsDetailPage.dart';
 import 'package:wwe_universe/pages/Settings/Stipulations/IRL/IRLStipulationsPage.dart';
 import 'package:wwe_universe/pages/Settings/Stipulations/Universe/UniverseStipulationsPage.dart';
 import 'package:wwe_universe/pages/Settings/Titles/IRL/IRLTitlesPage.dart';
-import 'package:wwe_universe/pages/Settings/Titles/Universe/UniverseTitlesPage.dart';
+// import 'package:wwe_universe/pages/Settings/Titles/Universe/UniverseTitlesPage.dart';
 
 class SettingsPage extends StatefulWidget{
   @override
@@ -63,10 +63,9 @@ class _SettingsPage extends State<SettingsPage> {
 
 
           GestureDetector( 
-            onTap: () async {
+            onTap: () {
               // await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseStipulationsPage(),));
-              await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => UniverseStipulationsPage()),
+               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UniverseStipulationsPage()),
             );
             },
             child :Container(
@@ -113,29 +112,29 @@ class _SettingsPage extends State<SettingsPage> {
             )
           ),
 
-          GestureDetector( 
-            onTap: () async {
-              await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseTitlesPage(),));
-            },
-            child :Container(
-              height: 100,
-              child : Card(
-                shape:RoundedRectangleBorder(
-                side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
-                borderRadius: BorderRadius.circular(4.0)),
-                margin: EdgeInsets.all(12),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                  child: Row(
-                    children: [
-                      Text('Universe Titles', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-                    ],
-                  )
-                )
-              )
-            )
-          ),
+          // GestureDetector( 
+          //   onTap: () async {
+          //     await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseTitlesPage(),));
+          //   },
+          //   child :Container(
+          //     height: 100,
+          //     child : Card(
+          //       shape:RoundedRectangleBorder(
+          //       side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+          //       borderRadius: BorderRadius.circular(4.0)),
+          //       margin: EdgeInsets.all(12),
+          //       elevation: 2,
+          //       child: Padding(
+          //         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+          //         child: Row(
+          //           children: [
+          //             Text('Universe Titles', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+          //           ],
+          //         )
+          //       )
+          //     )
+          //   )
+          // ),
         ]
       )
     ),

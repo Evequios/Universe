@@ -31,32 +31,60 @@ class _IRLShowsDetailPage extends State<IRLShowsDetailPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text(
-        'Matchs',
-      ),
+      title: const Text('Matchs',),
       actions: [editButton(), deleteButton()]
     ),
-    body: Center(
-          child: StreamBuilder<List<IRLMatches>>(
-            stream: readAllIRLMatches(),
-            builder: (BuildContext context, snapshot) {
+    body: Column(children: [ 
+      Container(
+        padding: EdgeInsets.all(8), 
+        alignment: Alignment.centerLeft,
+        child:Text('Résumé : ',textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
+      ),
+      Container(
+        width: double.infinity,
+        height: 150,
+        padding: EdgeInsets.all(8),
+        child :Card(
+          shape:RoundedRectangleBorder(
+            side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+            borderRadius: BorderRadius.circular(4.0)
+          ),
+          elevation : 2,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(8),
+            child : Text(irlShows!.resume != null ? irlShows!.resume : ''),
+          )
+        )
+      ),
+      SizedBox(height: 8,),
+      Container(
+        padding: EdgeInsets.all(8), 
+        alignment: Alignment.centerLeft,
+        child:Text('Matchs : ', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
+      ),
+      Flexible(
+        child: StreamBuilder<List<IRLMatches>>(
+          stream: readAllIRLMatches(),
+          builder: (BuildContext context, snapshot) {
             if (snapshot.hasError) {
               return Text('Something went wrong');
             }
 
             else if(snapshot.hasData){
               final irlMatches = snapshot.data!;
-
               return ListView(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(8),
                 children: irlMatches.map(buildIRLMatches).toList()
-              ,);
+              );
             }
+            
             else{
               return CircularProgressIndicator();
             }
-          }),
+          }
         ),
+      ),
+    ]),
     floatingActionButton: FloatingActionButton(
       backgroundColor: Colors.black,
       child : const Icon(Icons.add),
@@ -68,41 +96,44 @@ class _IRLShowsDetailPage extends State<IRLShowsDetailPage> {
   );
   
   Widget buildIRLMatches(IRLMatches irlMatches) {
-            return Container(
-              height: 80,
-              child :Card(
-              shape:RoundedRectangleBorder(
-              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
-              borderRadius: BorderRadius.circular(4.0)),
-              elevation : 2,
-              child: ListTile(
-              onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => IRLMatchesDetailPage(irlMatches: irlMatches, irlShows: irlShows!,),
-              ));
-              },
-              title: (() {
-                if(irlMatches.stipulation.contains("1v1")){
-                  return Text('${irlMatches.s1} vs ${irlMatches.s2}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                }
-                if(irlMatches.stipulation.contains("2v2")){
-                  return Text('${irlMatches.s1} & ${irlMatches.s2} vs ${irlMatches.s3} & ${irlMatches.s4}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                }
-                if(irlMatches.stipulation.contains("3v3")){
-                  return Text('${irlMatches.s1}, ${irlMatches.s2}, ${irlMatches.s3} vs ${irlMatches.s4}, ${irlMatches.s5}, ${irlMatches.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                }
-                if(irlMatches.stipulation.contains("4v4")){
-                  return Text('Team ${irlMatches.s1} vs Team ${irlMatches.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                }
-                if(irlMatches.stipulation.contains("5v5")){
-                  return Text('Team ${irlMatches.s1} vs Team ${irlMatches.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                }
-                if(irlMatches.stipulation.contains("Triple Threat")){
-                  return Text('${irlMatches.s1} vs ${irlMatches.s2} vs ${irlMatches.s3}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                }
-              }()),
-              subtitle: Text(irlMatches.stipulation, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
-            )));
+    return Container(
+    height: 80,
+    child :Card(
+      shape:RoundedRectangleBorder(
+        side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+        borderRadius: BorderRadius.circular(4.0)
+      ),
+      elevation : 2,
+      child: ListTile(
+        onTap: () async {
+          await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => IRLMatchesDetailPage(irlMatches: irlMatches, irlShows: irlShows!,),
+          ));
+        },
+        title: (() {
+          if(irlMatches.stipulation.contains("1v1")){
+            return Text('${irlMatches.s1} vs ${irlMatches.s2}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+          }
+          if(irlMatches.stipulation.contains("2v2")){
+            return Text('${irlMatches.s1} & ${irlMatches.s2} vs ${irlMatches.s3} & ${irlMatches.s4}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+          }
+          if(irlMatches.stipulation.contains("3v3")){
+            return Text('${irlMatches.s1}, ${irlMatches.s2}, ${irlMatches.s3} vs ${irlMatches.s4}, ${irlMatches.s5}, ${irlMatches.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+          }
+          if(irlMatches.stipulation.contains("4v4")){
+            return Text('Team ${irlMatches.s1} vs Team ${irlMatches.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+          }
+          if(irlMatches.stipulation.contains("5v5")){
+            return Text('Team ${irlMatches.s1} vs Team ${irlMatches.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+          }
+          if(irlMatches.stipulation.contains("Triple Threat")){
+            return Text('${irlMatches.s1} vs ${irlMatches.s2} vs ${irlMatches.s3}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+          }
+        }()),
+        subtitle: Text(irlMatches.stipulation, textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+      )
+    )
+    );
   }
 
   Widget editButton() => IconButton(

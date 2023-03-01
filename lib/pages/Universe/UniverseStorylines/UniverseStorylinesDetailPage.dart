@@ -2,16 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStorylines.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseNews/AddEditUniverseNewsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseStorylines/AddEditUniverseStorylinesPage.dart';
 // import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class UniverseStorylinesDetailPage extends StatefulWidget {
-  final UniverseStorylines universeStorylines;
+  final int storylineId;
 
   const UniverseStorylinesDetailPage({
     Key? key,
-    required this.universeStorylines,
+    required this.storylineId,
   }) : super(key: key);
 
   @override
@@ -19,12 +20,22 @@ class UniverseStorylinesDetailPage extends StatefulWidget {
 }
 
 class _UniverseStorylinesDetailPage extends State<UniverseStorylinesDetailPage> {
-  late UniverseStorylines? universeStorylines = widget.universeStorylines;
+  late UniverseStorylines storyline;
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
+
+    refreshStorylines();
+  }
+
+  Future refreshStorylines() async {
+    setState(() => isLoading = true);
+
+    this.storyline = await UniverseDatabase.instance.readStoryline(widget.storylineId);
+
+    setState(() => isLoading = false);
   }
 
   @override
@@ -40,7 +51,7 @@ class _UniverseStorylinesDetailPage extends State<UniverseStorylinesDetailPage> 
                   padding: EdgeInsets.symmetric(vertical: 8),
                   children: [
                     Text(
-                      universeStorylines!.titre,
+                      storyline.titre,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 22,
@@ -50,7 +61,7 @@ class _UniverseStorylinesDetailPage extends State<UniverseStorylinesDetailPage> 
                     SizedBox(height: 8),
                     SizedBox(height: 8),
                     Text(
-                      universeStorylines!.texte,
+                      storyline.texte,
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     )
                   ],
@@ -61,18 +72,20 @@ class _UniverseStorylinesDetailPage extends State<UniverseStorylinesDetailPage> 
   Widget editButton() => IconButton(
       icon: Icon(Icons.edit_outlined),
       onPressed: () async {
-        if (isLoading) return;
+        // if (isLoading) return;
 
         await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddEditUniverseStorylinesPage(universeStorylines: universeStorylines),
+          builder: (context) => AddEditUniverseStorylinesPage(storyline : storyline),
         ));
+
+        refreshStorylines();
       });
 
   Widget deleteButton() => IconButton(
         icon: Icon(Icons.delete),
-        onPressed: () {
-          final docUniverseStorylines= FirebaseFirestore.instance.collection('UniverseStorylines').doc(universeStorylines!.id);
-          docUniverseStorylines.delete();
+        onPressed: () async {
+          await UniverseDatabase.instance.deleteStoryline(widget.storylineId);
+          
           Navigator.of(context).pop();
         },
   );

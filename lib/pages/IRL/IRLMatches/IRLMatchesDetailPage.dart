@@ -32,78 +32,79 @@ class _IRLMatchesDetailPage extends State<IRLMatchesDetailPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          actions: [editButton(), deleteButton()],
-        ),
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: EdgeInsets.all(12),
-                child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  children: [
-                    Text(
-                      irlMatches!.stipulation,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Container(child:(() {
-                    if(irlMatches!.stipulation.contains("1v1")){
-                      return Text('${irlMatches!.s1} vs ${irlMatches!.s2}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                    }
-                    if(irlMatches!.stipulation.contains("2v2")){
-                      return Text('${irlMatches!.s1} & ${irlMatches!.s2} vs ${irlMatches!.s3} & ${irlMatches!.s4}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                    }
-                    if(irlMatches!.stipulation.contains("3v3")){
-                      return Text('${irlMatches!.s1}, ${irlMatches!.s2}, ${irlMatches!.s3} vs ${irlMatches!.s4}, ${irlMatches!.s5}, ${irlMatches!.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                    }
-                    if(irlMatches!.stipulation.contains("4v4")){
-                      return Text('Team ${irlMatches!.s1} vs Team ${irlMatches!.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                    }
-                    if(irlMatches!.stipulation.contains("5v5")){
-                      return Text('Team ${irlMatches!.s1} vs Team ${irlMatches!.s6}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                    }
-                    if(irlMatches!.stipulation.contains("Triple Threat")){
-                      return Text('${irlMatches!.s1} vs ${irlMatches!.s2} vs ${irlMatches!.s3}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
-                    }
-                  }())
-                ),
-                SizedBox(height: 30,),
-                    Text('Gagnant : ${irlMatches!.gagnant}',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center
-                    )
-                    
-                  ],
+    appBar: AppBar(
+      actions: [editButton(), deleteButton()],
+    ),
+    body: isLoading ? 
+      Center(child: CircularProgressIndicator())
+      : Padding(
+          padding: EdgeInsets.all(12),
+          child: ListView(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            children: [
+              Text(
+                irlMatches!.stipulation,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Colors.black,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,              
                 ),
               ),
-      );
+              SizedBox(height: 8),
+              Container(child:(() {
+                if(irlMatches!.stipulation.contains("1v1")){
+                  return Text('${irlMatches!.s1.trim()} vs ${irlMatches!.s2.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                }
+                if(irlMatches!.stipulation.contains("2v2")){
+                  return Text('${irlMatches!.s1.trim()} & ${irlMatches!.s2.trim()} vs ${irlMatches!.s3.trim()} & ${irlMatches!.s4.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                }
+                if(irlMatches!.stipulation.contains("3v3")){
+                  return Text('${irlMatches!.s1.trim()}, ${irlMatches!.s2.trim()}, ${irlMatches!.s3.trim()} vs ${irlMatches!.s4.trim()}, ${irlMatches!.s5.trim()}, ${irlMatches!.s6.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                }
+                if(irlMatches!.stipulation.contains("4v4")){
+                  return Text('${irlMatches!.s1.trim()}, ${irlMatches!.s2.trim()}, ${irlMatches!.s3.trim()}, ${irlMatches!.s4.trim()} vs ${irlMatches!.s5.trim()}, ${irlMatches!.s6.trim()}, ${irlMatches!.s7.trim()}, ${irlMatches!.s8.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                }
+                if(irlMatches!.stipulation.contains("5v5")){
+                  return Text('${irlMatches!.s1.trim()}, ${irlMatches!.s2.trim()}, ${irlMatches!.s3.trim()}, ${irlMatches!.s4.trim()}, ${irlMatches!.s5.trim()} vs ${irlMatches!.s6.trim()}, ${irlMatches!.s7.trim()}, ${irlMatches!.s8.trim()}, ${irlMatches!.s9.trim()}, ${irlMatches!.s10.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                }
+                if(irlMatches!.stipulation.contains("Triple Threat")){
+                  return Text('${irlMatches!.s1.trim()} vs ${irlMatches!.s2.trim()} vs ${irlMatches!.s3.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                }
+                if(irlMatches!.stipulation.contains("Fatal 4-Way")){
+                  return Text('${irlMatches!.s1.trim()} vs ${irlMatches!.s2.trim()} vs ${irlMatches!.s3.trim()} vs ${irlMatches!.s4.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                }
+              }())),
+              SizedBox(height: 30,),
+              Text('Gagnant : ${irlMatches!.gagnant}',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center
+              )      
+            ],
+          ),
+        ),
+  );
 
   Widget editButton() => IconButton(
-      icon: Icon(Icons.edit_outlined),
-      onPressed: () async {
-        if (isLoading) return;
-
-        await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddEditIRLMatchesPage(irlMatches: irlMatches, irlShows: widget.irlShows,),
-        ));
-      });
+    icon: Icon(Icons.edit_outlined),
+    onPressed: () async {
+      if (isLoading) return;
+      await Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => AddEditIRLMatchesPage(irlMatches: irlMatches, irlShows: widget.irlShows,),
+      ));
+    });
 
   Widget deleteButton() => IconButton(
-        icon: Icon(Icons.delete),
-        onPressed: () {
-          final docIRLMatches= FirebaseFirestore.instance.collection('IRLMatches').doc(irlMatches!.id);
-          docIRLMatches.delete();
-          Navigator.of(context).pop();
-        },
+    icon: Icon(Icons.delete),
+    onPressed: () {
+      final docIRLMatches= FirebaseFirestore.instance.collection('IRLMatches').doc(irlMatches!.id);
+      docIRLMatches.delete();
+      Navigator.of(context).pop();
+    },
   );
 }

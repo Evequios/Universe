@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/IRL/IRLStipulations.dart';
 
 class IRLMatchesFormWidget extends StatelessWidget {
   final String? stipulation;
@@ -32,7 +31,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
   final ValueChanged<String?> onChangedOrdre;
 
 
-  const IRLMatchesFormWidget({
+  IRLMatchesFormWidget({
     Key? key,
     this.stipulation,
     this.s1= '',
@@ -62,7 +61,6 @@ class IRLMatchesFormWidget extends StatelessWidget {
     required this.onChangedS10,
     required this.onChangedGagnant,
     required this.onChangedOrdre,
-
   }) : super(key: key);
   
 
@@ -77,17 +75,29 @@ class IRLMatchesFormWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               buildStipulation(),
+              SizedBox(height: 8,),
               buildS1(),
+              SizedBox(height: 8,),
               buildS2(),
+              SizedBox(height: 8,),
               buildS3(),
+              SizedBox(height: 8,),
               buildS4(),
+              SizedBox(height: 8,),
               buildS5(),
+              SizedBox(height: 8,),
               buildS6(),
+              SizedBox(height: 8,),
               buildS7(),
+              SizedBox(height: 8,),
               buildS8(),
+              SizedBox(height: 8,),
               buildS9(),
+              SizedBox(height: 8,),
               buildS10(),
+              SizedBox(height: 8,),
               buildGagnant(),
+              SizedBox(height: 8,),
               buildOrdre(),
             ],
           ),
@@ -97,55 +107,67 @@ class IRLMatchesFormWidget extends StatelessWidget {
   );
   }
 
-  // Widget buildStipulation() => DropdownButton(
-  //     value: stipulation != '' && stipulation != null ? stipulation : listStipulations[0],
-  //     onChanged : onChangedStipulation,
-  //     items: listStipulations.map((stipulation){
-  //       return DropdownMenuItem<String>(
-  //         value: stipulation != '' && stipulation != null ? stipulation : listStipulations[0],
-  //         child: Text(stipulation),);
-  //     }).toList(),
-  //   );
-
   Widget buildStipulation() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLStipulations').orderBy('stipulation').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Stipulation'),
-          value: stipulation == "" ? null : stipulation,
-          items:
+    stream: FirebaseFirestore.instance.collection('IRLStipulations').orderBy('stipulation').snapshots(),
+    builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    return ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Stipulation : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        // hint: Text('Stipulation'),
+        value: stipulation == "" ? null : stipulation,
+        items:
           snapshot.data?.docs.map((DocumentSnapshot document){
             return DropdownMenuItem(
               value: '${document['type']} ${document['stipulation']}',
               child: Text('${document['type']} ${document['stipulation']}'),
             );
           }).toList(),
-          onChanged: onChangedStipulation,
-        );
+        onChanged: 
+        onChangedStipulation,
+      )
+    );
   });
 
   Widget buildS1() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 1'),
-          value: s1 == "" ? null : s1,
-          items:
-          snapshot.data?.docs.map((DocumentSnapshot document){
-            return DropdownMenuItem(
-              value: '${document['prenom']} ${document['nom']}',
-              child: Text('${document['prenom']} ${document['nom']}'),
-            );
-          }).toList(),
-          onChanged: onChangedS1,
-        );
-      });
+    stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+    builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    return ButtonTheme(
+      alignedDropdown: true, 
+      child : DropdownButtonFormField(
+        isExpanded: true,
+        decoration: InputDecoration(
+          labelText: 'Superstar 1 : ',
+          labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        ),
+      // hint: Text('Superstar 1'),
+      value: s1 == "" ? null : s1,
+      items:
+        snapshot.data?.docs.map((DocumentSnapshot document){
+          return DropdownMenuItem(
+            value: '${document['prenom']} ${document['nom']}',
+            child: Text('${document['prenom']} ${document['nom']}'),
+          );
+        }).toList(),
+      onChanged: onChangedS1,
+      menuMaxHeight: 500,
+      )
+    );
+  });
 
       Widget buildS2() => StreamBuilder(
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 2'),
+        return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Superstar 2 : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Superstar 2'),
           value: s2 == "" ? null : s2,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -155,14 +177,21 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedS2,
-        );
+          menuMaxHeight: 500,
+        ));
       });
 
     Widget buildS3() => StreamBuilder(
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 3'),
+        if(!stipulation!.contains('1v1')){
+        return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Superstar 3 : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Superstar 3'),
           value: s3 == "" ? null : s3,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -172,14 +201,22 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedS3,
-        );
+          menuMaxHeight: 500,
+        ));}
+        else return SizedBox(height: 0);
       });
   
     Widget buildS4() => StreamBuilder(
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 4'),
+        if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat')){
+        return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Superstar 4 : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Superstar 4'),
           value: s4 == "" ? null : s4,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -189,14 +226,22 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedS4,
-        );
+          menuMaxHeight: 500,
+        ));}
+        else return SizedBox(height: 0,);
       });
 
     Widget buildS5() => StreamBuilder(
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 5'),
+        if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way')){
+        return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Superstar 5 : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Superstar 5'),
           value: s5 == "" ? null : s5,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -206,14 +251,22 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedS5,
-        );
+          menuMaxHeight: 500,
+        ));}
+        else return SizedBox(height: 0,);
       });
 
     Widget buildS6() => StreamBuilder(
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 6'),
+        if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way')){
+        return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Superstar 6 : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Superstar 6'),
           value: s6 == "" ? null : s6,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -223,14 +276,22 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedS6,
-        );
+          menuMaxHeight: 500,
+        ));}
+        else return SizedBox(height: 0);
       });
 
     Widget buildS7() => StreamBuilder(
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 7'),
+        if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way') && !stipulation!.contains('3v3') && !stipulation!.contains('2v2v2')){
+        return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Superstar 7 : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Superstar 7'),
           value: s7 == "" ? null : s7,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -240,14 +301,22 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedS7,
-        );
+          menuMaxHeight: 500,
+        ));}
+        else return SizedBox(height:0);
       });
 
     Widget buildS8() => StreamBuilder(
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 8'),
+        if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way') && !stipulation!.contains('3v3') && !stipulation!.contains('2v2v2')){
+        return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Superstar 8 : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Superstar 8'),
           value: s8 == "" ? null : s8,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -257,14 +326,22 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedS8,
-        );
+          menuMaxHeight: 500,
+        ));}
+        else return SizedBox(height: 8,);
       });
 
   Widget buildS9() => StreamBuilder(
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 9'),
+        if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way') && !stipulation!.contains('3v3') && !stipulation!.contains('4v4')){
+        return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Superstar 9 : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Superstar 9'),
           value: s9 == "" ? null : s9,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -274,14 +351,22 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedS9,
-        );
+          menuMaxHeight: 500,
+        ));}
+        else return SizedBox(height: 0,);
       });
 
     Widget buildS10() => StreamBuilder(
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Superstar 10'),
+        if(stipulation!.contains('5v5')){
+        return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Superstar 10 : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Superstar 10'),
           value: s10 == "" ? null : s10,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -291,14 +376,21 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedS10,
-        );
+          menuMaxHeight: 500,
+        ));}
+        else return SizedBox(height: 0,);
       });
 
-    Widget buildGagnant() => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
-      builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return DropdownButton(
-          hint: Text('Gagnant'),
+  Widget buildGagnant() => StreamBuilder(
+    stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
+    builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Gagnant : ',
+            labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+          ),
+          // hint: Text('Gagnant'),
           value: gagnant == "" ? null : gagnant,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -308,7 +400,15 @@ class IRLMatchesFormWidget extends StatelessWidget {
             );
           }).toList(),
           onChanged: onChangedGagnant,
-        );
+          menuMaxHeight: 500,
+          validator: (gagnant) =>
+            gagnant != null && gagnant != '' 
+            && gagnant != s1 && gagnant != s2
+            && gagnant != s3 && gagnant != s4
+            && gagnant != s5 && gagnant != s6
+            && gagnant != s7 && gagnant != s8
+            && gagnant != s9 && gagnant != s10 ? "Le gagnant doit être un participant du match" : null,
+        ));
       });
 
       Widget buildOrdre() => TextFormField(
@@ -320,6 +420,8 @@ class IRLMatchesFormWidget extends StatelessWidget {
           fontSize: 18
         ),
         decoration: const InputDecoration(
+          labelText: 'Ordre : ',
+          labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           border: InputBorder.none,
           hintText: 'Match n°',
           // hintStyle: TextStyle(color: Colors.white70),

@@ -3,16 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseMatches.dart';
 import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
+import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
+import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/widget/Universe/UniverseMatchesFormWidget.dart';
 import 'package:wwe_universe/widget/Universe/UniverseNewsFormWidget.dart';
 
 class AddEditUniverseMatchesPage extends StatefulWidget {
-  final UniverseMatches? universeMatches;
-  final UniverseShows? universeShows;
+  final UniverseMatches? match;
+  final UniverseShows? show;
+  final List<UniverseStipulations>? listStipulations;
+  final List<UniverseSuperstars>? listSuperstars;
   const AddEditUniverseMatchesPage({
     Key? key,
-    this.universeMatches,
-    this.universeShows,
+    this.match,
+    this.show,
+    this.listStipulations,
+    this.listSuperstars
   }) : super(key: key);
   @override
   _AddEditUniverseMatchesPage createState() => _AddEditUniverseMatchesPage();
@@ -20,40 +27,42 @@ class AddEditUniverseMatchesPage extends StatefulWidget {
 
 class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
   final _formKey = GlobalKey<FormState>();
-  late String stipulation;
-  late String s1;
-  late String s2;
-  late String s3;
-  late String s4;
-  late String s5;
-  late String s6;
-  late String s7;
-  late String s8;
-  late String s9;
-  late String s10;
-  late String gagnant;
-  late String ordre;
-  late String showId;
+  late List<UniverseStipulations> listStipulations = [];
+  late List<UniverseSuperstars> listSuperstars = [];
+  late int stipulation;
+  late int s1;
+  late int s2;
+  late int s3;
+  late int s4;
+  late int s5;
+  late int s6;
+  late int s7;
+  late int s8;
+  late int gagnant;
+  late int ordre;
+  late int showId;
 
   @override
   void initState() {
     super.initState();
 
-    stipulation = widget.universeMatches?.stipulation ?? '';
-    s1 = widget.universeMatches?.s1 ?? '';
-    s2 = widget.universeMatches?.s2 ?? '';
-    s3 = widget.universeMatches?.s3 ?? '';
-    s4 = widget.universeMatches?.s4 ?? '';
-    s5 = widget.universeMatches?.s5 ?? '';
-    s6 = widget.universeMatches?.s6 ?? '';
-    s7 = widget.universeMatches?.s7 ?? '';
-    s8 = widget.universeMatches?.s8 ?? '';
-    s9 = widget.universeMatches?.s9 ?? '';
-    s10 = widget.universeMatches?.s10 ?? '';
-    gagnant = widget.universeMatches?.gagnant ?? '';
-    ordre = widget.universeMatches?.ordre ?? '';
-    showId = widget.universeMatches?.showId ?? widget.universeShows!.id;
+    stipulation = widget.match?.stipulation ?? 0;
+    s1 = widget.match?.s1 ?? 0;
+    s2 = widget.match?.s2 ?? 0;
+    s3 = widget.match?.s3 ?? 0;
+    s4 = widget.match?.s4 ?? 0;
+    s5 = widget.match?.s5 ?? 0;
+    s6 = widget.match?.s6 ?? 0;
+    s7 = widget.match?.s7 ?? 0;
+    s8 = widget.match?.s8 ?? 0;
+    gagnant = widget.match?.gagnant ?? 0;
+    ordre = widget.match?.ordre ?? 0;
+    showId = widget.match?.showId ?? 0;
+    listStipulations = widget.listStipulations!;
+    listSuperstars = widget.listSuperstars!;
   }
+
+  
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -63,6 +72,8 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
         body: Form(
           key: _formKey,
           child: UniverseMatchesFormWidget(
+            listSuperstars: listSuperstars,
+            listStipulations: listStipulations,
             stipulation: stipulation,
             s1 : s1,
             s2 : s2,
@@ -72,12 +83,10 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
             s6 : s6,
             s7 : s7,
             s8 : s8,
-            s9 : s9,
-            s10 : s10,
             gagnant : gagnant,
             ordre : ordre,
-            showId : widget.universeShows!.id,
-            onChangedStipulation: (stipulation) => setState(() => this.stipulation = stipulation!),
+            showId : widget.show!.id,
+            onChangedStipulation: (stipulation) { setState(() => this.stipulation = stipulation!); getDetails(stipulation); gagnant = 0;},
             onChangedS1: (s1) => setState(() => this.s1 = s1!),
             onChangedS2: (s2) => setState(() => this.s2 = s2!),
             onChangedS3: (s3) => setState(() => this.s3 = s3!),
@@ -86,17 +95,16 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
             onChangedS6: (s6) => setState(() => this.s6 = s6!),
             onChangedS7: (s7) => setState(() => this.s7 = s7!),
             onChangedS8: (s8) => setState(() => this.s8 = s8!),
-            onChangedS9: (s9) => setState(() => this.s9 = s9!),
-            onChangedS10: (s10) => setState(() => this.s10 = s10!),
             onChangedGagnant: (gagnant) => setState(() => this.gagnant = gagnant!),
-            onChangedOrdre: (ordre) => setState(() => this.ordre = ordre!),
+            onChangedOrdre: (ordre) => setState(() => this.ordre = int.parse(ordre!)),
 
           ),
         ),
       );
 
   Widget buildButton() {
-    final isFormValid = stipulation.isNotEmpty;
+    // final isFormValid = stipulation.isNotEmpty;
+    final isFormValid = (stipulation == null);
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -115,7 +123,7 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
-      final isUpdating = widget.universeMatches != null;
+      final isUpdating = widget.match != null;
 
       if (isUpdating) {
         await updateUniverseMatches();
@@ -128,29 +136,7 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
   }
 
   Future updateUniverseMatches() async {
-    final docUniverseMatches = FirebaseFirestore.instance.collection('UniverseMatches').doc(widget.universeMatches!.id);
-    docUniverseMatches.update({
-      'stipulation': stipulation,
-      's1' : s1,
-      's2' : s2,
-      's3' : s3,
-      's4' : s4,
-      's5' : s5,
-      's6' : s6,
-      's7' : s7,
-      's8' : s8,
-      's9' : s9,
-      's10' : s10,
-      'gagnant' : gagnant,
-      'ordre' : ordre,
-      'showId' : widget.universeShows!.id,
-    });
-  }
-
-  Future addUniverseMatches() async {
-    final docUniverseMatches = FirebaseFirestore.instance.collection('UniverseMatches').doc();
-    final universeMatches = UniverseMatches(
-      id: docUniverseMatches.id,
+    final match = widget.match!.copy(
       stipulation: stipulation,
       s1 : s1,
       s2 : s2,
@@ -160,14 +146,32 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
       s6 : s6,
       s7 : s7,
       s8 : s8,
-      s9 : s9,
-      s10 : s10,
       gagnant : gagnant,
       ordre : ordre,
-      showId : widget.universeShows!.id,
+      showId : widget.show!.id,
     );
 
-    final json = universeMatches.toJson();
-    await docUniverseMatches.set(json);
+    await UniverseDatabase.instance.updateMatches(match);
+  }
+
+  Future addUniverseMatches() async {
+    final stip = await UniverseDatabase.instance.readStipulation(stipulation);
+    final match = UniverseMatches(
+      stipulation: stipulation,
+      s1 : s1,
+      s2 : s2,
+
+      s3 : stip.type == '1v1' ? 0 : s3,
+      s4 : stip.type == '1v1' || stip.type == 'Triple Threat' ? 0 : s4,
+      s5 : stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' ? 0 : s5,
+      s6 : stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' ? 0 : s6,
+      s7 : stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == '3v3' || stip.type == '2v2v2' || stip.type == '6-Way' ? 0 : s7,
+      s8 : stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == '3v3' || stip.type == '2v2v2' || stip.type == '6-Way' ? 0 : s8,
+      gagnant : gagnant,
+      ordre : ordre,
+      showId : widget.show!.id,
+    );
+
+    await UniverseDatabase.instance.createMatch(match);
   }
 }

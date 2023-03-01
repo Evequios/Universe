@@ -34,33 +34,18 @@ class _IRLSuperstarsDetailPage extends State<IRLSuperstarsDetailPage> {
         ),
         body: isLoading
             ? Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: EdgeInsets.all(12),
-                child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  children: [
-                    Text(
-                      'Prénom : ${irlSuperstars!.prenom}',
-                      style: TextStyle(color: Colors.black, fontSize: 18,),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Nom : ${irlSuperstars!.nom}',
-                      style: TextStyle(color: Colors.black, fontSize: 18),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Show : ${irlSuperstars!.show}',
-                      style: TextStyle(color: Colors.black, fontSize: 18),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Orientation : ${irlSuperstars!.orientation}',
-                      style: TextStyle(color: Colors.black, fontSize: 18),
-                    )
-                  ],
-                ),
+            : ListView(
+              children: [
+              Container(
+                child: ((){ if(irlSuperstars!.show != 'Aucun') return Image(image: AssetImage('assets/banners/${irlSuperstars!.show.toLowerCase()}.jpg'));}()),
               ),
+              SizedBox(height: 10,),
+              Column(mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                Text('${irlSuperstars!.prenom} ${irlSuperstars!.nom}', style: TextStyle(color: Colors.black, fontSize: 36, fontWeight: FontWeight.bold),),
+                SizedBox(height:8),
+                Text('${irlSuperstars!.orientation}', style: TextStyle(color: Colors.black, fontSize: 18))]),
+            ]),
       );
 
   Widget editButton() => IconButton(

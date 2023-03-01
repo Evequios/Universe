@@ -52,6 +52,14 @@ class _IRLStorylinesDetailPage extends State<IRLStorylinesDetailPage> {
                     Text(
                       irlStorylines!.texte,
                       style: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                    SizedBox(height: 20,),
+                    Row(
+                      children: [
+                      Text('Début : ${irlStorylines!.debut}',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
+                      const Spacer(),
+                      Text('Fin : ${irlStorylines!.fin}', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
+                      ]
                     )
                   ],
                 ),

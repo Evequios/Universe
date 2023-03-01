@@ -1,34 +1,60 @@
+final String tableShows = 'shows';
+
+class ShowFields{
+  static final List<String> values = [
+    id, nom, annee, semaine, resume
+  ];
+
+  static final String id = '_id';
+  static final String nom = 'nom';
+  static final String annee = 'annee';
+  static final String semaine = 'semaine';
+  static final String resume = 'resume';
+}
+
 class UniverseShows{
-  final String id;
+  final int? id;
   final String nom;
-  final String date;
+  final int annee;
+  final int semaine;
+  final String resume;
 
   const UniverseShows({
-    required this.id,
+    this.id,
     required this.nom,
-    required this.date
+    required this.annee,
+    required this.semaine,
+    required this.resume
   });
 
   UniverseShows copy({
-    String? id,
+    int? id,
     String? nom,
-    String? date,
+    int? annee,
+    int? semaine,
+    String? resume
   }) =>
       UniverseShows(
         id: id ?? this.id,
         nom: nom ?? this.nom,
-        date: date ?? this.date,
+        annee: annee ?? this.annee,
+        semaine: semaine ?? this.semaine,
+        resume : resume ?? this.resume
       );
 
   static UniverseShows fromJson(Map<String, dynamic> json) => UniverseShows(
-        id: json['id'],
-        nom: json['nom'],
-        date: json['date'],
+        id: json[ShowFields.id] as int ?,
+        nom: json[ShowFields.nom] as String,
+        annee: json[ShowFields.annee] as int,
+        semaine: json[ShowFields.semaine] as int,
+        resume: json[ShowFields.resume] as String,
       );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'nom': nom,
-        'date': date
+        ShowFields.id: id,
+        ShowFields.nom: nom,
+        ShowFields.annee: annee,
+        ShowFields.semaine: semaine,
+        ShowFields.resume: resume,
       };
 }

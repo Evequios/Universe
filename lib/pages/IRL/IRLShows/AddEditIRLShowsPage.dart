@@ -21,6 +21,7 @@ class _AddEditIRLShowsPage extends State<AddEditIRLShowsPage> {
   final _formKey = GlobalKey<FormState>();
   late String nom;
   late String date;
+  late String resume;
 
   @override
   void initState() {
@@ -28,23 +29,26 @@ class _AddEditIRLShowsPage extends State<AddEditIRLShowsPage> {
 
     nom = widget.irlShows?.nom ?? '';
     date = widget.irlShows?.date ?? '';
+    resume = widget.irlShows?.resume ?? '';
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          actions: [buildButton()],
-        ),
-        body: Form(
-          key: _formKey,
-          child: IRLShowsFormWidget(
-            nom: nom,
-            date: date,
-            onChangedNom: (nom) => setState(() => this.nom = nom),
-            onChangedDate: (date) => setState(() => this.date = date) ,
-          ),
-        ),
-      );
+    appBar: AppBar(
+      actions: [buildButton()],
+    ),
+    body: Form(
+      key: _formKey,
+      child: IRLShowsFormWidget(
+        nom: nom,
+        date: date,
+        resume: resume,
+        onChangedNom: (nom) => setState(() => this.nom = nom),
+        onChangedDate: (date) => setState(() => this.date = date),
+        onChangedResume: (resume) => setState(() => this.resume = resume),
+      ),
+    ),
+  );
 
   Widget buildButton() {
     final isFormValid = nom.isNotEmpty && nom.isNotEmpty;
@@ -83,6 +87,7 @@ class _AddEditIRLShowsPage extends State<AddEditIRLShowsPage> {
     docIRLShows.update({
       'nom': nom,
       'date': date,
+      'resume': resume,
     });
   }
 
@@ -91,7 +96,8 @@ class _AddEditIRLShowsPage extends State<AddEditIRLShowsPage> {
     final irlShows = IRLShows(
       id: docIRLShows.id,
       nom: nom,
-      date: date
+      date: date,
+      resume: resume
     );
     final json = irlShows.toJson();
     await docIRLShows.set(json);

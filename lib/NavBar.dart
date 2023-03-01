@@ -4,11 +4,13 @@ import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsPage.dart';
 import 'package:wwe_universe/pages/IRL/IRLShows/IRLShowsPage.dart';
 import 'package:wwe_universe/pages/IRL/IRLStorylines/IRLStorylinesPage.dart';
 import 'package:wwe_universe/pages/IRL/IRLSuperstars/IRLSuperstarsPage.dart';
+import 'package:wwe_universe/pages/Universe/UniverseBrands/UniverseBrandsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseNews/UniverseNewsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseShows/UniverseShowsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseStorylines/UniverseStorylinesPage.dart';
 import 'package:wwe_universe/pages/Settings/SettingsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseSuperstars/UniverseSuperstarsPage.dart';
+import 'package:wwe_universe/pages/Universe/UniverseTitles/UniverseTitlesPage.dart';
 
 class Navbar extends StatelessWidget{
   @override
@@ -70,6 +72,18 @@ class Navbar extends StatelessWidget{
                 title : Text('Superstars'),
                 onTap:() {
                   Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseSuperstarsPage(),));
+                }
+              ),
+              ListTile(
+                title : Text('Brands'),
+                onTap:() {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseBrandsPage(),));
+                }
+              ),
+              ListTile(
+                title : Text('Titles'),
+                onTap:() {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseTitlesPage(),));
                 }
               ),
             ],

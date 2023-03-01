@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Settings/Stipulations/Universe/AddEditUniverseStipulationsPage.dart';
 // import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class UniverseStipulationsDetailPage extends StatefulWidget {
-  final UniverseStipulations universeStipulations;
+  final int stipulationId;
 
   const UniverseStipulationsDetailPage({
     Key? key,
-    required this.universeStipulations,
+    required this.stipulationId,
   }) : super(key: key);
 
   @override
@@ -17,12 +18,22 @@ class UniverseStipulationsDetailPage extends StatefulWidget {
 }
 
 class _UniverseStipulationsDetailPage extends State<UniverseStipulationsDetailPage> {
-  late UniverseStipulations? universeStipulations = widget.universeStipulations;
+  late UniverseStipulations stipulation;
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
+
+    refreshStipulations();
+  }
+
+  Future refreshStipulations() async {
+    setState(() => isLoading = true);
+
+    this.stipulation = await UniverseDatabase.instance.readStipulation(widget.stipulationId);
+
+    setState(() => isLoading = false);
   }
 
   @override
@@ -38,7 +49,7 @@ class _UniverseStipulationsDetailPage extends State<UniverseStipulationsDetailPa
                   padding: EdgeInsets.symmetric(vertical: 8),
                   children: [
                     Text(
-                      universeStipulations!.type,
+                      stipulation.type,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 22,
@@ -48,7 +59,7 @@ class _UniverseStipulationsDetailPage extends State<UniverseStipulationsDetailPa
                     SizedBox(height: 8),
                     SizedBox(height: 8),
                     Text(
-                      universeStipulations!.stipulation,
+                      stipulation.stipulation,
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                   ],
@@ -62,15 +73,17 @@ class _UniverseStipulationsDetailPage extends State<UniverseStipulationsDetailPa
         if (isLoading) return;
 
         await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddEditUniverseStipulationsPage(universeStipulations: universeStipulations),
+          builder: (context) => AddEditUniverseStipulationsPage(stipulation: stipulation),
         ));
+
+        refreshStipulations();
       });
 
   Widget deleteButton() => IconButton(
         icon: Icon(Icons.delete),
-        onPressed: () {
-          final docUniverseStipulations = FirebaseFirestore.instance.collection('UniverseStipulations').doc(universeStipulations!.id);
-          docUniverseStipulations.delete();
+        onPressed: () async {
+          await UniverseDatabase.instance.deleteStipulation(widget.stipulationId);
+
           Navigator.of(context).pop();
         },
       );

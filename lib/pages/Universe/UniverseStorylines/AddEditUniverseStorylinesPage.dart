@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStorylines.dart';
+import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/widget/Universe/UniverseStorylinesFormWidget.dart';
 
 class AddEditUniverseStorylinesPage extends StatefulWidget {
-  final UniverseStorylines? universeStorylines;
+  final UniverseStorylines? storyline;
 
   const AddEditUniverseStorylinesPage({
     Key? key,
-    this.universeStorylines,
+    this.storyline,
   }) : super(key: key);
   @override
   _AddEditUniverseStorylinesPage createState() => _AddEditUniverseStorylinesPage();
@@ -25,10 +26,10 @@ class _AddEditUniverseStorylinesPage extends State<AddEditUniverseStorylinesPage
   void initState() {
     super.initState();
 
-    titre = widget.universeStorylines?.titre ?? '';
-    texte = widget.universeStorylines?.texte ?? '';
-    debut = widget.universeStorylines?.debut?? '';
-    fin = widget.universeStorylines?.fin ?? '';
+    titre = widget.storyline?.titre ?? '';
+    texte = widget.storyline?.texte ?? '';
+    debut = widget.storyline?.debut?? '';
+    fin = widget.storyline?.fin ?? '';
   }
 
   @override
@@ -71,38 +72,38 @@ class _AddEditUniverseStorylinesPage extends State<AddEditUniverseStorylinesPage
     final isValid = _formKey.currentState!.validate();
 
     if (isValid) {
-      final isUpdating = widget.universeStorylines != null;
+      final isUpdating = widget.storyline != null;
 
       if (isUpdating) {
         await updateUniverseStorylines();
       } else {
         await addUniverseStorylines();
       }
+    
       Navigator.of(context).pop();
+
     }
   }
 
   Future updateUniverseStorylines() async {
-    final docUniverseStorylines = FirebaseFirestore.instance.collection('UniverseStorylines').doc(widget.universeStorylines!.id);
-    docUniverseStorylines.update({
-      'titre': titre,
-      'texte': texte,
-      'debut': debut,
-      'fin': fin
-    });
+    final storyline = widget.storyline!.copy(
+      titre: titre,
+      texte: texte,
+      debut: debut,
+      fin: fin
+    );
+
+    await UniverseDatabase.instance.updateStoryline(storyline);
   }
 
   Future addUniverseStorylines() async {
-    final docUniverseStorylines = FirebaseFirestore.instance.collection('UniverseStorylines').doc();
-
-    final universeStoryline = UniverseStorylines(
-      id : docUniverseStorylines.id,
+    final storyline = UniverseStorylines(
       titre: titre,
       texte: texte, 
       debut: debut, 
       fin: fin
     );
-    final json = universeStoryline.toJson();
-    await docUniverseStorylines.set(json);
+
+    await UniverseDatabase.instance.createStoryline(storyline);
   }
 }
