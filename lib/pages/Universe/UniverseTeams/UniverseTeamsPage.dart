@@ -1,40 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
+import 'package:wwe_universe/classes/Universe/UniverseTeams.dart';
 import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/database.dart';
+import 'package:wwe_universe/pages/Universe/UniverseTeams/AddEditUniverseTeamsPage.dart';
+import 'package:wwe_universe/pages/Universe/UniverseTeams/UniverseTeamsDetailPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseTitles/AddEditUniverseTitlesPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseTitles/UniverseTitlesDetailPage.dart';
 
 
 
-class UniverseTitlesPage extends StatefulWidget{
+class UniverseTeamsPage extends StatefulWidget{
   @override
-  _UniverseTitlesPageState createState() => _UniverseTitlesPageState();
+  _UniverseTeamsPageState createState() => _UniverseTeamsPageState();
 }
 
-class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
-  UniverseBrands defaultBrand = UniverseBrands(nom: 'nom');
-  late List<UniverseTitles> titlesList;
+class _UniverseTeamsPageState extends State<UniverseTeamsPage> {
+  UniverseSuperstars defaultSuperstar = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation');
   late List<UniverseSuperstars> superstarsList;
-  late List<UniverseBrands> brandsList;
+  late List<UniverseTeams> teamsList;
+
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
 
-    refreshTitles();
+    refreshTeams();
   }
 
-  Future refreshTitles() async {
+  Future refreshTeams() async {
     setState(() => isLoading = true);
 
-    this.titlesList = await UniverseDatabase.instance.readAllTitles();
+    this.teamsList = await UniverseDatabase.instance.readAllTeams();
     this.superstarsList = await UniverseDatabase.instance.readAllSuperstars();
-    this.brandsList = await UniverseDatabase.instance.readAllBrands();
 
     setState(() => isLoading = false);
   }
@@ -44,45 +46,46 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
     drawer: Navbar(),
     appBar: AppBar(
       title: const Text(
-        'Titles',
+        'Teams',
       ),
     ),
     body: Center(
       child: isLoading
         ? const CircularProgressIndicator()
-        : titlesList.isEmpty
+        : teamsList.isEmpty
           ? const Text(
-            'No created titles'
+            'No created teams'
           )
-        : buildUniverseTitles(),
+        : buildUniverseTeams(),
     ),
     floatingActionButton: FloatingActionButton(
       backgroundColor: Colors.black,
       child: const Icon(Icons.add),
       onPressed: () async {
         await Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => AddEditUniverseTitlesPage(listBrands: brandsList, listSuperstars: superstarsList,)),
+          MaterialPageRoute(builder: (context) => AddEditUniverseTeamsPage(listSuperstars: superstarsList)),
         );
 
-        refreshTitles();
+        refreshTeams();
       },
     ),
   );
 
-  Widget buildUniverseTitles() => ListView.builder(
+  Widget buildUniverseTeams() => ListView.builder(
     padding : EdgeInsets.all(8),
-    itemCount: titlesList.length,
+    itemCount: teamsList.length,
     itemBuilder: (context, index){
-      final title = titlesList[index];
-      UniverseBrands brand = defaultBrand;
-      if (title.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == title.brand);
-      if (title.holder1 != 0) final h1 = superstarsList.firstWhere((h1) => h1.id == title.holder1);
-      if (title.holder2 != 0) final h2 = superstarsList.firstWhere((h2) => h2.id == title.holder2);
+      final team = teamsList[index];
+      final m1 = superstarsList.firstWhere((m1) => m1.id == team.member1);
+      final m2 = superstarsList.firstWhere((m2) => m2.id == team.member2);
+      if (team.member3 != 0) final m3 = superstarsList.firstWhere((m1) => m1.id == team.member3);
+      if (team.member4 != 0) final m4 = superstarsList.firstWhere((m2) => m2.id == team.member4);
+      if (team.member5 != 0) final m5 = superstarsList.firstWhere((m1) => m1.id == team.member5);
       return GestureDetector( 
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => UniverseTitlesDetailPage(titleId: title.id!, brandId: title.brand, h1Id: title.holder1, h2Id: title.holder2,),
-          )).then((value) => refreshTitles());
+            builder: (context) => UniverseTeamsDetailPage(teamId: team.id!, m1Id: team.member1, m2Id: team.member2, m3Id: team.member3, m4Id: team.member4, m5Id: team.member5,),
+          )).then((value) => refreshTeams());
         },
         child :Container(
           height: 100,
@@ -101,12 +104,10 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
                     flex: 10,
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
-                      child: Text('${title.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      child: Text('${team.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                       alignment: Alignment.centerLeft, 
                     )
                   ),
-                  Spacer(),
-                  Container(child : ((){ if(brand.nom == 'Raw' || brand.nom == 'SmackDown') return Image(image: AssetImage('assets/${brand.nom.toLowerCase()}.png'));}())),
                 ]),
               )
             )

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/NavBar.dart';
@@ -15,7 +16,9 @@ class UniverseSuperstarsPage extends StatefulWidget{
 }
 
 class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
+  UniverseBrands defaultBrand = UniverseBrands(nom: 'nom');
   late List<UniverseSuperstars> superstarsList;
+  late List<UniverseBrands> brandsList;
   bool isLoading = false;
 
   @override
@@ -29,6 +32,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
     setState(() => isLoading = true);
 
     this.superstarsList = await UniverseDatabase.instance.readAllSuperstars();
+    this.brandsList = await UniverseDatabase.instance.readAllBrands();
 
     setState(() => isLoading = false);
   }
@@ -56,7 +60,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
           child: const Icon(Icons.add),
           onPressed: () async {
             await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => AddEditUniverseSuperstarsPage()),
+              MaterialPageRoute(builder: (context) => AddEditUniverseSuperstarsPage(listBrands: brandsList,))
             );
 
             refreshSuperstars();
@@ -70,6 +74,8 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
     itemCount: superstarsList.length,
     itemBuilder: (context, index){
       final superstar = superstarsList[index];
+      UniverseBrands brand = defaultBrand; 
+      if(superstar.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == superstar.brand);
       return GestureDetector( 
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
@@ -90,6 +96,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
               child: Row(
                 children: [ 
                   Expanded(
+                    flex:10,
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text('${superstar.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
@@ -97,7 +104,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
                     )
                   ),
                   Spacer(),
-                  Container(child : ((){ if(superstar.show != 'Aucun') return Image(image: AssetImage('assets/${superstar.show.toLowerCase()}.png'));}()))
+                  Container(child : ((){ if(superstar.brand != 0 && (brand.nom.toLowerCase() == 'raw' || brand.nom.toLowerCase() == 'smackdown' || brand.nom.toLowerCase() == 'nxt')) return Image(image: AssetImage('assets/${brand.nom.toLowerCase()}.png'));}()))
                 ],
               )
             )

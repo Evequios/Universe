@@ -23,8 +23,8 @@ class AddEditUniverseTitlesPage extends StatefulWidget {
 
 class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
   final _formKey = GlobalKey<FormState>();
-  late List<UniverseBrands> listBrands = [];
   late List<UniverseSuperstars> listSuperstars = [];
+  late List<UniverseBrands> listBrands = [];
   late String nom;
   late int brand;
   late int tag;
@@ -40,8 +40,8 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
     tag = widget.title?.tag ?? 0;
     holder1 = widget.title?.holder1 ?? 0;
     holder2 = widget.title?.holder2 ?? 0;
-    listSuperstars = widget.listSuperstars!;
     listBrands = widget.listBrands!;
+    listSuperstars = widget.listSuperstars!;
   }
 
   @override
@@ -52,8 +52,8 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
         body: Form(
           key: _formKey,
           child: UniverseTitlesFormWidget(
-            listBrands: listBrands,
             listSuperstars: listSuperstars,
+            listBrands: listBrands,
             nom: nom,
             brand: brand,
             tag: tag,

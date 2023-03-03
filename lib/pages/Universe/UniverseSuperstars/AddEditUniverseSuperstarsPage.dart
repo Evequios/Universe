@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/database.dart';
@@ -8,10 +9,12 @@ import 'package:wwe_universe/widget/Universe/UniverseSuperstarsFormWidget.dart';
 
 class AddEditUniverseSuperstarsPage extends StatefulWidget {
   final UniverseSuperstars? superstar;
+  final List<UniverseBrands>? listBrands;
 
   const AddEditUniverseSuperstarsPage({
     Key? key,
-    this.superstar
+    this.superstar,
+    this.listBrands
   }) : super(key: key);
   @override
   _AddEditUniverseSuperstarsPage createState() => _AddEditUniverseSuperstarsPage();
@@ -19,8 +22,9 @@ class AddEditUniverseSuperstarsPage extends StatefulWidget {
 
 class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage> {
   final _formKey = GlobalKey<FormState>();
+  late List<UniverseBrands> listBrands = [];
   late String nom;
-  late String show;
+  late int brand;
   late String orientation;
 
   @override
@@ -28,8 +32,9 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
     super.initState();
 
     nom = widget.superstar?.nom ?? '';
-    show = widget.superstar?.show ?? '';
+    brand = widget.superstar?.brand ?? 0;
     orientation = widget.superstar?.orientation ?? '';
+    listBrands = widget.listBrands!;
   }
 
   @override
@@ -40,11 +45,12 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
         body: Form(
           key: _formKey,
           child: UniverseSuperstarsFormWidget(
+            listBrands: listBrands,
             nom: nom,
-            show: show,
+            brand: brand,
             orientation: orientation,
-            onChangedNom: (nom) => setState(() => this.nom = nom),
-            onChangedShow: (show) => setState(() => this.show = show.toString()),
+            onChangedNom: (nom) => setState(() => this.nom = nom!),
+            onChangedBrand: (brand) => setState(() => this.brand = brand!),
             onChangedOrientation: (orientation) => setState(() => this.orientation = orientation.toString())
           ),
         ),
@@ -86,7 +92,7 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
   Future updateUniverseSuperstars() async {
     final superstar = widget.superstar!.copy(
       nom: nom,
-      show: show,
+      brand: brand,
       orientation: orientation,
     );
     await UniverseDatabase.instance.updateSuperstar(superstar);
@@ -95,7 +101,7 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
   Future addUniverseSuperstars() async {
     final superstar = UniverseSuperstars(
       nom: nom,
-      show: show,
+      brand: brand,
       orientation: orientation,
     );
 

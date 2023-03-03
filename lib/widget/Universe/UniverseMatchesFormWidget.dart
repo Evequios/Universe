@@ -5,7 +5,7 @@ import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/database.dart';
 
 UniverseStipulations defaultStip = UniverseStipulations(type: 'type', stipulation: 'stipulation');
-UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', show: 'show', orientation: 'orientation');
+UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation');
 late UniverseStipulations stip = UniverseStipulations(type: 'type', stipulation: 'stipulation');
 Future getDetails(id) async {
   stip = await UniverseDatabase.instance.readStipulation(id);

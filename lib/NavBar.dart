@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/main.dart';
 import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsPage.dart';
 import 'package:wwe_universe/pages/IRL/IRLShows/IRLShowsPage.dart';
 import 'package:wwe_universe/pages/IRL/IRLStorylines/IRLStorylinesPage.dart';
@@ -10,7 +9,9 @@ import 'package:wwe_universe/pages/Universe/UniverseShows/UniverseShowsPage.dart
 import 'package:wwe_universe/pages/Universe/UniverseStorylines/UniverseStorylinesPage.dart';
 import 'package:wwe_universe/pages/Settings/SettingsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseSuperstars/UniverseSuperstarsPage.dart';
+import 'package:wwe_universe/pages/Universe/UniverseTeams/UniverseTeamsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseTitles/UniverseTitlesPage.dart';
+
 
 class Navbar extends StatelessWidget{
   @override
@@ -57,7 +58,7 @@ class Navbar extends StatelessWidget{
                 }
               ),
               ListTile(
-                title : Text('Résultats'),
+                title : Text('Results'),
                 onTap:() {
                   Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseShowsPage(),));
                 }
@@ -84,6 +85,12 @@ class Navbar extends StatelessWidget{
                 title : Text('Titles'),
                 onTap:() {
                   Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseTitlesPage(),));
+                }
+              ),
+              ListTile(
+                title : Text('Teams'),
+                onTap:() {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseTeamsPage(),));
                 }
               ),
             ],

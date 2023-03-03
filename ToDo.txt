@@ -1,0 +1,18 @@
+---- A faire
+- Vérifier l'affichage pour toutes les pages d'ajout/edit
+- Affichage conditionnel des listes vides lors de listes vides (superstars, brand)
+- Réfléchir à de potentiels changements dans la BDD
+- Quand plus aucun changements à faire dans la BDD, mise en place de mon mode Universe
+- Vérifier les standards
+
+
+
+---- Prochaine grande étape :
+- Améliorer mise en page
+- Refactor et commentaires
+
+Tout faire pour pouvoir représenter au mieux les statistiques.
+
+
+---- Ce que je peux essayer :
+- Ajouter des tests

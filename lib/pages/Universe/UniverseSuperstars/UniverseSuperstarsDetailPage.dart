@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/database.dart';
@@ -21,6 +22,9 @@ class UniverseSuperstarsDetailPage extends StatefulWidget {
 
 class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> {
   late UniverseSuperstars superstar;
+  late UniverseBrands brand;
+  late List<UniverseBrands> listBrands = [];
+  UniverseBrands defaultBrand = UniverseBrands(nom: '');
   bool isLoading = false;
 
   @override
@@ -33,7 +37,10 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
   Future refreshSuperstars() async {
     setState(() => isLoading = true);
 
-    this.superstar = await UniverseDatabase.instance.readSuperstar(widget.superstarId);
+    superstar = await UniverseDatabase.instance.readSuperstar(widget.superstarId);
+    if(superstar.brand != 0) brand = await UniverseDatabase.instance.readBrand(superstar.brand);
+    else brand = defaultBrand;
+    listBrands = await UniverseDatabase.instance.readAllBrands();
 
     setState(() => isLoading = false);  
   }
@@ -56,7 +63,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Show : ${superstar.show}',
+                      'Brand : ${brand.nom}',
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     SizedBox(height: 8),
