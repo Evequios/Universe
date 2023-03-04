@@ -28,7 +28,7 @@ class UniverseTitlesDetailPage extends StatefulWidget {
 
 class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
   UniverseTitles title = UniverseTitles(nom: '', tag: 0, brand: 0, holder1: 0, holder2: 0);
-  UniverseBrands brand = UniverseBrands(nom: '');
+  UniverseBrands brand = UniverseBrands(name: '');
   UniverseSuperstars h1 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0); 
   UniverseSuperstars h2 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
   late List<UniverseBrands> brandsList;
@@ -79,7 +79,7 @@ class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
                     ),
                     SizedBox(height: 8),
                     SizedBox(height: 8),
-                    Text("Brand : ${brand.nom}",
+                    Text("Brand : ${brand.name}",
                       style: TextStyle(color: Colors.black, fontSize: 18)
                     ),
                     SizedBox(height: 8),

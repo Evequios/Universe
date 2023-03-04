@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 
-UniverseBrands defaultBrand = UniverseBrands(nom: 'nom');
+UniverseBrands defaultBrand = UniverseBrands(name: 'nom');
 UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
 List<bool> listTag = [false, true];
 
@@ -95,7 +95,7 @@ class UniverseTitlesFormWidget extends StatelessWidget {
         return DropdownMenuItem(
           // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
           value: brand.id,
-          child: Text(brand.nom));
+          child: Text(brand.name));
       }).toList(),
       ),);
 

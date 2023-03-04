@@ -32,7 +32,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 43, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 44, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS $tableNews (
   await db.execute('''
 CREATE TABLE IF NOT EXISTS $tableBrands ( 
   ${BrandsFields.id} $idType, 
-  ${BrandsFields.nom} $textType
+  ${BrandsFields.name} $textType
   ); ''');
   await db.execute('''
 CREATE TABLE IF NOT EXISTS $tableSuperstars ( 
@@ -142,15 +142,12 @@ CREATE TABLE IF NOT EXISTS $tableTeams (
     final booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
    
-    // await db.execute('''DROP TABLE IF EXISTS $tableMatches;''');
-    // await db.execute('''DROP TABLE IF EXISTS $tableShows;''');
-    // await db.execute('''DROP TABLE IF EXISTS $tableStipulations;''');
-    // await db.execute('''DROP TABLE IF EXISTS $tableStorylines;''');
-    // await db.execute('''DROP TABLE IF EXISTS $tableSuperstars;''');
-    // await db.execute('''DROP TABLE IF EXISTS $tableNews;''');
-    // await db.execute('''DROP TABLE IF EXISTS $tableTitles;''');
-    await db.execute('''ALTER TABLE $tableSuperstars
-    ADD ${SuperstarsFields.rival1} $intType DEFAULT 0;''');
+    await db.execute('''DROP TABLE IF EXISTS $tableBrands;''');
+    await db.execute('''
+CREATE TABLE IF NOT EXISTS $tableBrands ( 
+  ${BrandsFields.id} $idType, 
+  ${BrandsFields.name} $textType
+  ); ''');
   }
   }
 

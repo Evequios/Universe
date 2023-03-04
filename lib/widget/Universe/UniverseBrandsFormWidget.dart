@@ -2,14 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class UniverseBrandsFormWidget extends StatelessWidget {
-  final String? nom;
-  final ValueChanged<String> onChangedNom;
+  final String? name;
+  final ValueChanged<String> onChangedName;
 
 
   const UniverseBrandsFormWidget({
     Key? key,
-    this.nom = '',
-    required this.onChangedNom
+    this.name = '',
+    required this.onChangedName
   }) : super(key: key);
 
   @override
@@ -19,24 +19,24 @@ class UniverseBrandsFormWidget extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              buildNom()
+              buildName()
             ],
           ),
         ),
       );
 
-  Widget buildNom() => TextFormField(
-        initialValue: nom,
+  Widget buildName() => TextFormField(
+        initialValue: name,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 24,
         ),
         decoration: const InputDecoration(
           border: InputBorder.none,
-          hintText: 'Nom',
+          hintText: 'Name',
         ),
-        validator: (nom) =>
-            nom != null && nom.isEmpty ? 'The show must have a name' : null,
-        onChanged: onChangedNom,
+        validator: (name) =>
+            name != null && name.isEmpty ? 'The show must have a name' : null,
+        onChanged: onChangedName,
       );
 }

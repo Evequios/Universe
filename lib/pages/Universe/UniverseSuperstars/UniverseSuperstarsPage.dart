@@ -16,7 +16,7 @@ class UniverseSuperstarsPage extends StatefulWidget{
 }
 
 class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
-  UniverseBrands defaultBrand = UniverseBrands(nom: 'nom');
+  UniverseBrands defaultBrand = UniverseBrands(name: 'nom');
   late List<UniverseSuperstars> superstarsList;
   late List<UniverseBrands> brandsList;
   bool isLoading = false;
@@ -104,7 +104,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
                     )
                   ),
                   Spacer(),
-                  Container(child : ((){ if(superstar.brand != 0 && (brand.nom.toLowerCase() == 'raw' || brand.nom.toLowerCase() == 'smackdown' || brand.nom.toLowerCase() == 'nxt')) return Image(image: AssetImage('assets/${brand.nom.toLowerCase()}.png'));}()))
+                  Container(child : ((){ if(superstar.brand != 0 && (brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt')) return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));}()))
                 ],
               )
             )

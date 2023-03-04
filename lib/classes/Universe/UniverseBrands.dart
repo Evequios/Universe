@@ -2,38 +2,38 @@ const String tableBrands = 'brands';
 
 class BrandsFields {
   static final List<String> values = [
-    id, nom
+    id, name
   ];
 
   static const String id = '_id';
-  static const String nom = 'nom';
+  static const String name = 'name';
 }
 
 class UniverseBrands {
   final int? id;
-  final String nom;
+  final String name;
 
   const UniverseBrands({
     this.id,
-    required this.nom
+    required this.name
   });
 
   UniverseBrands copy ({
     int? id,
-    String? nom
+    String? name
   }) =>
     UniverseBrands(
       id : id ?? this.id,
-      nom : nom ?? this.nom
+      name : name ?? this.name
     );
   
   static UniverseBrands fromJson (Map<String, dynamic> json) => UniverseBrands(
     id : json[BrandsFields.id] as int ?,
-    nom : json[BrandsFields.nom] as String
+    name : json[BrandsFields.name] as String
   );
 
   Map<String, dynamic> toJson() => {
     BrandsFields.id : id,
-    BrandsFields.nom : nom,
+    BrandsFields.name : name,
   };
 }

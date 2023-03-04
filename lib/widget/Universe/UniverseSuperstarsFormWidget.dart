@@ -3,7 +3,7 @@ import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 
 const List<String> listOrientations = <String>['Face', 'Tweener', 'Heel'];
-UniverseBrands defaultBrand = const UniverseBrands(nom: 'nom');
+UniverseBrands defaultBrand = const UniverseBrands(name: 'nom');
 UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
 
 class UniverseSuperstarsFormWidget extends StatelessWidget {
@@ -82,7 +82,7 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
           items: listBrands!.map((brand){
           return DropdownMenuItem(
             value: brand.id,
-            child: Text(brand.nom));
+            child: Text(brand.name));
         }).toList(),
         ),);
 

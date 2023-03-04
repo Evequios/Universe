@@ -25,7 +25,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
   late UniverseBrands brand;
   late List<UniverseBrands> listBrands = [];
   late List<UniverseSuperstars> listSuperstars = [];
-  UniverseBrands defaultBrand = UniverseBrands(nom: '');
+  UniverseBrands defaultBrand = UniverseBrands(name: '');
   bool isLoading = false;
 
   @override
@@ -65,7 +65,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Brand : ${brand.nom}',
+                      'Brand : ${brand.name}',
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     SizedBox(height: 8),

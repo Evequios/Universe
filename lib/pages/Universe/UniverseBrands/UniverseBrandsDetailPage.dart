@@ -47,7 +47,7 @@ class _UniverseBrandsDetailPage extends State<UniverseBrandsDetailPage> {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   children: [
                     Text(
-                      brand.nom,
+                      brand.name,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 22,

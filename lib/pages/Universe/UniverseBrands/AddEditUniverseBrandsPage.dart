@@ -16,13 +16,13 @@ class AddEditUniverseBrandsPage extends StatefulWidget {
 
 class _AddEditUniverseBrandsPage extends State<AddEditUniverseBrandsPage> {
   final _formKey = GlobalKey<FormState>();
-  late String nom;
+  late String name;
 
   @override
   void initState() {
     super.initState();
 
-    nom = widget.brand?.nom ?? '';
+    name = widget.brand?.name ?? '';
   }
 
   @override
@@ -33,14 +33,14 @@ class _AddEditUniverseBrandsPage extends State<AddEditUniverseBrandsPage> {
     body: Form(
       key: _formKey,
       child: UniverseBrandsFormWidget(
-        nom: nom,
-        onChangedNom: (nom) => setState(() => this.nom = nom),
+        name: name,
+        onChangedName: (name) => setState(() => this.name = name),
       ),
     ),
   );
 
   Widget buildButton() {
-    final isFormValid = nom.isNotEmpty;
+    final isFormValid = name.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -73,7 +73,7 @@ class _AddEditUniverseBrandsPage extends State<AddEditUniverseBrandsPage> {
 
   Future updateUniverseBrand() async {
     final brand = widget.brand!.copy(
-      nom : nom,
+      name : name,
     );
 
     await UniverseDatabase.instance.updateBrand(brand);
@@ -81,7 +81,7 @@ class _AddEditUniverseBrandsPage extends State<AddEditUniverseBrandsPage> {
 
   Future addUniverseBrand() async {
     final brand = UniverseBrands(
-      nom : nom
+      name : name
     );
 
     await UniverseDatabase.instance.createBrand(brand);

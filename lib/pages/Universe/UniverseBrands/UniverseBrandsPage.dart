@@ -88,11 +88,11 @@ class _UniverseBrandsPageState extends State<UniverseBrandsPage> {
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
-                    child: Text(brand.nom, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
+                    child: Text(brand.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
                   )
                 ),
                 const Spacer(),
-                Container(child : ((){ if(brand.nom.toLowerCase() == 'raw' || brand.nom.toLowerCase() == 'smackdown' || brand.nom.toLowerCase() == 'nxt') return Image(image: AssetImage('assets/${brand.nom.toLowerCase()}.png'));}()))
+                Container(child : ((){ if(brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt') return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));}()))
               ],
               )
             ),
