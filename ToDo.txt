@@ -16,5 +16,6 @@
 Tout faire pour pouvoir représenter au mieux les statistiques.
 
 
----- Ce que je peux essayer :
+---- Idées :
 - Ajouter des tests
+- Changer date de création des news ? 

@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseNews/AddEditUniverseNewsPage.dart';
-// import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class UniverseNewsDetailPage extends StatefulWidget {
   final int newsId;
@@ -31,59 +29,58 @@ class _UniverseNewsDetailPage extends State<UniverseNewsDetailPage> {
   Future refreshNews() async {
     setState(() => isLoading = true);
 
-    this.news = await UniverseDatabase.instance.readNews(widget.newsId);
+    news = await UniverseDatabase.instance.readNews(widget.newsId);
 
     setState(() => isLoading = false);  
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          actions: [editButton(), deleteButton()],
-        ),
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: EdgeInsets.all(12),
-                child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  children: [
-                    Text(
-                      news.titre,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    SizedBox(height: 8),
-                    Text(
-                      news.texte,
-                      style: TextStyle(color: Colors.black, fontSize: 18),
-                    ),
-                  ],
-                ),
+    appBar: AppBar(
+      actions: [editButton(), deleteButton()],
+    ),
+    body: isLoading
+      ? const Center(child: CircularProgressIndicator())
+      : Padding(
+        padding: const EdgeInsets.all(12),
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          children: [
+            Text(
+              news.title,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
               ),
-      );
+            ),
+            const SizedBox(height: 8),
+            const SizedBox(height: 8),
+            Text(
+              news.text,
+              style: const TextStyle(color: Colors.black, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
+  );
 
   Widget editButton() => IconButton(
-      icon: Icon(Icons.edit_outlined),
-      onPressed: () async {
-        // if (isLoading) return;
+    icon: const Icon(Icons.edit_outlined),
+    onPressed: () async {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => AddEditUniverseNewsPage(news: news),)
+      );
 
-        await Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => AddEditUniverseNewsPage(news: news),)
-        );
-
-        refreshNews();
-      });
+      refreshNews();
+    }
+  );
 
   Widget deleteButton() => IconButton(
-        icon: Icon(Icons.delete),
-        onPressed: () async {
-          await UniverseDatabase.instance.deleteNews(widget.newsId);
-          Navigator.of(context).pop();
-        },
-      );
+    icon: const Icon(Icons.delete),
+    onPressed: () async {
+      await UniverseDatabase.instance.deleteNews(widget.newsId);
+      if(context.mounted) Navigator.of(context).pop();
+    },
+  );
 }

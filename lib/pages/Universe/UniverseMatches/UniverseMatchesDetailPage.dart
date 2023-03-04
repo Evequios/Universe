@@ -1,14 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseMatches.dart';
 import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
-import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseMatches/AddEditUniverseMatchesPage.dart';
-import 'package:wwe_universe/pages/Universe/UniverseNews/AddEditUniverseNewsPage.dart';
-// import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class UniverseMatchesDetailPage extends StatefulWidget {
   final int matchId;

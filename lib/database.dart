@@ -8,8 +8,6 @@ import 'package:wwe_universe/classes/Universe/UniverseStorylines.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/classes/Universe/UniverseTeams.dart';
 import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
-import 'NavBar.dart';
-import 'main.dart';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +30,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 44, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 45, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -51,10 +49,10 @@ class UniverseDatabase {
     await db.execute('''
 CREATE TABLE IF NOT EXISTS $tableNews ( 
   ${NewsFields.id} $idType, 
-  ${NewsFields.titre} $textType,
-  ${NewsFields.texte} $textType,
+  ${NewsFields.title} $textType,
+  ${NewsFields.text} $textType,
   ${NewsFields.createdTime} $textType,
-  ${NewsFields.categorie} $textType DEFAULT 'Autre'
+  ${NewsFields.type} $textType DEFAULT 'Other'
   ); ''');
 
   await db.execute('''
@@ -142,11 +140,14 @@ CREATE TABLE IF NOT EXISTS $tableTeams (
     final booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
    
-    await db.execute('''DROP TABLE IF EXISTS $tableBrands;''');
+    await db.execute('''DROP TABLE IF EXISTS $tableNews;''');
     await db.execute('''
-CREATE TABLE IF NOT EXISTS $tableBrands ( 
-  ${BrandsFields.id} $idType, 
-  ${BrandsFields.name} $textType
+CREATE TABLE IF NOT EXISTS $tableNews ( 
+  ${NewsFields.id} $idType, 
+  ${NewsFields.title} $textType,
+  ${NewsFields.text} $textType,
+  ${NewsFields.createdTime} $textType,
+  ${NewsFields.type} $textType DEFAULT 'Other'
   ); ''');
   }
   }

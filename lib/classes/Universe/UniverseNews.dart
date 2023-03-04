@@ -2,61 +2,59 @@ const String tableNews = 'news';
 
 class NewsFields {
   static final List<String> values = [
-    id, titre, texte, createdTime, categorie
+    id, title, text, createdTime, type
   ];
 
   static const String id = '_id';
-  static const String titre = 'titre';
-  static const String texte = 'texte';
+  static const String title = 'title';
+  static const String text = 'text';
   static const String createdTime = 'createdTime';
-  static const String categorie = 'categorie';
+  static const String type = 'type';
 }
 
 class UniverseNews{
   final int? id;
-  final String titre;
-  final String texte;
+  final String title;
+  final String text;
   final DateTime createdTime;
-  final String categorie;
+  final String type;
 
   const UniverseNews({
     this.id,
-    required this.titre,
-    required this.texte,
+    required this.title,
+    required this.text,
     required this.createdTime,
-    required this.categorie,
+    required this.type,
   });
 
   UniverseNews copy ({
     int? id,
-    String? titre,
-    String? texte,
+    String? title,
+    String? text,
     DateTime? createdTime,
-    String? categorie
+    String? type
   }) =>
     UniverseNews(
       id : id ?? this.id,
-      titre: titre ?? this.titre,
-      texte: texte ?? this.texte,
+      title: title ?? this.title,
+      text: text ?? this.text,
       createdTime: createdTime ?? this.createdTime,
-      categorie: categorie ?? this.categorie
+      type: type ?? this.type
     );
 
   static UniverseNews fromJson(Map<String, dynamic> json) => UniverseNews(
         id: json[NewsFields.id] as int ?,
-        titre: json[NewsFields.titre] as String,
-        texte: json[NewsFields.texte] as String, 
-        // createdTime: DateTime.parse(json['time']),
+        title: json[NewsFields.title] as String,
+        text: json[NewsFields.text] as String, 
         createdTime: DateTime.parse(json[NewsFields.createdTime] as String),
-        categorie: json[NewsFields.categorie] as String
+        type: json[NewsFields.type] as String
       );
 
   Map<String, dynamic> toJson() => {
         NewsFields.id: id,
-        NewsFields.titre: titre,
-        NewsFields.texte: texte,
-        // 'time': createdTime.toIso8601String(),
+        NewsFields.title: title,
+        NewsFields.text: text,
         NewsFields.createdTime: createdTime.toIso8601String(),
-        NewsFields.categorie: categorie
+        NewsFields.type: type
       };
 }
