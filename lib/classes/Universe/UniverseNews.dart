@@ -1,15 +1,15 @@
-final String tableNews = 'news';
+const String tableNews = 'news';
 
 class NewsFields {
   static final List<String> values = [
     id, titre, texte, createdTime, categorie
   ];
 
-  static final String id = '_id';
-  static final String titre = 'titre';
-  static final String texte = 'texte';
-  static final String createdTime = 'createdTime';
-  static final String categorie = 'categorie';
+  static const String id = '_id';
+  static const String titre = 'titre';
+  static const String texte = 'texte';
+  static const String createdTime = 'createdTime';
+  static const String categorie = 'categorie';
 }
 
 class UniverseNews{

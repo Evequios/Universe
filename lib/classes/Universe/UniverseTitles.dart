@@ -1,18 +1,16 @@
-import 'dart:ffi';
-
-final String tableTitles = 'titles';
+const String tableTitles = 'titles';
 
 class TitlesFields {
   static final List<String> values = [
     id, nom, tag, brand, holder1, holder2
   ];
 
-  static final String id = '_id';
-  static final String nom = 'nom';
-  static final String tag = 'tag';
-  static final String brand = 'brand';
-  static final String holder1 = 'holder1';
-  static final String holder2 = 'holder2';
+  static const String id = '_id';
+  static const String nom = 'nom';
+  static const String tag = 'tag';
+  static const String brand = 'brand';
+  static const String holder1 = 'holder1';
+  static const String holder2 = 'holder2';
 }
 class UniverseTitles{
   final int? id;

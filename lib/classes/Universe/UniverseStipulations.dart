@@ -1,13 +1,13 @@
-final String tableStipulations = 'stipulations';
+const String tableStipulations = 'stipulations';
 
 class StipulationsFields {
   static final List<String> values = [
     id, type, stipulation
   ];
 
-  static final String id = '_id';
-  static final String type = 'type';
-  static final String stipulation = 'stipulation';
+  static const String id = '_id';
+  static const String type = 'type';
+  static const String stipulation = 'stipulation';
 }
 class UniverseStipulations{
   final int? id;

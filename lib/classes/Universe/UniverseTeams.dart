@@ -1,17 +1,17 @@
-final String tableTeams = 'teams';
+const String tableTeams = 'teams';
 
 class TeamsFields {
   static final List<String> values = [
     id, nom, member1, member2, member3, member4, member5
   ];
 
-  static final String id = '_id';
-  static final String nom = 'nom';
-  static final String member1 = 'member1';
-  static final String member2 = 'member2';
-  static final String member3 = 'member3';
-  static final String member4 = 'member4';
-  static final String member5 = 'member5';
+  static const String id = '_id';
+  static const String nom = 'nom';
+  static const String member1 = 'member1';
+  static const String member2 = 'member2';
+  static const String member3 = 'member3';
+  static const String member4 = 'member4';
+  static const String member5 = 'member5';
 }
 
 class UniverseTeams{

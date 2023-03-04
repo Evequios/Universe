@@ -1,15 +1,15 @@
-final String tableStorylines = 'storylines';
+const String tableStorylines = 'storylines';
 
 class StorylinesFields {
   static final List<String> values = [
     id, titre, texte, debut, fin
   ];
 
-  static final String id = '_id';
-  static final String titre = 'titre';
-  static final String texte = 'texte';
-  static final String debut = 'debut';
-  static final String fin = 'fin';
+  static const String id = '_id';
+  static const String titre = 'titre';
+  static const String texte = 'texte';
+  static const String debut = 'debut';
+  static const String fin = 'fin';
 
 }
 

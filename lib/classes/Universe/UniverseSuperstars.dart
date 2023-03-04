@@ -1,15 +1,15 @@
-final String tableSuperstars = 'superstars';
+const String tableSuperstars = 'superstars';
 
 class SuperstarsFields{
   static final List<String> values = [
     id, nom, brand, orientation, rival1
   ];
 
-  static final String id = '_id';
-  static final String nom = 'nom';
-  static final String brand = 'brand';
-  static final String orientation = 'orientation';
-  static final String rival1 = 'rival1';
+  static const String id = '_id';
+  static const String nom = 'nom';
+  static const String brand = 'brand';
+  static const String orientation = 'orientation';
+  static const String rival1 = 'rival1';
 }
 
 class UniverseSuperstars{

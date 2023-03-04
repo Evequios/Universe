@@ -1,15 +1,15 @@
-final String tableShows = 'shows';
+const String tableShows = 'shows';
 
 class ShowFields{
   static final List<String> values = [
     id, nom, annee, semaine, resume
   ];
 
-  static final String id = '_id';
-  static final String nom = 'nom';
-  static final String annee = 'annee';
-  static final String semaine = 'semaine';
-  static final String resume = 'resume';
+  static const String id = '_id';
+  static const String nom = 'nom';
+  static const String annee = 'annee';
+  static const String semaine = 'semaine';
+  static const String resume = 'resume';
 }
 
 class UniverseShows{

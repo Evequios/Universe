@@ -1,12 +1,12 @@
-final String tableBrands = 'brands';
+const String tableBrands = 'brands';
 
 class BrandsFields {
   static final List<String> values = [
     id, nom
   ];
 
-  static final String id = '_id';
-  static final String nom = 'nom';
+  static const String id = '_id';
+  static const String nom = 'nom';
 }
 
 class UniverseBrands {

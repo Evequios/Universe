@@ -1,23 +1,23 @@
-final String tableMatches = 'matches';
+const String tableMatches = 'matches';
 
 class MatchesFields {
   static final List<String> values = [
     id, stipulation, s1, s2, s3, s4, s5, s6, s7, s8, gagnant, ordre, showId
   ];
 
-  static final String id = '_id';
-  static final String stipulation = 'stipulation';
-  static final String s1 = 's1';
-  static final String s2= 's2';
-  static final String s3= 's3';
-  static final String s4= 's4';
-  static final String s5= 's5';
-  static final String s6= 's6';
-  static final String s7= 's7';
-  static final String s8= 's8';
-  static final String gagnant= 'gagnant';
-  static final String ordre= 'ordre';
-  static final String showId= 'showId';
+  static const String id = '_id';
+  static const String stipulation = 'stipulation';
+  static const String s1 = 's1';
+  static const String s2= 's2';
+  static const String s3= 's3';
+  static const String s4= 's4';
+  static const String s5= 's5';
+  static const String s6= 's6';
+  static const String s7= 's7';
+  static const String s8= 's8';
+  static const String gagnant= 'gagnant';
+  static const String ordre= 'ordre';
+  static const String showId= 'showId';
 }
 
 class UniverseMatches{
