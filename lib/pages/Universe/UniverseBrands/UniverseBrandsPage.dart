@@ -6,6 +6,8 @@ import 'package:wwe_universe/pages/Universe/UniverseBrands/AddEditUniverseBrands
 import 'package:wwe_universe/pages/Universe/UniverseBrands/UniverseBrandsDetailPage.dart';
 
 class UniverseBrandsPage extends StatefulWidget{
+  const UniverseBrandsPage({super.key});
+
   @override
   _UniverseBrandsPageState createState() => _UniverseBrandsPageState();
 }
@@ -24,12 +26,13 @@ class _UniverseBrandsPageState extends State<UniverseBrandsPage> {
   Future refreshBrands() async {
     setState(() => isLoading = true);
 
-    this.brandsList = await UniverseDatabase.instance.readAllBrands();
+    brandsList = await UniverseDatabase.instance.readAllBrands();
 
     setState(() => isLoading = false);
   }
 
-   Widget build(BuildContext context) => Scaffold(
+  @override
+  Widget build(BuildContext context) => Scaffold(
     drawer: Navbar(),
     appBar: AppBar(
       title: const Text(
@@ -50,7 +53,7 @@ class _UniverseBrandsPageState extends State<UniverseBrandsPage> {
       child: const Icon(Icons.add),
       onPressed: () async {
         await Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => AddEditUniverseBrandsPage()),
+          MaterialPageRoute(builder: (context) => const AddEditUniverseBrandsPage()),
         );
 
         refreshBrands();
@@ -58,45 +61,44 @@ class _UniverseBrandsPageState extends State<UniverseBrandsPage> {
     ),
    );
 
-   Widget buildUniverseBrands() => ListView.builder(
-      padding : EdgeInsets.all(8),
-      itemCount:  brandsList.length,
-      itemBuilder: (context, index){
-        final brand = brandsList[index];
-        return GestureDetector(
-          onTap: () async {
-            await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => UniverseBrandsDetailPage(brandId : brand.id!),
-            )).then((value) => refreshBrands());
-          },
-          child : Container(
-            height: 100,
-            child : Card(
-              shape : RoundedRectangleBorder(
-                side : new BorderSide(color : Color.fromARGB(189, 96, 125, 139)),
-                borderRadius: BorderRadius.circular(4.0)
-              ),
-              elevation: 2,
-              child: Padding (
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child : Row (
-                  children: [ 
-                  Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text('${brand.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      alignment: Alignment.centerLeft, 
-                    )
-                  ),
-                  Spacer(),
-                  Container(child : ((){ if(brand.nom.toLowerCase() == 'raw' || brand.nom.toLowerCase() == 'smackdown' || brand.nom.toLowerCase() == 'nxt') return Image(image: AssetImage('assets/${brand.nom.toLowerCase()}.png'));}()))
-                ],
-                )
-              ),
-            )
+  Widget buildUniverseBrands() => ListView.builder(
+    padding : const EdgeInsets.all(8),
+    itemCount:  brandsList.length,
+    itemBuilder: (context, index){
+      final brand = brandsList[index];
+      return GestureDetector(
+        onTap: () async {
+          await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => UniverseBrandsDetailPage(brandId : brand.id!),
+          )).then((value) => refreshBrands());
+        },
+        child : SizedBox(
+          height: 100,
+          child : Card(
+            shape : RoundedRectangleBorder(
+              side : const BorderSide(color : Color.fromARGB(189, 96, 125, 139)),
+              borderRadius: BorderRadius.circular(4.0)
+            ),
+            elevation: 2,
+            child: Padding (
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child : Row (
+                children: [ 
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(brand.nom, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
+                  )
+                ),
+                const Spacer(),
+                Container(child : ((){ if(brand.nom.toLowerCase() == 'raw' || brand.nom.toLowerCase() == 'smackdown' || brand.nom.toLowerCase() == 'nxt') return Image(image: AssetImage('assets/${brand.nom.toLowerCase()}.png'));}()))
+              ],
+              )
+            ),
           )
-        );
-      },
-    );
-
+        )
+      );
+    },
+  );
 }

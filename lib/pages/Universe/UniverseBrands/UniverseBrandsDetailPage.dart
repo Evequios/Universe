@@ -1,11 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
-import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseBrands/AddEditUniverseBrandsPage.dart';
-import 'package:wwe_universe/pages/Universe/UniverseNews/AddEditUniverseNewsPage.dart';
-// import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class UniverseBrandsDetailPage extends StatefulWidget {
   final int brandId;
@@ -33,7 +29,7 @@ class _UniverseBrandsDetailPage extends State<UniverseBrandsDetailPage> {
   Future refreshBrand() async {
     setState(() => isLoading = true);
 
-    this.brand = await UniverseDatabase.instance.readBrand(widget.brandId);
+    brand = await UniverseDatabase.instance.readBrand(widget.brandId);
 
     setState(() => isLoading = false);  
   }
@@ -44,32 +40,30 @@ class _UniverseBrandsDetailPage extends State<UniverseBrandsDetailPage> {
           actions: [editButton(), deleteButton()],
         ),
         body: isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Padding(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   children: [
                     Text(
                       brand.nom,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
       );
 
   Widget editButton() => IconButton(
-      icon: Icon(Icons.edit_outlined),
+      icon: const Icon(Icons.edit_outlined),
       onPressed: () async {
-        // if (isLoading) return;
-
         await Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => AddEditUniverseBrandsPage(brand: brand),)
         );
@@ -78,10 +72,10 @@ class _UniverseBrandsDetailPage extends State<UniverseBrandsDetailPage> {
       });
 
   Widget deleteButton() => IconButton(
-        icon: Icon(Icons.delete),
+        icon: const Icon(Icons.delete),
         onPressed: () async {
           await UniverseDatabase.instance.deleteBrand(widget.brandId);
-          Navigator.of(context).pop();
+          if (context.mounted) Navigator.of(context).pop();
         },
       );
 }
