@@ -1,27 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
+import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 
 const List<String> listOrientations = <String>['Face', 'Tweener', 'Heel'];
-UniverseBrands defaultBrand = UniverseBrands(nom: 'nom');
+UniverseBrands defaultBrand = const UniverseBrands(nom: 'nom');
+UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
 
 class UniverseSuperstarsFormWidget extends StatelessWidget {
+  final List<UniverseSuperstars>? listSuperstars;
   final List<UniverseBrands>? listBrands;
   final String? nom;
   final int? brand;
   final String? orientation;
+  final int? rival1;
   final ValueChanged<String?> onChangedNom;
   final ValueChanged<int?> onChangedBrand;
   final ValueChanged<String?> onChangedOrientation;
+  final ValueChanged<int?> onChangedRival1;
 
   const UniverseSuperstarsFormWidget({
     Key? key,
+    required this.listSuperstars,
     required this.listBrands,
     this.nom = '',
     this.brand,
     this.orientation = '',
+    this.rival1,
     required this.onChangedNom,
     required this.onChangedBrand,
     required this.onChangedOrientation,
+    required this.onChangedRival1
   }) : super(key: key);
 
   @override
@@ -29,15 +37,17 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   return Scaffold(
     body: Center(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               buildNom(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildBrand(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildOrientation(),
+              const SizedBox(height: 8,),
+              buildRival1()
             ],
           ),
         ),
@@ -62,24 +72,22 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
       ButtonTheme( 
         alignedDropdown: true, 
         child: DropdownButtonFormField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
           labelText: 'Brand : ',
           labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
         ),
-          hint : Text("Brand"),
+          hint : const Text("Brand"),
           value: brand != 0 ? brand : defaultBrand.id,
-          // value: s1 != 0 ? s1 : listSuperstars![0].id,
           onChanged: onChangedBrand,
           items: listBrands!.map((brand){
           return DropdownMenuItem(
-            // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
             value: brand.id,
             child: Text(brand.nom));
         }).toList(),
         ),);
 
     Widget buildOrientation() => Container(alignment: Alignment.bottomLeft,child: DropdownButton(
-      hint: Text("Orientation"),
+      hint: const Text("Orientation"),
       value: orientation == "" ? null : orientation,
       onChanged : onChangedOrientation, 
       items: listOrientations.map((orientation){
@@ -88,5 +96,23 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
           child: Text(orientation));
       }).toList(),
     ),);
-  
+
+    Widget buildRival1() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Rival 1 : ',
+        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      ),
+        hint : Text("Rival 1"),
+        value: rival1 != 0 ? rival1 : defaultSup.id,
+        onChanged: onChangedRival1,
+        items: listSuperstars!.map((rival1){
+        return DropdownMenuItem(
+          // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
+          value: rival1.id,
+          child: Text(rival1.nom));
+      }).toList(),
+      ),);
 }

@@ -5,7 +5,7 @@ import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 
 UniverseBrands defaultBrand = UniverseBrands(nom: 'nom');
-UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation');
+UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
 List<bool> listTag = [false, true];
 
 bool disable(int tag){

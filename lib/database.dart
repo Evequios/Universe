@@ -32,7 +32,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 42, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 43, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -142,98 +142,15 @@ CREATE TABLE IF NOT EXISTS $tableTeams (
     final booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
    
-    await db.execute('''DROP TABLE IF EXISTS $tableMatches;''');
-    await db.execute('''DROP TABLE IF EXISTS $tableShows;''');
-    await db.execute('''DROP TABLE IF EXISTS $tableStipulations;''');
-    await db.execute('''DROP TABLE IF EXISTS $tableStorylines;''');
-    await db.execute('''DROP TABLE IF EXISTS $tableSuperstars;''');
-    await db.execute('''DROP TABLE IF EXISTS $tableNews;''');
-    await db.execute('''DROP TABLE IF EXISTS $tableTitles;''');
-    await db.execute('''DROP TABLE IF EXISTS $tableBrands;''');
-    await db.execute('''
-CREATE TABLE IF NOT EXISTS $tableNews ( 
-  ${NewsFields.id} $idType, 
-  ${NewsFields.titre} $textType,
-  ${NewsFields.texte} $textType,
-  ${NewsFields.createdTime} $textType,
-  ${NewsFields.categorie} $textType DEFAULT 'Autre'
-  ); ''');
-
-  await db.execute('''
-CREATE TABLE IF NOT EXISTS $tableBrands ( 
-  ${BrandsFields.id} $idType, 
-  ${BrandsFields.nom} $textType
-  ); ''');
-  await db.execute('''
-CREATE TABLE IF NOT EXISTS $tableSuperstars ( 
-  ${SuperstarsFields.id} $idType, 
-  ${SuperstarsFields.nom} $textType,
-  ${SuperstarsFields.brand} $intType,
-  ${SuperstarsFields.orientation} $textType
-  ); ''');
-
-    await db.execute('''
-    CREATE TABLE IF NOT EXISTS $tableStorylines ( 
-      ${StorylinesFields.id} $idType, 
-      ${StorylinesFields.titre} $textType,
-      ${StorylinesFields.texte} $textType,
-      ${StorylinesFields.debut} $textType,
-      ${StorylinesFields.fin} $textType
-      ); ''');
-
-      await db.execute('''
-   CREATE TABLE IF NOT EXISTS $tableShows( 
-  ${ShowFields.id} $idType, 
-   ${ShowFields.nom} $textType,
-   ${ShowFields.annee} $intTypeNN,
-   ${ShowFields.semaine} $intTypeNN,
-   ${ShowFields.resume} $textType
-   ); ''');
-
-    await db.execute('''
-  CREATE TABLE IF NOT EXISTS $tableStipulations(
-    ${StipulationsFields.id} $idType,
-    ${StipulationsFields.type} $textType,
-    ${StipulationsFields.stipulation} $textType
-  );''');
-   await db.execute('''
-   CREATE TABLE IF NOT EXISTS $tableMatches( 
-  ${MatchesFields.id} $idType, 
-  ${MatchesFields.stipulation} $intTypeNN,
-   ${MatchesFields.s1} $intTypeNN,
-   ${MatchesFields.s2} $intTypeNN,
-   ${MatchesFields.s3} $intType,
-   ${MatchesFields.s4} $intType,
-   ${MatchesFields.s5} $intType,
-   ${MatchesFields.s6} $intType,
-   ${MatchesFields.s7} $intType,
-   ${MatchesFields.s8} $intType,
-   ${MatchesFields.gagnant} $intTypeNN,
-   ${MatchesFields.ordre} $intTypeNN DEFAULT 0,
-   ${MatchesFields.showId} $intTypeNN
-   ); ''');
-
-   db.execute('''
-CREATE TABLE IF NOT EXISTS $tableTitles ( 
-  ${TitlesFields.id} $idType, 
-  ${TitlesFields.nom} $textType,
-  ${TitlesFields.brand} $intType,
-  ${TitlesFields.tag} $booleanTypeNN,
-  ${TitlesFields.holder1} $intType,
-  ${TitlesFields.holder2} $intType
-  ); ''');
-
-    db.execute('''
-CREATE TABLE IF NOT EXISTS $tableTeams (
-  ${TeamsFields.id} $idType,
-  ${TeamsFields.nom} $textType,
-  ${TeamsFields.member1} $intTypeNN,
-  ${TeamsFields.member2} $intTypeNN,
-  ${TeamsFields.member3} $intType,
-  ${TeamsFields.member4} $intType,
-  ${TeamsFields.member5} $intType
-);
-''');
+    // await db.execute('''DROP TABLE IF EXISTS $tableMatches;''');
+    // await db.execute('''DROP TABLE IF EXISTS $tableShows;''');
+    // await db.execute('''DROP TABLE IF EXISTS $tableStipulations;''');
+    // await db.execute('''DROP TABLE IF EXISTS $tableStorylines;''');
+    // await db.execute('''DROP TABLE IF EXISTS $tableSuperstars;''');
+    // await db.execute('''DROP TABLE IF EXISTS $tableNews;''');
+    // await db.execute('''DROP TABLE IF EXISTS $tableTitles;''');
+    await db.execute('''ALTER TABLE $tableSuperstars
+    ADD ${SuperstarsFields.rival1} $intType DEFAULT 0;''');
   }
   }
 

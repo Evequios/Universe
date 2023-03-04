@@ -4,6 +4,8 @@
 - Réfléchir à de potentiels changements dans la BDD
 - Quand plus aucun changements à faire dans la BDD, mise en place de mon mode Universe
 - Vérifier les standards
+- Historisation
+- Integrité des données
 
 
 

@@ -10,11 +10,13 @@ import 'package:wwe_universe/widget/Universe/UniverseSuperstarsFormWidget.dart';
 class AddEditUniverseSuperstarsPage extends StatefulWidget {
   final UniverseSuperstars? superstar;
   final List<UniverseBrands>? listBrands;
+  final List<UniverseSuperstars>? listSuperstars;
 
   const AddEditUniverseSuperstarsPage({
     Key? key,
     this.superstar,
-    this.listBrands
+    this.listBrands,
+    this.listSuperstars
   }) : super(key: key);
   @override
   _AddEditUniverseSuperstarsPage createState() => _AddEditUniverseSuperstarsPage();
@@ -23,9 +25,11 @@ class AddEditUniverseSuperstarsPage extends StatefulWidget {
 class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage> {
   final _formKey = GlobalKey<FormState>();
   late List<UniverseBrands> listBrands = [];
+  late List<UniverseSuperstars> listSuperstars = [];
   late String nom;
   late int brand;
   late String orientation;
+  late int rival1;
 
   @override
   void initState() {
@@ -34,7 +38,10 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
     nom = widget.superstar?.nom ?? '';
     brand = widget.superstar?.brand ?? 0;
     orientation = widget.superstar?.orientation ?? '';
+    rival1 = widget.superstar?.rival1 ?? 0;
     listBrands = widget.listBrands!;
+    listSuperstars = widget.listSuperstars!;
+
   }
 
   @override
@@ -45,13 +52,16 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
         body: Form(
           key: _formKey,
           child: UniverseSuperstarsFormWidget(
+            listSuperstars: listSuperstars,
             listBrands: listBrands,
             nom: nom,
             brand: brand,
             orientation: orientation,
+            rival1 : rival1,
             onChangedNom: (nom) => setState(() => this.nom = nom!),
             onChangedBrand: (brand) => setState(() => this.brand = brand!),
-            onChangedOrientation: (orientation) => setState(() => this.orientation = orientation.toString())
+            onChangedOrientation: (orientation) => setState(() => this.orientation = orientation.toString()),
+            onChangedRival1: (rival1) => setState(() => this.rival1 = rival1!)
           ),
         ),
       );
@@ -94,6 +104,7 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
       nom: nom,
       brand: brand,
       orientation: orientation,
+      rival1: rival1
     );
     await UniverseDatabase.instance.updateSuperstar(superstar);
   }
@@ -103,8 +114,8 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
       nom: nom,
       brand: brand,
       orientation: orientation,
+      rival1: rival1
     );
-
     await UniverseDatabase.instance.createSuperstar(superstar);
   }
 }

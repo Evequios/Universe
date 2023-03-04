@@ -35,11 +35,11 @@ class UniverseTeamsDetailPage extends StatefulWidget {
 
 class _UniverseTeamsDetailPage extends State<UniverseTeamsDetailPage> {
   UniverseTeams team = UniverseTeams(nom: 'nom', member1: 0, member2: 0, member3: 0, member4: 0, member5: 0);
-  UniverseSuperstars m1 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation'); 
-  UniverseSuperstars m2 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation');
-  UniverseSuperstars m3 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation');
-  UniverseSuperstars m4 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation');
-  UniverseSuperstars m5 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation');
+  UniverseSuperstars m1 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0); 
+  UniverseSuperstars m2 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
+  UniverseSuperstars m3 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
+  UniverseSuperstars m4 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
+  UniverseSuperstars m5 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
   // late List<UniverseSuperstars> superstarsList;
   bool isLoading = false;
 

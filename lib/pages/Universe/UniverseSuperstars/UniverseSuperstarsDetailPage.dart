@@ -24,6 +24,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
   late UniverseSuperstars superstar;
   late UniverseBrands brand;
   late List<UniverseBrands> listBrands = [];
+  late List<UniverseSuperstars> listSuperstars = [];
   UniverseBrands defaultBrand = UniverseBrands(nom: '');
   bool isLoading = false;
 
@@ -41,6 +42,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
     if(superstar.brand != 0) brand = await UniverseDatabase.instance.readBrand(superstar.brand);
     else brand = defaultBrand;
     listBrands = await UniverseDatabase.instance.readAllBrands();
+    listSuperstars = await UniverseDatabase.instance.readAllSuperstars();
 
     setState(() => isLoading = false);  
   }
@@ -70,7 +72,12 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
                     Text(
                       'Orientation : ${superstar.orientation}',
                       style: TextStyle(color: Colors.black, fontSize: 18),
-                    )
+                    ),
+                    SizedBox(height: 8),
+                    superstar.rival1 != 0 ? Text(
+                      'Rival1 : ${superstar.rival1}',
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                    ) : SizedBox(height: 0,)
                   ],
                 ),
               ),
@@ -82,7 +89,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
         if (isLoading) return;
 
         await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddEditUniverseSuperstarsPage(superstar: superstar),
+          builder: (context) => AddEditUniverseSuperstarsPage(superstar: superstar, listBrands: listBrands, listSuperstars: listSuperstars,),
         ));
 
         refreshSuperstars();

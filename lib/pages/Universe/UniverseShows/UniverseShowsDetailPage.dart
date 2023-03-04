@@ -7,7 +7,6 @@ import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseMatches/AddEditUniverseMatchesPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseMatches/UniverseMatchesDetailPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseShows/AddEditUniverseShowsPage.dart';
-import 'package:wwe_universe/widget/Universe/UniverseMatchesFormWidget.dart';
 
 class UniverseShowsDetailPage extends StatefulWidget {
   final int showId;
@@ -109,12 +108,12 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
       final stipulation = stipulationsList.firstWhere((stipulation) => stipulation.id == match.stipulation);
       final s1 = superstarsList.firstWhere((superstar) => superstar.id == match.s1);
       final s2 = superstarsList.firstWhere((superstar) => superstar.id == match.s2);
-      UniverseSuperstars s3 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation');
-      UniverseSuperstars s4 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation');
-      UniverseSuperstars s5 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation');
-      UniverseSuperstars s6 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation');
-      UniverseSuperstars s7 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation');
-      UniverseSuperstars s8 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation');
+      UniverseSuperstars s3 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+      UniverseSuperstars s4 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+      UniverseSuperstars s5 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+      UniverseSuperstars s6 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+      UniverseSuperstars s7 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+      UniverseSuperstars s8 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
       if (match.s3 != 0) s3 = superstarsList.firstWhere((superstar) => superstar.id == match.s3);
       if (match.s4 != 0) s4 = superstarsList.firstWhere((superstar) => superstar.id == match.s4);
       if (match.s5 != 0) s5 = superstarsList.firstWhere((superstar) => superstar.id == match.s5);

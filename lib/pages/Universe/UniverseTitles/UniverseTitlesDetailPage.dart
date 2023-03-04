@@ -29,8 +29,8 @@ class UniverseTitlesDetailPage extends StatefulWidget {
 class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
   UniverseTitles title = UniverseTitles(nom: '', tag: 0, brand: 0, holder1: 0, holder2: 0);
   UniverseBrands brand = UniverseBrands(nom: '');
-  UniverseSuperstars h1 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation'); 
-  UniverseSuperstars h2 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation');
+  UniverseSuperstars h1 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0); 
+  UniverseSuperstars h2 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
   late List<UniverseBrands> brandsList;
   late List<UniverseSuperstars> superstarsList;
   bool isLoading = false;
