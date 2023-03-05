@@ -29,8 +29,8 @@ class UniverseTitlesDetailPage extends StatefulWidget {
 class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
   UniverseTitles title = UniverseTitles(nom: '', tag: 0, brand: 0, holder1: 0, holder2: 0);
   UniverseBrands brand = UniverseBrands(name: '');
-  UniverseSuperstars h1 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0); 
-  UniverseSuperstars h2 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
+  UniverseSuperstars h1 = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0); 
+  UniverseSuperstars h2 = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
   late List<UniverseBrands> brandsList;
   late List<UniverseSuperstars> superstarsList;
   bool isLoading = false;
@@ -84,12 +84,12 @@ class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
                     ),
                     SizedBox(height: 8),
                     title.tag == 0 && widget.h1Id != null ?
-                    Text("Champion : ${h1.nom}",
+                    Text("Champion : ${h1.name}",
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     )
                     :
                     title.tag == 0 && widget.h1Id != null ?
-                    Text("Champions : ${h1.nom} & ${h1.nom}",
+                    Text("Champions : ${h1.name} & ${h1.name}",
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     )
                     : SizedBox(height: 0),

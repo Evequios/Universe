@@ -19,7 +19,7 @@ class UniverseTeamsPage extends StatefulWidget{
 }
 
 class _UniverseTeamsPageState extends State<UniverseTeamsPage> {
-  UniverseSuperstars defaultSuperstar = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+  UniverseSuperstars defaultSuperstar = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
   late List<UniverseSuperstars> superstarsList;
   late List<UniverseTeams> teamsList;
 

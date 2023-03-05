@@ -54,31 +54,31 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
     ),
     body: Column(children: [
       Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         alignment:  Alignment.centerLeft,
-        child: Text('Résumé : ', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
+        child: const Text('Résumé : ', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
       ),
       Container(
         width: double.infinity,
         height: 150,
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child : Card(
           shape: RoundedRectangleBorder(
-            side : new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+            side : new BorderSide(color: const Color.fromARGB(189, 96, 125, 139)),
             borderRadius: BorderRadius.circular(4.0)
           ),
           elevation: 2,
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: Text(show.resume != null ? show.resume : ''),
           )
         )
       ),
-      SizedBox(height: 8,),
+      const SizedBox(height: 8,),
       Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         alignment: Alignment.centerLeft,
-        child : Text('Matchs : ', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
+        child : const Text('Matchs : ', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
       ),
       Flexible(
         child: isLoading
@@ -101,19 +101,19 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
   );
   
   Widget buildUniverseMatches() => ListView.builder(
-    padding : EdgeInsets.all(8),
+    padding : const EdgeInsets.all(8),
     itemCount: matchesList.length,
     itemBuilder: (context, index) {
       final match = matchesList[index];
       final stipulation = stipulationsList.firstWhere((stipulation) => stipulation.id == match.stipulation);
       final s1 = superstarsList.firstWhere((superstar) => superstar.id == match.s1);
       final s2 = superstarsList.firstWhere((superstar) => superstar.id == match.s2);
-      UniverseSuperstars s3 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
-      UniverseSuperstars s4 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
-      UniverseSuperstars s5 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
-      UniverseSuperstars s6 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
-      UniverseSuperstars s7 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
-      UniverseSuperstars s8 = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+      UniverseSuperstars s3 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s4 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s5 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s6 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s7 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s8 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
       if (match.s3 != 0) s3 = superstarsList.firstWhere((superstar) => superstar.id == match.s3);
       if (match.s4 != 0) s4 = superstarsList.firstWhere((superstar) => superstar.id == match.s4);
       if (match.s5 != 0) s5 = superstarsList.firstWhere((superstar) => superstar.id == match.s5);
@@ -126,7 +126,7 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
     height: 80,
     child: Card(
       shape:RoundedRectangleBorder(
-        side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+        side: new BorderSide(color: const Color.fromARGB(189, 96, 125, 139)),
         borderRadius: BorderRadius.circular(4.0)
       ),
       elevation : 2,
@@ -139,32 +139,32 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
         // title : Text(s1.nom),
         title:((){
           if(stipulation.type == ("1v1")){
-            return Text('${s1.nom} vs ${s2.nom}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+            return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
           }
           if(stipulation.type == ("2v2")){
-            return Text('${s1.nom} & ${s2.nom} vs ${s3.nom} & ${s4.nom}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+            return Text('${s1.name} & ${s2.name} vs ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
           }
           if(stipulation.type == ("3v3")){
-            return Text('${s1.nom}, ${s2.nom}, ${s3.nom} vs ${s4.nom}, ${s5.nom}, ${s6.nom}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+            return Text('${s1.name}, ${s2.name}, ${s3.name} vs ${s4.name}, ${s5.name}, ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
           }
           if(stipulation.type == ("4v4")){
-            return Text('Team ${s1.nom} vs Team ${s6.nom}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+            return Text('Team ${s1.name} vs Team ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
           }
           if(stipulation.type == ("Triple Threat")){
-            return Text('${s1.nom} vs ${s2.nom} vs ${s3.nom}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+            return Text('${s1.name} vs ${s2.name} vs ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
           }
           if(stipulation.type == ("Fatal 4-Way")){
-            return Text('${s1.nom} vs ${s2.nom} vs ${s3.nom} vs ${s4.nom}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold));
+            return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
           }
         }()),
-        subtitle: Text('${stipulation.type} ${stipulation.stipulation}', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text('${stipulation.type} ${stipulation.stipulation}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
       )
     )
     );
   });
 
   Widget editButton() => IconButton(
-      icon: Icon(Icons.edit_outlined),
+      icon: const Icon(Icons.edit_outlined),
       onPressed: () async {
         if (isLoading) return;
 
@@ -176,7 +176,7 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
       });
 
   Widget deleteButton() => IconButton(
-        icon: Icon(Icons.delete),
+        icon: const Icon(Icons.delete),
         onPressed: () async {
           await UniverseDatabase.instance.deleteShow(widget.showId);
           Navigator.of(context).pop();

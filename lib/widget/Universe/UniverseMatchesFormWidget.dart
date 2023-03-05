@@ -5,7 +5,7 @@ import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/database.dart';
 
 UniverseStipulations defaultStip = UniverseStipulations(type: 'type', stipulation: 'stipulation');
-UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+UniverseSuperstars defaultSup = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
 late UniverseStipulations stip = UniverseStipulations(type: 'type', stipulation: 'stipulation');
 Future getDetails(id) async {
   stip = await UniverseDatabase.instance.readStipulation(id);
@@ -227,7 +227,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         return DropdownMenuItem(
           // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
           value: s1.id,
-          child: Text(s1.nom));
+          child: Text(s1.name));
       }).toList(),
       validator: (s1) =>
            s1 == null ? "Please choose a superstar" : null
@@ -249,7 +249,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         return DropdownMenuItem(
           // value: s2.id != 0 ? s2.id : listSuperstars![1].id,
           value: s2.id,
-          child: Text(s2.nom));
+          child: Text(s2.name));
       }).toList(),
       validator: (s2) =>
            s2 == null ? "Please choose a superstar" : null
@@ -270,7 +270,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         items: disable(3) ? null : listSuperstars!.map((s3){
         return DropdownMenuItem(
           value: s3.id,
-          child: Text(s3.nom));
+          child: Text(s3.name));
       }).toList(),
       ),);
 
@@ -289,7 +289,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         items: disable(4) ? null : listSuperstars!.map((s4){
         return DropdownMenuItem(
           value: s4.id,
-          child: Text(s4.nom));
+          child: Text(s4.name));
       }).toList(),
       ),);
     }
@@ -308,7 +308,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         items: disable(5) ? null : listSuperstars!.map((s5){
         return DropdownMenuItem(
           value: s5.id,
-          child: Text(s5.nom));
+          child: Text(s5.name));
       }).toList(),
       ),);
 
@@ -326,7 +326,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         items: disable(6) ? null : listSuperstars!.map((s6){
         return DropdownMenuItem(
           value: s6.id,
-          child: Text(s6.nom));
+          child: Text(s6.name));
       }).toList(),
       ),);
 
@@ -344,7 +344,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         items: disable(7) ? null : listSuperstars!.map((s7){
         return DropdownMenuItem(
           value: s7.id,
-          child: Text(s7.nom));
+          child: Text(s7.name));
       }).toList(),
       ),);
 
@@ -362,7 +362,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         items: disable(8) ? null : listSuperstars!.map((s8){
         return DropdownMenuItem(
           value: s8.id,
-          child: Text(s8.nom));
+          child: Text(s8.name));
       }).toList(),
       ),);
 
@@ -381,7 +381,7 @@ Widget buildGagnant() =>
         items: listSuperstars!.map((gagnant){
         return DropdownMenuItem(
           value: gagnant.id,
-          child: Text(gagnant.nom));
+          child: Text(gagnant.name));
       }).toList(),
       validator: (gagnant) => validateWinner() ? null : "The winner must be in the match",
       // validator: (gagnant) {

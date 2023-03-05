@@ -94,26 +94,26 @@ class _UniverseMatchesDetailPage extends State<UniverseMatchesDetailPage> {
               SizedBox(height: 8),
               Container(child:(() {
                 if(stipulation.type == ("1v1")){
-                  return Text('${s1.nom} vs ${s2.nom}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
                 }
                 if(stipulation.type == ("2v2")){
-                  return Text('${s1.nom} & ${s2.nom} vs ${s3.nom} & ${s4.nom}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${s1.name} & ${s2.name} vs ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
                 }
                 if(stipulation.type == ("3v3")){
-                  return Text('${s1.nom}, ${s2.nom}, ${s3.nom} vs ${s4.nom}, ${s5.nom}, ${s6.nom}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${s1.name}, ${s2.name}, ${s3.name} vs ${s4.name}, ${s5.name}, ${s6.name}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
                 }
                 if(stipulation.type == ("4v4")){
-                  return Text('${s1.nom}, ${s2.nom}, ${s3.nom}, ${s4.nom} vs ${s5.nom}, ${s6.nom}, ${s7.nom}, ${s8.nom}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${s1.name}, ${s2.name}, ${s3.name}, ${s4.name} vs ${s5.name}, ${s6.name}, ${s7.name}, ${s8.name}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
                 }
                 if(stipulation.type == ("Triple Threat")){
-                  return Text('${s1.nom} vs ${s2.nom} vs ${s3.nom}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${s1.name} vs ${s2.name} vs ${s3.name}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
                 }
                 if(stipulation.type == ("Fatal 4-Way")){
-                  return Text('${s1.nom} vs ${s2.nom} vs ${s3.nom} vs ${s4.nom}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
                 }
               }())),
               SizedBox(height: 30,),
-              Text('Gagnant : ${gagnant.nom}',
+              Text('Gagnant : ${gagnant.name}',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 22,

@@ -35,11 +35,11 @@ class UniverseTeamsDetailPage extends StatefulWidget {
 
 class _UniverseTeamsDetailPage extends State<UniverseTeamsDetailPage> {
   UniverseTeams team = UniverseTeams(nom: 'nom', member1: 0, member2: 0, member3: 0, member4: 0, member5: 0);
-  UniverseSuperstars m1 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0); 
-  UniverseSuperstars m2 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
-  UniverseSuperstars m3 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
-  UniverseSuperstars m4 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
-  UniverseSuperstars m5 = UniverseSuperstars(nom: '', brand: 0, orientation: 'orientation', rival1: 0);
+  UniverseSuperstars m1 = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+  UniverseSuperstars m2 = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+  UniverseSuperstars m3 = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+  UniverseSuperstars m4 = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+  UniverseSuperstars m5 = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
   // late List<UniverseSuperstars> superstarsList;
   bool isLoading = false;
 
@@ -98,7 +98,7 @@ class _UniverseTeamsDetailPage extends State<UniverseTeamsDetailPage> {
                     ),
                     SizedBox(height: 8),
                     SizedBox(height: 8),
-                    Text("Members : ${m1.nom}, ${m2.nom}" + (getNbMembres() >= 3 ? ", ${m3.nom}" : "") + (getNbMembres() >= 4 ? ", ${m4.nom}" : "") + (getNbMembres() == 5 ? ", ${m5.nom}" : ""),
+                    Text("Members : ${m1.name}, ${m2.name}" + (getNbMembres() >= 3 ? ", ${m3.name}" : "") + (getNbMembres() >= 4 ? ", ${m4.name}" : "") + (getNbMembres() == 5 ? ", ${m5.name}" : ""),
                       style: TextStyle(color: Colors.black, fontSize: 18)
                     ),
                   ],

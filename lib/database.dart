@@ -30,7 +30,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 47, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 49, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -60,12 +60,23 @@ CREATE TABLE IF NOT EXISTS $tableBrands (
   ${BrandsFields.id} $idType, 
   ${BrandsFields.name} $textType
   ); ''');
+  
   await db.execute('''
 CREATE TABLE IF NOT EXISTS $tableSuperstars ( 
   ${SuperstarsFields.id} $idType, 
-  ${SuperstarsFields.nom} $textType,
+  ${SuperstarsFields.name} $textType,
   ${SuperstarsFields.brand} $intType,
-  ${SuperstarsFields.orientation} $textType
+  ${SuperstarsFields.orientation} $textType,
+  ${SuperstarsFields.ally1} $intType DEFAULT 0,
+  ${SuperstarsFields.ally2} $intType DEFAULT 0,
+  ${SuperstarsFields.ally3} $intType DEFAULT 0,
+  ${SuperstarsFields.ally4} $intType DEFAULT 0,
+  ${SuperstarsFields.ally5} $intType DEFAULT 0,
+  ${SuperstarsFields.rival1} $intType DEFAULT 0,
+  ${SuperstarsFields.rival2} $intType DEFAULT 0,
+  ${SuperstarsFields.rival3} $intType DEFAULT 0,
+  ${SuperstarsFields.rival4} $intType DEFAULT 0,
+  ${SuperstarsFields.rival5} $intType DEFAULT 0
   ); ''');
 
     await db.execute('''
@@ -142,17 +153,24 @@ CREATE TABLE IF NOT EXISTS $tableTeams (
     final booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
    
-    await db.execute('''DROP TABLE IF EXISTS $tableStorylines;''');
+    await db.execute('''DROP TABLE IF EXISTS $tableSuperstars;''');
      await db.execute('''
-    CREATE TABLE IF NOT EXISTS $tableStorylines ( 
-      ${StorylinesFields.id} $idType, 
-      ${StorylinesFields.title} $textType,
-      ${StorylinesFields.text} $textType,
-      ${StorylinesFields.yearStart} $intTypeNN,
-      ${StorylinesFields.yearEnd} $intType,
-      ${StorylinesFields.start} $intTypeNN,
-      ${StorylinesFields.end} $intType
-      ); ''');
+CREATE TABLE IF NOT EXISTS $tableSuperstars ( 
+  ${SuperstarsFields.id} $idType, 
+  ${SuperstarsFields.name} $textType,
+  ${SuperstarsFields.brand} $intType,
+  ${SuperstarsFields.orientation} $textType,
+  ${SuperstarsFields.ally1} $intType DEFAULT 0,
+  ${SuperstarsFields.ally2} $intType DEFAULT 0,
+  ${SuperstarsFields.ally3} $intType DEFAULT 0,
+  ${SuperstarsFields.ally4} $intType DEFAULT 0,
+  ${SuperstarsFields.ally5} $intType DEFAULT 0,
+  ${SuperstarsFields.rival1} $intType DEFAULT 0,
+  ${SuperstarsFields.rival2} $intType DEFAULT 0,
+  ${SuperstarsFields.rival3} $intType DEFAULT 0,
+  ${SuperstarsFields.rival4} $intType DEFAULT 0,
+  ${SuperstarsFields.rival5} $intType DEFAULT 0
+  ); ''');
   }
   }
 
@@ -239,9 +257,7 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
   Future<List<UniverseSuperstars>> readAllSuperstars() async {
     final db = await instance.database;
-    final orderBy = '${SuperstarsFields.nom} ASC';
-    // final result =
-    //     await db.rawQuery('SELECT * FROM $tableIRLSuperstars ORDER BY $orderBy');
+    final orderBy = '${SuperstarsFields.name} ASC';
 
     final result = await db.query(tableSuperstars, orderBy: orderBy);
 
@@ -269,11 +285,6 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
   }
 
-  Future close() async {
-    final db = await instance.database;
-
-    db.close();
-  }
 
 // Storylines
   Future<UniverseStorylines> createStoryline(UniverseStorylines universeStorylines) async {

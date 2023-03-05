@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 
-UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+UniverseSuperstars defaultSup = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
 
 // bool disable(int tag){
 //  return tag == 0 ? true : false;
@@ -97,7 +97,7 @@ class UniverseTeamsFormWidget extends StatelessWidget {
         return DropdownMenuItem(
           // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
           value: m1.id,
-          child: Text(m1.nom));
+          child: Text(m1.name));
       }).toList(),
       ),);
 
@@ -116,7 +116,7 @@ Widget buildM2() =>
         return DropdownMenuItem(
           // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
           value: m2.id,
-          child: Text(m2.nom));
+          child: Text(m2.name));
       }).toList(),
       ),);
 
@@ -135,7 +135,7 @@ Widget buildM2() =>
         items: m1 != 0 && m2 != 0 ? listSuperstars!.map((m3){
         return DropdownMenuItem(
           value: m3.id,
-          child: Text(m3.nom));
+          child: Text(m3.name));
       }).toList() : null,
       ),);
 
@@ -155,7 +155,7 @@ Widget buildM2() =>
         return DropdownMenuItem(
           // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
           value: m4.id,
-          child: Text(m4.nom));
+          child: Text(m4.name));
       }).toList(),
       ),);
 
@@ -174,7 +174,7 @@ Widget buildM2() =>
         return DropdownMenuItem(
           // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
           value: m5.id,
-          child: Text(m5.nom));
+          child: Text(m5.name));
       }).toList(),
       ),);
 }

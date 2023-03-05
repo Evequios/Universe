@@ -5,7 +5,7 @@ import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 
 UniverseBrands defaultBrand = UniverseBrands(name: 'nom');
-UniverseSuperstars defaultSup = UniverseSuperstars(nom: 'nom', brand: 0, orientation: 'orientation', rival1: 0);
+UniverseSuperstars defaultSup = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
 List<bool> listTag = [false, true];
 
 bool disable(int tag){
@@ -134,7 +134,7 @@ class UniverseTitlesFormWidget extends StatelessWidget {
         return DropdownMenuItem(
           // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
           value: holder1.id,
-          child: Text(holder1.nom));
+          child: Text(holder1.name));
       }).toList(),
       ),);
 
@@ -154,7 +154,7 @@ class UniverseTitlesFormWidget extends StatelessWidget {
         items : disable(tag!) ? null : listSuperstars!.map((holder2){
         return DropdownMenuItem(
           value: holder2.id,
-          child: Text(holder2.nom));
+          child: Text(holder2.name));
       }).toList(),
       ),);
 }
