@@ -30,32 +30,32 @@ class _AddEditUniverseStipulationsPage extends State<AddEditUniverseStipulations
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          actions: [buildButton()],
-        ),
-        body: Form(
-          key: _formKey,
-          child: UniverseStipulationsFormWidget(
-            type: type,
-            stipulation: stipulation,
-            onChangedType: (type) => setState(() => this.type = type),
-            onChangedStipulation: (stipulation) => setState(() => this.stipulation = stipulation),
-          ),
-        ),
-      );
+    appBar: AppBar(
+      actions: [buildButton()],
+    ),
+    body: Form(
+      key: _formKey,
+      child: UniverseStipulationsFormWidget(
+        type: type,
+        stipulation: stipulation,
+        onChangedType: (type) => setState(() => this.type = type),
+        onChangedStipulation: (stipulation) => setState(() => this.stipulation = stipulation),
+      ),
+    ),
+  );
 
   Widget buildButton() {
     final isFormValid = type.isNotEmpty && stipulation.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, 
+          backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateUniverseStipulations,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -72,7 +72,7 @@ class _AddEditUniverseStipulationsPage extends State<AddEditUniverseStipulations
         await addUniverseStipulations();
       }
 
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
     }
   }
 

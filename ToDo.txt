@@ -6,7 +6,7 @@
 - Vérifier les standards
 - Historisation
 - Integrité des données
-
+- Regarder comment marchent les match handicap
 
 
 ---- Prochaine grande étape :
