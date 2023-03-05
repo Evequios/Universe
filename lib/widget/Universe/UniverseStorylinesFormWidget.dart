@@ -1,116 +1,152 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class UniverseStorylinesFormWidget extends StatelessWidget {
-  final String? titre;
-  final String? texte;
-  final String? debut;
-  final String? fin;
-  final ValueChanged<String> onChangedTitre;
-  final ValueChanged<String> onChangedTexte;
-  final ValueChanged<String> onChangedDebut;
-  final ValueChanged<String> onChangedFin;
+  final String? title;
+  final String? text;
+  final int? yearStart;
+  final int? yearEnd;
+  final int? start;
+  final int? end;
+  final ValueChanged<String?> onChangedTitle;
+  final ValueChanged<String?> onChangedText;
+  final ValueChanged<String?> onChangedYearStart;
+  final ValueChanged<String?> onChangedYearEnd;
+  final ValueChanged<String?> onChangedStart;
+  final ValueChanged<String?> onChangedEnd;
 
   const UniverseStorylinesFormWidget({
     Key? key,
-    this.titre = '',
-    this.texte = '',
-    this.debut = '',
-    this.fin = '',
-    required this.onChangedTitre,
-    required this.onChangedTexte,
-    required this.onChangedDebut,
-    required this.onChangedFin,
+    this.title = '',
+    this.text = '',
+    this.yearStart,
+    this.yearEnd,
+    this.start,
+    this.end,
+    required this.onChangedTitle,
+    required this.onChangedText,
+    required this.onChangedYearStart,
+    required this.onChangedYearEnd,
+    required this.onChangedStart,
+    required this.onChangedEnd,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              buildTitre(),
-              SizedBox(height: 8),
-              buildTexte(),
-              SizedBox(height: 16),
-              buildDebut(),
-              SizedBox(height: 8),
-              buildFin(),
-              SizedBox(height: 8),
-            ],
-          ),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildTitle(),
+          const SizedBox(height: 8),
+          buildText(),
+          const SizedBox(height: 16),
+          buildYearStart(),
+          const SizedBox(height: 16),
+          buildYearEnd(),
+          const SizedBox(height: 16),
+          buildStart(),
+          const SizedBox(height: 8),
+          buildEnd(),
+          const SizedBox(height: 8),
+        ],
+      ),
+    ),
+  );
 
-  Widget buildTitre() => TextFormField(
-        // maxLines: 1,
-        initialValue: titre,
-        style: const TextStyle(
-          // color: Colors.white70,
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Titre',
-          // hintStyle: TextStyle(color: Colors.white70),
-        ),
-        validator: (titre) =>
-            titre != null && titre.isEmpty ? 'Le titre ne peut pas être vide' : null,
-        onChanged: onChangedTitre,
-      );
+  Widget buildTitle() => TextFormField(
+    initialValue: title,
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 24,
+    ),
+    decoration: const InputDecoration(
+      border: InputBorder.none,
+      hintText: 'Title',
+    ),
+    validator: (title) =>
+        title != null && title.isEmpty ? "The title can't be empty" : null,
+    onChanged: onChangedTitle,
+  );
 
-  Widget buildTexte() => TextFormField(
-        // maxLines: 5,
-        initialValue: texte,
-        style: const TextStyle(color: Colors.black, fontSize: 18),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Texte',
-          hintStyle: TextStyle(color: Colors.black),
-        ),
-        validator: (texte) => texte != null && texte.isEmpty
-            ? 'Le texte ne peut pas être vide'
-            : null,
-        onChanged: onChangedTexte,
-      );
+  Widget buildText() => TextFormField(
+    initialValue: text,
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18
+    ),
+    decoration: const InputDecoration(
+      border: InputBorder.none,
+      hintText: 'Text',
+    ),
+    validator: (texte) => texte != null && texte.isEmpty
+        ? "The text can't be empty"
+        : null,
+    onChanged: onChangedText,
+  );
 
+  Widget buildYearStart() => TextFormField(
+    keyboardType: TextInputType.number,
+    initialValue: yearStart.toString(),
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18
+    ),
+    decoration: const InputDecoration(
+      labelText: 'Starting year : ',
+      labelStyle: TextStyle(decoration: TextDecoration.underline),
+      border: InputBorder.none,
+      hintText: 'Starting year',
+    ),
+    validator: (yearStart) =>
+        yearStart != null && yearStart.isEmpty ? "The starting year can't be empty" : null,
+    onChanged: onChangedYearStart,
+  );
 
+  Widget buildYearEnd() => TextFormField(
+    initialValue: yearEnd.toString(),
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18
+    ),
+    decoration: const InputDecoration(
+      labelText: 'Ending year : ',
+      labelStyle: TextStyle(decoration: TextDecoration.underline),
+      border: InputBorder.none,
+      hintText: 'Ending year',
+    ),
+    onChanged: onChangedYearEnd,
+  );
 
-    Widget buildDebut() => TextFormField(
-        // maxLines: 1,
-        initialValue: debut,
-        style: const TextStyle(
-          // color: Colors.white70,
-          fontWeight: FontWeight.bold,
-          fontSize: 18
-        ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Numéro de la semaine de début',
-          // hintStyle: TextStyle(color: Colors.white70),
-        ),
-        validator: (debut) =>
-            debut != null && debut.isEmpty ? 'La semaine de début ne peut pas être vide' : null,
-        onChanged: onChangedDebut,
-      );
+  Widget buildStart() => TextFormField(
+    initialValue: start.toString(),
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18
+    ),
+    decoration: const InputDecoration(
+      labelText: 'Starting week : ',
+      labelStyle: TextStyle(decoration: TextDecoration.underline),
+      border: InputBorder.none,
+      hintText: 'Starting week',
+    ),
+    validator: (debut) =>
+        debut != null && debut.isEmpty ? "The starting week can't be empty" : null,
+    onChanged: onChangedStart,
+  );
 
-      Widget buildFin() => TextFormField(
-        // maxLines: 1,
-        initialValue: fin,
-        style: const TextStyle(
-          // color: Colors.white70,
-          fontWeight: FontWeight.bold,
-          fontSize: 18
-        ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Numéro de la semaine de fin',
-          // hintStyle: TextStyle(color: Colors.white70),
-        ),
-        // validator: (fin) =>
-        //     fin != null && fin.isEmpty ? 'La semaine de fin ne peut pas être vide' : null,
-        onChanged: onChangedFin,
-      );
+  Widget buildEnd() => TextFormField(
+    initialValue: end.toString(),
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18
+    ),
+    decoration: const InputDecoration(
+      labelText: 'Ending week : ',
+      labelStyle: TextStyle(decoration: TextDecoration.underline),
+      border: InputBorder.none,
+      hintText: 'Ending week',
+    ),
+    onChanged: onChangedEnd,
+  );
 }

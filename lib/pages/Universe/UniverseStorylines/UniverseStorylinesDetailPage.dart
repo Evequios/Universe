@@ -1,11 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStorylines.dart';
-import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/database.dart';
-import 'package:wwe_universe/pages/Universe/UniverseNews/AddEditUniverseNewsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseStorylines/AddEditUniverseStorylinesPage.dart';
-// import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class UniverseStorylinesDetailPage extends StatefulWidget {
   final int storylineId;
@@ -33,61 +29,60 @@ class _UniverseStorylinesDetailPage extends State<UniverseStorylinesDetailPage> 
   Future refreshStorylines() async {
     setState(() => isLoading = true);
 
-    this.storyline = await UniverseDatabase.instance.readStoryline(widget.storylineId);
+    storyline = await UniverseDatabase.instance.readStoryline(widget.storylineId);
 
     setState(() => isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          actions: [editButton(), deleteButton()],
-        ),
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: EdgeInsets.all(12),
-                child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  children: [
-                    Text(
-                      storyline.titre,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    SizedBox(height: 8),
-                    Text(
-                      storyline.texte,
-                      style: TextStyle(color: Colors.black, fontSize: 18),
-                    )
-                  ],
+    appBar: AppBar(
+      actions: [editButton(), deleteButton()],
+    ),
+    body: isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Padding(
+            padding: const EdgeInsets.all(12),
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              children: [
+                Text(
+                  storyline.title,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-      );
+                const SizedBox(height: 8),
+                const SizedBox(height: 8),
+                Text(
+                  storyline.text,
+                  style: const TextStyle(color: Colors.black, fontSize: 18),
+                )
+              ],
+            ),
+          ),
+  );
 
   Widget editButton() => IconButton(
-      icon: Icon(Icons.edit_outlined),
-      onPressed: () async {
-        // if (isLoading) return;
+    icon: const Icon(Icons.edit_outlined),
+    onPressed: () async {
+      await Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => AddEditUniverseStorylinesPage(storyline : storyline),
+      ));
 
-        await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddEditUniverseStorylinesPage(storyline : storyline),
-        ));
-
-        refreshStorylines();
-      });
+      refreshStorylines();
+    }
+  );
 
   Widget deleteButton() => IconButton(
-        icon: Icon(Icons.delete),
-        onPressed: () async {
-          await UniverseDatabase.instance.deleteStoryline(widget.storylineId);
-          
-          Navigator.of(context).pop();
-        },
+    icon: const Icon(Icons.delete),
+    onPressed: () async {
+      await UniverseDatabase.instance.deleteStoryline(widget.storylineId);
+      
+      if(context.mounted) Navigator.of(context).pop();
+    },
   );
 }
 

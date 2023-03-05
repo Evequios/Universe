@@ -30,7 +30,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 45, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 47, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -71,10 +71,12 @@ CREATE TABLE IF NOT EXISTS $tableSuperstars (
     await db.execute('''
     CREATE TABLE IF NOT EXISTS $tableStorylines ( 
       ${StorylinesFields.id} $idType, 
-      ${StorylinesFields.titre} $textType,
-      ${StorylinesFields.texte} $textType,
-      ${StorylinesFields.debut} $textType,
-      ${StorylinesFields.fin} $textType
+      ${StorylinesFields.title} $textType,
+      ${StorylinesFields.text} $textType,
+      ${StorylinesFields.yearStart} $intTypeNN,
+      ${StorylinesFields.yearEnd} $intTypeNN,
+      ${StorylinesFields.start} $intTypeNN,
+      ${StorylinesFields.end} $intTypeNN
       ); ''');
 
       await db.execute('''
@@ -140,15 +142,17 @@ CREATE TABLE IF NOT EXISTS $tableTeams (
     final booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
    
-    await db.execute('''DROP TABLE IF EXISTS $tableNews;''');
-    await db.execute('''
-CREATE TABLE IF NOT EXISTS $tableNews ( 
-  ${NewsFields.id} $idType, 
-  ${NewsFields.title} $textType,
-  ${NewsFields.text} $textType,
-  ${NewsFields.createdTime} $textType,
-  ${NewsFields.type} $textType DEFAULT 'Other'
-  ); ''');
+    await db.execute('''DROP TABLE IF EXISTS $tableStorylines;''');
+     await db.execute('''
+    CREATE TABLE IF NOT EXISTS $tableStorylines ( 
+      ${StorylinesFields.id} $idType, 
+      ${StorylinesFields.title} $textType,
+      ${StorylinesFields.text} $textType,
+      ${StorylinesFields.yearStart} $intTypeNN,
+      ${StorylinesFields.yearEnd} $intType,
+      ${StorylinesFields.start} $intTypeNN,
+      ${StorylinesFields.end} $intType
+      ); ''');
   }
   }
 
@@ -304,14 +308,14 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     return result.map((json) => UniverseStorylines.fromJson(json)).toList();
   }
 
-  Future<int> updateStoryline(UniverseStorylines universeStoryline) async {
+  Future<int> updateStoryline(UniverseStorylines storyline) async {
     final db = await instance.database;
 
     return db.update(
       tableStorylines,
-      universeStoryline.toJson(),
+      storyline.toJson(),
       where: '${StorylinesFields.id} = ?',
-      whereArgs: [StorylinesFields.id],
+      whereArgs: [storyline.id],
     );
   }
 

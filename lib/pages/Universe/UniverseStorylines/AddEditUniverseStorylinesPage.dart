@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStorylines.dart';
 import 'package:wwe_universe/database.dart';
@@ -17,53 +16,60 @@ class AddEditUniverseStorylinesPage extends StatefulWidget {
 
 class _AddEditUniverseStorylinesPage extends State<AddEditUniverseStorylinesPage> {
   final _formKey = GlobalKey<FormState>();
-  late String titre;
-  late String texte;
-  late String debut;
-  late String fin;
+  late String title;
+  late String text;
+  late int yearStart;
+  late int yearEnd;
+  late int start;
+  late int end;
 
   @override
   void initState() {
     super.initState();
 
-    titre = widget.storyline?.titre ?? '';
-    texte = widget.storyline?.texte ?? '';
-    debut = widget.storyline?.debut?? '';
-    fin = widget.storyline?.fin ?? '';
+    title = widget.storyline?.title ?? '';
+    text = widget.storyline?.text ?? '';
+    yearStart = widget.storyline?.yearStart ?? 0;
+    yearEnd = widget.storyline?.yearEnd ?? 0;
+    start = widget.storyline?.start?? 0;
+    end = widget.storyline?.end ?? 0;
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          actions: [buildButton()],
-        ),
-        body: Form(
-          key: _formKey,
-          child: UniverseStorylinesFormWidget(
-            titre: titre,
-            texte: texte,
-            debut : debut,
-            fin : fin,
-            onChangedTitre: (titre) => setState(() => this.titre = titre),
-            onChangedTexte: (texte) => setState(() => this.texte = texte),
-            onChangedDebut: (debut) => setState(() => this.debut = debut),
-            onChangedFin: (fin) => setState(() => this.fin = fin),
-          ),
-        ),
-      );
+    appBar: AppBar(
+      actions: [buildButton()],
+    ),
+    body: Form(
+      key: _formKey,
+      child: UniverseStorylinesFormWidget(
+        title: title,
+        text: text,
+        yearStart : yearStart,
+        yearEnd : yearEnd,
+        start : start,
+        end : end,
+        onChangedTitle: (title) => setState(() => this.title = title!),
+        onChangedText: (text) => setState(() => this.text = text!),
+        onChangedYearStart: (yearStart) => setState(() => this.yearStart = int.parse(yearStart!)),
+        onChangedYearEnd: (yearEnd) => setState(() => this.yearEnd = int.parse(yearEnd!)),
+        onChangedStart: (start) => setState(() => this.start = int.parse(start!)),
+        onChangedEnd: (end) => setState(() => this.end = int.parse(end!)),
+      ),
+    ),
+  );
 
   Widget buildButton() {
-    final isFormValid = titre.isNotEmpty && texte.isNotEmpty;
+    final isFormValid = title.isNotEmpty && text.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateUniverseStorylines,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -80,17 +86,19 @@ class _AddEditUniverseStorylinesPage extends State<AddEditUniverseStorylinesPage
         await addUniverseStorylines();
       }
     
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
 
     }
   }
 
   Future updateUniverseStorylines() async {
     final storyline = widget.storyline!.copy(
-      titre: titre,
-      texte: texte,
-      debut: debut,
-      fin: fin
+      title: title,
+      text: text,
+      yearStart : yearStart,
+      yearEnd: yearEnd,
+      start: start,
+      end: end
     );
 
     await UniverseDatabase.instance.updateStoryline(storyline);
@@ -98,10 +106,12 @@ class _AddEditUniverseStorylinesPage extends State<AddEditUniverseStorylinesPage
 
   Future addUniverseStorylines() async {
     final storyline = UniverseStorylines(
-      titre: titre,
-      texte: texte, 
-      debut: debut, 
-      fin: fin
+      title: title,
+      text: text, 
+      yearStart: yearStart,
+      yearEnd: yearEnd,
+      start: start, 
+      end: end
     );
 
     await UniverseDatabase.instance.createStoryline(storyline);

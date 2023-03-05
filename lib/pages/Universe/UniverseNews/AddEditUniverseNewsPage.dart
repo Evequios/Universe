@@ -16,17 +16,17 @@ class AddEditUniverseNewsPage extends StatefulWidget {
 
 class _AddEditUniverseNewsPage extends State<AddEditUniverseNewsPage> {
   final _formKey = GlobalKey<FormState>();
-  late String titre;
-  late String texte;
-  late String categorie;
+  late String title;
+  late String text;
+  late String type;
 
   @override
   void initState() {
     super.initState();
 
-    titre = widget.news?.title ?? '';
-    texte = widget.news?.text ?? '';
-    categorie = widget.news?.type ?? '';
+    title = widget.news?.title ?? '';
+    text = widget.news?.text ?? '';
+    type = widget.news?.type ?? '';
   }
 
   @override
@@ -37,18 +37,18 @@ class _AddEditUniverseNewsPage extends State<AddEditUniverseNewsPage> {
     body: Form(
       key: _formKey,
       child: UniverseNewsFormWidget(
-        titre: titre,
-        texte: texte,
-        categorie: categorie,
-        onChangedTitre: (titre) => setState(() => this.titre = titre),
-        onChangedTexte: (texte) => setState(() => this.texte = texte),
-        onChangedCategorie: (categorie) => setState(() => this.categorie = categorie.toString()),
+        title: title,
+        text: text,
+        type: type,
+        onChangedTitle: (title) => setState(() => this.title = title),
+        onChangedText: (text) => setState(() => this.text = text),
+        onChangedType: (type) => setState(() => this.type = type!),
       ),
     ),
   );
 
   Widget buildButton() {
-    final isFormValid = titre.isNotEmpty && texte.isNotEmpty;
+    final isFormValid = title.isNotEmpty && text.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -81,9 +81,9 @@ class _AddEditUniverseNewsPage extends State<AddEditUniverseNewsPage> {
 
   Future updateUniverseNews() async {
     final news = widget.news!.copy(
-      title: titre,
-      text: texte,
-      type: categorie != '' ? categorie : "Annonce",
+      title: title,
+      text: text,
+      type: type != '' ? type : "Annonce",
     );
 
     await UniverseDatabase.instance.updateNews(news);
@@ -91,10 +91,10 @@ class _AddEditUniverseNewsPage extends State<AddEditUniverseNewsPage> {
 
   Future addUniverseNews() async {
     final news = UniverseNews(
-      title: titre,
-      text: texte,
+      title: title,
+      text: text,
       createdTime: DateTime.now(),
-      type: categorie != '' ? categorie : "Annonce" 
+      type: type != '' ? type : "Annonce" 
     );
 
     await UniverseDatabase.instance.createNews(news);

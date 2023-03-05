@@ -4,22 +4,22 @@ import 'package:flutter/material.dart';
 const List<String> listCategories = <String>['Annonce', 'Blessure', 'Retour', 'Autre'];
 
 class UniverseNewsFormWidget extends StatelessWidget {
-  final String? titre;
-  final String? texte;
-  final String? categorie;
-  final ValueChanged<String> onChangedTitre;
-  final ValueChanged<String> onChangedTexte;
-  final ValueChanged<String?> onChangedCategorie;
+  final String? title;
+  final String? text;
+  final String? type;
+  final ValueChanged<String> onChangedTitle;
+  final ValueChanged<String> onChangedText;
+  final ValueChanged<String?> onChangedType;
 
 
   const UniverseNewsFormWidget({
     Key? key,
-    this.titre = '',
-    this.texte = '',
-    this.categorie = '',
-    required this.onChangedTitre,
-    required this.onChangedTexte,
-    required this.onChangedCategorie
+    this.title = '',
+    this.text = '',
+    this.type = '',
+    required this.onChangedTitle,
+    required this.onChangedText,
+    required this.onChangedType
   }) : super(key: key);
 
   @override
@@ -41,7 +41,7 @@ class UniverseNewsFormWidget extends StatelessWidget {
 
   Widget buildTitre() => TextFormField(
         // maxLines: 1,
-        initialValue: titre,
+        initialValue: title,
         style: const TextStyle(
           // color: Colors.white70,
           fontWeight: FontWeight.bold,
@@ -54,12 +54,12 @@ class UniverseNewsFormWidget extends StatelessWidget {
         ),
         validator: (titre) =>
             titre != null && titre.isEmpty ? 'Le titre ne peut pas être vide' : null,
-        onChanged: onChangedTitre,
+        onChanged: onChangedTitle,
       );
 
   Widget buildTexte() => TextFormField(
         maxLines: 5,
-        initialValue: texte,
+        initialValue: text,
         style: const TextStyle(color: Colors.black, fontSize: 18),
         decoration: const InputDecoration(
           border: InputBorder.none,
@@ -69,14 +69,14 @@ class UniverseNewsFormWidget extends StatelessWidget {
         validator: (texte) => texte != null && texte.isEmpty
             ? 'Le texte ne peut pas être vide'
             : null,
-        onChanged: onChangedTexte,
+        onChanged: onChangedText,
       );
 
 
 
     Widget buildCategorie() => Container(alignment: Alignment.bottomLeft,child: DropdownButton(
-      value: categorie != '' && categorie != null ? categorie : listCategories[0],
-      onChanged : onChangedCategorie, 
+      value: type != '' && type != null ? type : listCategories[0],
+      onChanged : onChangedType, 
       items: listCategories.map((categorie){
         return DropdownMenuItem<String>(
           value: categorie != '' && categorie != null ? categorie : listCategories[0],
