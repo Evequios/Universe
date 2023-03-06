@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
@@ -11,12 +10,14 @@ import 'package:wwe_universe/pages/Universe/UniverseTitles/UniverseTitlesDetailP
 
 
 class UniverseTitlesPage extends StatefulWidget{
+  const UniverseTitlesPage({super.key});
+
   @override
   _UniverseTitlesPageState createState() => _UniverseTitlesPageState();
 }
 
 class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
-  UniverseBrands defaultBrand = UniverseBrands(name: 'nom');
+  UniverseBrands defaultBrand = const UniverseBrands(name: 'nom');
   late List<UniverseTitles> titlesList;
   late List<UniverseSuperstars> superstarsList;
   late List<UniverseBrands> brandsList;
@@ -32,9 +33,9 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
   Future refreshTitles() async {
     setState(() => isLoading = true);
 
-    this.titlesList = await UniverseDatabase.instance.readAllTitles();
-    this.superstarsList = await UniverseDatabase.instance.readAllSuperstars();
-    this.brandsList = await UniverseDatabase.instance.readAllBrands();
+    titlesList = await UniverseDatabase.instance.readAllTitles();
+    superstarsList = await UniverseDatabase.instance.readAllSuperstars();
+    brandsList = await UniverseDatabase.instance.readAllBrands();
 
     setState(() => isLoading = false);
   }
@@ -70,7 +71,7 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
   );
 
   Widget buildUniverseTitles() => ListView.builder(
-    padding : EdgeInsets.all(8),
+    padding : const EdgeInsets.all(8),
     itemCount: titlesList.length,
     itemBuilder: (context, index){
       final title = titlesList[index];
@@ -81,17 +82,16 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
       return GestureDetector( 
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => UniverseTitlesDetailPage(titleId: title.id!, brandId: title.brand, h1Id: title.holder1, h2Id: title.holder2,),
+            builder: (context) => UniverseTitlesDetailPage(titleId: title.id!),
           )).then((value) => refreshTitles());
         },
-        child :Container(
+        child :SizedBox(
           height: 100,
           child : Card(
             shape:RoundedRectangleBorder(
-              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)
             ),
-              // margin: EdgeInsets.all(12),
             elevation: 2,
             child: Padding(    
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
@@ -101,16 +101,17 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
                     flex: 10,
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
-                      child: Text('${title.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      alignment: Alignment.centerLeft, 
+                      alignment: Alignment.centerLeft,
+                      child: Text(title.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
                     )
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Container(child : ((){ if(brand.name == 'Raw' || brand.name == 'SmackDown') return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));}())),
-                ]),
-              )
+                ]
+              ),
             )
           )
+        )
       );
     }
   );

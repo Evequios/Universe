@@ -30,7 +30,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 49, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 50, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS $tableSuperstars (
   await db.execute('''
 CREATE TABLE IF NOT EXISTS $tableTitles ( 
   ${TitlesFields.id} $idType, 
-  ${TitlesFields.nom} $textType,
+  ${TitlesFields.name} $textType,
   ${TitlesFields.brand} $intType,
   ${TitlesFields.tag} $booleanTypeNN,
   ${TitlesFields.holder1} $intType,
@@ -153,23 +153,15 @@ CREATE TABLE IF NOT EXISTS $tableTeams (
     final booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
    
-    await db.execute('''DROP TABLE IF EXISTS $tableSuperstars;''');
-     await db.execute('''
-CREATE TABLE IF NOT EXISTS $tableSuperstars ( 
-  ${SuperstarsFields.id} $idType, 
-  ${SuperstarsFields.name} $textType,
-  ${SuperstarsFields.brand} $intType,
-  ${SuperstarsFields.orientation} $textType,
-  ${SuperstarsFields.ally1} $intType DEFAULT 0,
-  ${SuperstarsFields.ally2} $intType DEFAULT 0,
-  ${SuperstarsFields.ally3} $intType DEFAULT 0,
-  ${SuperstarsFields.ally4} $intType DEFAULT 0,
-  ${SuperstarsFields.ally5} $intType DEFAULT 0,
-  ${SuperstarsFields.rival1} $intType DEFAULT 0,
-  ${SuperstarsFields.rival2} $intType DEFAULT 0,
-  ${SuperstarsFields.rival3} $intType DEFAULT 0,
-  ${SuperstarsFields.rival4} $intType DEFAULT 0,
-  ${SuperstarsFields.rival5} $intType DEFAULT 0
+    await db.execute('''DROP TABLE IF EXISTS $tableTitles;''');
+    await db.execute('''
+CREATE TABLE IF NOT EXISTS $tableTitles ( 
+  ${TitlesFields.id} $idType, 
+  ${TitlesFields.name} $textType,
+  ${TitlesFields.brand} $intType,
+  ${TitlesFields.tag} $booleanTypeNN,
+  ${TitlesFields.holder1} $intType,
+  ${TitlesFields.holder2} $intType
   ); ''');
   }
   }

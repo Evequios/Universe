@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
@@ -25,7 +24,7 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
   final _formKey = GlobalKey<FormState>();
   late List<UniverseSuperstars> listSuperstars = [];
   late List<UniverseBrands> listBrands = [];
-  late String nom;
+  late String name;
   late int brand;
   late int tag;
   late int holder1;
@@ -35,7 +34,7 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
   void initState() {
     super.initState();
 
-    nom = widget.title?.nom ?? '';
+    name = widget.title?.name ?? '';
     brand = widget.title?.brand ?? 0;
     tag = widget.title?.tag ?? 0;
     holder1 = widget.title?.holder1 ?? 0;
@@ -54,12 +53,12 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
           child: UniverseTitlesFormWidget(
             listSuperstars: listSuperstars,
             listBrands: listBrands,
-            nom: nom,
+            name: name,
             brand: brand,
             tag: tag,
             holder1 : holder1,
             holder2 : holder2,
-            onChangedNom: (nom) => setState(() => this.nom = nom!),
+            onChangedName: (name) => setState(() => this.name = name!),
             onChangedBrand: (brand) => setState(() => this.brand = brand!),
             onChangedTag: (tag) => setState(() => this.tag = tag!),
             onChangedHolder1: (holder1) => setState(() => this.holder1 = holder1!),
@@ -69,17 +68,17 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
       );
 
   Widget buildButton() {
-    final isFormValid = nom.isNotEmpty;
+    final isFormValid = name.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, 
+          backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateUniverseTitles,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -96,13 +95,13 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
         await addUniverseTitles();
       }
 
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
     }
   }
 
   Future updateUniverseTitles() async {
     final title = widget.title!.copy(
-      nom: nom,
+      name: name,
       brand: brand,
       tag: tag,
       holder1: holder1,
@@ -114,7 +113,7 @@ class _AddEditUniverseTitlesPage extends State<AddEditUniverseTitlesPage> {
 
   Future addUniverseTitles() async {
     final title = UniverseTitles(
-      nom: nom,
+      name: name,
       brand: brand,
       tag: tag,
       holder1: holder1,
