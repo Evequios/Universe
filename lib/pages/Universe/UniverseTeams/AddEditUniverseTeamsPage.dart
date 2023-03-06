@@ -1,12 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
-import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/classes/Universe/UniverseTeams.dart';
 import 'package:wwe_universe/database.dart';
-import 'package:wwe_universe/widget/Universe/UniverseNewsFormWidget.dart';
-import 'package:wwe_universe/widget/Universe/UniverseSuperstarsFormWidget.dart';
 import 'package:wwe_universe/widget/Universe/UniverseTeamsFormWidget.dart';
 
 class AddEditUniverseTeamsPage extends StatefulWidget {
@@ -74,14 +69,14 @@ class _AddEditUniverseTeamsPage extends State<AddEditUniverseTeamsPage> {
     final isFormValid = nom.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, 
+          backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateUniverseTeams,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -98,7 +93,7 @@ class _AddEditUniverseTeamsPage extends State<AddEditUniverseTeamsPage> {
         await addUniverseTeams();
       }
 
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
 
     }
   }

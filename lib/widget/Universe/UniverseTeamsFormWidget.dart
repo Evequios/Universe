@@ -1,14 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 
-UniverseSuperstars defaultSup = UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
-
-// bool disable(int tag){
-//  return tag == 0 ? true : false;
-// }
+UniverseSuperstars defaultSup = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
 
 class UniverseTeamsFormWidget extends StatelessWidget {
   final List<UniverseSuperstars>? listSuperstars;
@@ -44,92 +37,92 @@ class UniverseTeamsFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              buildNom(),
-              SizedBox(height: 8),
-              buildM1(),
-              SizedBox(height: 8),
-              buildM2(),
-              SizedBox(height: 8),
-              buildM3(),
-              SizedBox(height: 8),
-              buildM4(),
-              SizedBox(height: 8),
-              buildM5(),
-              SizedBox(height: 8),
-            ],
-          ),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildNom(),
+          const SizedBox(height: 8),
+          buildM1(),
+          const SizedBox(height: 8),
+          buildM2(),
+          const SizedBox(height: 8),
+          buildM3(),
+          const SizedBox(height: 8),
+          buildM4(),
+          const SizedBox(height: 8),
+          buildM5(),
+          const SizedBox(height: 8),
+        ],
+      ),
+    ),
+  );
 
   Widget buildNom() => TextFormField(
-        initialValue: nom,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        ),
+    initialValue: nom,
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 24,
+    ),
+    decoration: const InputDecoration(
+      border: InputBorder.none,
+      hintText: 'Name',
+    ),
+    validator: (nom) =>
+        nom != null && nom.isEmpty ? "The name can't be empty" : null,
+    onChanged: onChangedNom,
+  );
+
+
+  Widget buildM1() => 
+  ButtonTheme( 
+    alignedDropdown: true, 
+    child: DropdownButtonFormField(
+      decoration: const InputDecoration(
+      labelText: 'Member 1 : ',
+      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+    ),
+      hint : const Text("Member 1"),
+      value: m1 != 0 ? m1 : defaultSup.id,
+      onChanged: onChangedM1,
+      items: listSuperstars!.map((m1){
+      return DropdownMenuItem(
+        value: m1.id,
+        child: Text(m1.name));
+    }).toList(),
+    ),
+  );
+
+  Widget buildM2() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
         decoration: const InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Name',
-        ),
-        validator: (nom) =>
-            nom != null && nom.isEmpty ? "The name can't be empty" : null,
-        onChanged: onChangedNom,
-      );
-
-
-    Widget buildM1() => 
-    ButtonTheme( 
-      alignedDropdown: true, 
-      child: DropdownButtonFormField(
-        decoration: InputDecoration(
-        labelText: 'Member 1 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
-      ),
-        hint : Text("Member 1"),
-        value: m1 != 0 ? m1 : defaultSup.id,
-        onChanged: onChangedM1,
-        items: listSuperstars!.map((m1){
-        return DropdownMenuItem(
-          // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
-          value: m1.id,
-          child: Text(m1.name));
-      }).toList(),
-      ),);
-
-Widget buildM2() => 
-    ButtonTheme( 
-      alignedDropdown: true, 
-      child: DropdownButtonFormField(
-        decoration: InputDecoration(
         labelText: 'Member 2 : ',
         labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
-        hint : Text("Member 2"),
+        hint : const Text("Member 2"),
         value: m2 != 0 ? m2 : defaultSup.id,
         onChanged: onChangedM2,
         items: listSuperstars!.map((m2){
         return DropdownMenuItem(
-          // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
           value: m2.id,
           child: Text(m2.name));
       }).toList(),
-      ),);
+      ),
+    );
 
 
     Widget buildM3() => 
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
         labelText: 'Member 3 : ',
         labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
-        hint : Text("Member 3"),
+        hint : const Text("Member 3"),
         value: m3 != 0 ? m3 : defaultSup.id,
         onChanged: onChangedM3,
         items: m1 != 0 && m2 != 0 ? listSuperstars!.map((m3){
@@ -137,44 +130,45 @@ Widget buildM2() =>
           value: m3.id,
           child: Text(m3.name));
       }).toList() : null,
-      ),);
-
-
-    Widget buildM4() => 
-    ButtonTheme( 
-      alignedDropdown: true, 
-      child: DropdownButtonFormField(
-        decoration: InputDecoration(
-        labelText: 'Member 4 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
-        hint : Text("Member 4"),
-        value: m4 != 0 ? m4 : defaultSup.id,
-        onChanged: onChangedM4,
-        items: m3 == 0 ? null : listSuperstars!.map((m4){
-        return DropdownMenuItem(
-          // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
-          value: m4.id,
-          child: Text(m4.name));
-      }).toList(),
-      ),);
+    );
 
-    Widget buildM5() => 
-    ButtonTheme( 
-      alignedDropdown: true, 
-      child: DropdownButtonFormField(
-        decoration: InputDecoration(
-        labelText: 'Member 5 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
-      ),
-        hint : Text("Member 5"),
-        value: m5 != 0 ? m5 : defaultSup.id,
-        onChanged: onChangedM5,
-        items: m4 == 0 ? null : listSuperstars!.map((m5){
-        return DropdownMenuItem(
-          // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
-          value: m5.id,
-          child: Text(m5.name));
-      }).toList(),
-      ),);
+
+  Widget buildM4() => 
+  ButtonTheme( 
+    alignedDropdown: true, 
+    child: DropdownButtonFormField(
+      decoration: const InputDecoration(
+      labelText: 'Member 4 : ',
+      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+    ),
+      hint : const Text("Member 4"),
+      value: m4 != 0 ? m4 : defaultSup.id,
+      onChanged: onChangedM4,
+      items: m3 == 0 ? null : listSuperstars!.map((m4){
+      return DropdownMenuItem(
+        value: m4.id,
+        child: Text(m4.name));
+    }).toList(),
+    ),
+  );
+
+  Widget buildM5() => 
+  ButtonTheme( 
+    alignedDropdown: true, 
+    child: DropdownButtonFormField(
+      decoration: const InputDecoration(
+      labelText: 'Member 5 : ',
+      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+    ),
+      hint : const Text("Member 5"),
+      value: m5 != 0 ? m5 : defaultSup.id,
+      onChanged: onChangedM5,
+      items: m4 == 0 ? null : listSuperstars!.map((m5){
+      return DropdownMenuItem(
+        value: m5.id,
+        child: Text(m5.name));
+    }).toList(),
+    ),
+  );
 }
