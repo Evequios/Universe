@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 
 class UniverseShowsFormWidget extends StatelessWidget {
-  final String? nom;
-  final int? annee;
-  final int? semaine;
-  final String? resume;
-  final ValueChanged<String> onChangedNom;
-  final ValueChanged<String> onChangedAnnee;
-  final ValueChanged<String> onChangedSemaine;
-  final ValueChanged<String> onChangedResume;
+  final String? name;
+  final int? year;
+  final int? week;
+  final String? summary;
+  final ValueChanged<String> onChangedName;
+  final ValueChanged<String> onChangedYear;
+  final ValueChanged<String> onChangedWeek;
+  final ValueChanged<String> onChangedSummary;
 
 
   const UniverseShowsFormWidget({
     Key? key,
-    this.nom = '',
-    this.annee,
-    this.semaine,
-    this.resume = '',
-    required this.onChangedNom,
-    required this.onChangedAnnee,
-    required this.onChangedSemaine,
-    required this.onChangedResume,
+    this.name = '',
+    this.year,
+    this.week,
+    this.summary = '',
+    required this.onChangedName,
+    required this.onChangedYear,
+    required this.onChangedWeek,
+    required this.onChangedSummary,
   }) : super(key: key);
 
   @override
@@ -43,7 +43,7 @@ class UniverseShowsFormWidget extends StatelessWidget {
   );
 
   Widget buildNom() => TextFormField(
-    initialValue: nom,
+    initialValue: name,
     style: const TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 24,
@@ -54,12 +54,12 @@ class UniverseShowsFormWidget extends StatelessWidget {
     ),
     validator: (nom) =>
       nom != null && nom.isEmpty ? 'Le nom du show ne peut pas être vide' : null,
-    onChanged: onChangedNom,
+    onChanged: onChangedName,
   );
 
 
   Widget buildAnnee() => TextFormField(
-    initialValue: annee.toString(),
+    initialValue: year.toString(),
     style: const TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 24,
@@ -70,11 +70,11 @@ class UniverseShowsFormWidget extends StatelessWidget {
     ),
     validator: (date) =>
       date != null && date.isEmpty ? 'La date du show ne peut pas être vide' : null,
-    onChanged: onChangedAnnee,
+    onChanged: onChangedYear,
   );
 
   Widget buildSemaine() => TextFormField(
-    initialValue: annee.toString(),
+    initialValue: year.toString(),
     style: const TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 24,
@@ -85,12 +85,12 @@ class UniverseShowsFormWidget extends StatelessWidget {
     ),
     validator: (date) =>
       date != null && date.isEmpty ? 'La date du show ne peut pas être vide' : null,
-    onChanged: onChangedSemaine,
+    onChanged: onChangedWeek,
   );
   
   Widget buildResume() => TextFormField(
     maxLines : null,
-    initialValue: resume,
+    initialValue: summary,
     style : const TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 24,
@@ -99,6 +99,6 @@ class UniverseShowsFormWidget extends StatelessWidget {
       border: InputBorder.none,
       hintText: 'Résumé du show',
     ),
-    onChanged: onChangedResume,
+    onChanged: onChangedSummary,
   );
 }

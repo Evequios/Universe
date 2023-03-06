@@ -48,7 +48,7 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('Matchs',),
+      title: const Text('Matches',),
       actions: [editButton(), deleteButton()]
     ),
     body: Column(
@@ -70,7 +70,7 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
             elevation: 2,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(8),
-              child: Text(show.resume),
+              child: Text(show.summary),
             )
           )
         ),
@@ -138,7 +138,6 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
               builder: (context) => UniverseMatchesDetailPage(matchId: match.id!, showId: show.id!,),
             )).then((value) => refreshMatches());
           },
-          // title : Text(s1.nom),
           title:((){
             if(stipulation.type == ("1v1")){
               return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));

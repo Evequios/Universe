@@ -30,7 +30,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 50, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 51, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -93,10 +93,10 @@ CREATE TABLE IF NOT EXISTS $tableSuperstars (
       await db.execute('''
    CREATE TABLE IF NOT EXISTS $tableShows( 
   ${ShowFields.id} $idType, 
-   ${ShowFields.nom} $textType,
-   ${ShowFields.annee} $intTypeNN,
-   ${ShowFields.semaine} $intTypeNN,
-   ${ShowFields.resume} $textType
+   ${ShowFields.name} $textType,
+   ${ShowFields.year} $intTypeNN,
+   ${ShowFields.week} $intTypeNN,
+   ${ShowFields.summary} $textType
    ); ''');
 
     await db.execute('''
@@ -153,16 +153,15 @@ CREATE TABLE IF NOT EXISTS $tableTeams (
     final booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
    
-    await db.execute('''DROP TABLE IF EXISTS $tableTitles;''');
+    await db.execute('''DROP TABLE IF EXISTS $tableShows;''');
     await db.execute('''
-CREATE TABLE IF NOT EXISTS $tableTitles ( 
-  ${TitlesFields.id} $idType, 
-  ${TitlesFields.name} $textType,
-  ${TitlesFields.brand} $intType,
-  ${TitlesFields.tag} $booleanTypeNN,
-  ${TitlesFields.holder1} $intType,
-  ${TitlesFields.holder2} $intType
-  ); ''');
+   CREATE TABLE IF NOT EXISTS $tableShows( 
+  ${ShowFields.id} $idType, 
+   ${ShowFields.name} $textType,
+   ${ShowFields.year} $intTypeNN,
+   ${ShowFields.week} $intTypeNN,
+   ${ShowFields.summary} $textType
+   ); ''');
   }
   }
 

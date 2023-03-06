@@ -64,7 +64,7 @@ class _UniverseShowsPage extends State<UniverseShowsPage> {
     itemCount : showsList.length,
     itemBuilder: (context, index){
       final show = showsList[index];
-      String image = 'assets/${show.nom.toLowerCase()}.png';
+      String image = 'assets/${show.name.toLowerCase()}.png';
       return GestureDetector(
         onTap: () async {
          await Navigator.of(context).push(MaterialPageRoute(
@@ -84,19 +84,20 @@ class _UniverseShowsPage extends State<UniverseShowsPage> {
               child: Row(
                 children: [
                   Expanded(
+                    flex:10,
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft, 
                       child: 
-                        show.nom.toLowerCase() == 'raw' || 
-                        show.nom.toLowerCase() == 'smackdown' ||
-                        show.nom.toLowerCase() == 'nxt' ?
+                        show.name.toLowerCase() == 'raw' || 
+                        show.name.toLowerCase() == 'smackdown' ||
+                        show.name.toLowerCase() == 'nxt' ?
                           Image(image: AssetImage(image))
-                          : Text(show.nom, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                          : Text(show.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                     )
                   ),
                   const Spacer(),
-                  Text('Year ${show.annee} Week ${show.semaine}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18), ),                      
+                  Text('Year ${show.year} Week ${show.week}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18), ),                      
                 ],
               )
             )

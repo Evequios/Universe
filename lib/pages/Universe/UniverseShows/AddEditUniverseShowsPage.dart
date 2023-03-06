@@ -16,19 +16,19 @@ class AddEditUniverseShowsPage extends StatefulWidget {
 
 class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
   final _formKey = GlobalKey<FormState>();
-  late String nom;
-  late int annee;
-  late int semaine;
-  late String resume;
+  late String name;
+  late int year;
+  late int week;
+  late String summary;
 
   @override
   void initState() {
     super.initState();
 
-    nom = widget.show?.nom ?? '';
-    annee = widget.show?.annee ?? 0;
-    semaine = widget.show?.semaine ?? 0;
-    resume = widget.show?.resume ?? '';
+    name = widget.show?.name ?? '';
+    year = widget.show?.year ?? 0;
+    week = widget.show?.week ?? 0;
+    summary = widget.show?.summary ?? '';
   }
 
   @override
@@ -39,20 +39,20 @@ class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
     body: Form(
       key: _formKey,
       child: UniverseShowsFormWidget(
-        nom: nom,
-        annee : annee,
-        semaine: semaine,
-        resume: resume,
-        onChangedNom: (nom) => setState(() => this.nom = nom),
-        onChangedAnnee: (annee) => setState(() => this.annee = int.parse(annee)),
-        onChangedSemaine: (semaine) => setState(() => this.semaine = int.parse(semaine)),
-        onChangedResume: (resume) => setState(() => this.resume = resume),
+        name: name,
+        year : year,
+        week: week,
+        summary: summary,
+        onChangedName: (name) => setState(() => this.name = name),
+        onChangedYear: (year) => setState(() => this.year = int.parse(year)),
+        onChangedWeek: (week) => setState(() => this.week = int.parse(week)),
+        onChangedSummary: (summary) => setState(() => this.summary = summary),
       ),
     ),
   );
 
   Widget buildButton() {
-    final isFormValid = nom.isNotEmpty && nom.isNotEmpty;
+    final isFormValid = name.isNotEmpty && name.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -85,10 +85,10 @@ class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
 
   Future updateUniverseShows() async {
     final show = widget.show!.copy(
-      nom: nom,
-      annee: annee,
-      semaine: semaine,
-      resume: resume,
+      name: name,
+      year: year,
+      week: week,
+      summary: summary,
     );
 
     await UniverseDatabase.instance.updateShow(show);
@@ -96,10 +96,10 @@ class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
 
   Future addUniverseShows() async {
     final show = UniverseShows(
-      nom: nom,
-      annee: annee,
-      semaine: semaine,
-      resume: resume
+      name: name,
+      year: year,
+      week: week,
+      summary: summary
     );
     await UniverseDatabase.instance.createShow(show);
   }
