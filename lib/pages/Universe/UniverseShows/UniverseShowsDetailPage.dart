@@ -37,12 +37,11 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
   Future refreshMatches() async {
     setState(() => isLoading = true);
 
-    this.show = await UniverseDatabase.instance.readShow(widget.showId);
-    this.matchesList = await UniverseDatabase.instance.readAllMatches(show.id!);
-    this.stipulationsList = await UniverseDatabase.instance.readAllStipulations();
-    this.superstarsList = await UniverseDatabase.instance.readAllSuperstars();
+    show = await UniverseDatabase.instance.readShow(widget.showId);
+    matchesList = await UniverseDatabase.instance.readAllMatches(show.id!);
+    stipulationsList = await UniverseDatabase.instance.readAllStipulations();
+    superstarsList = await UniverseDatabase.instance.readAllSuperstars();
     
-
     setState(() => isLoading = false);  
   }
 
@@ -52,42 +51,44 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
       title: const Text('Matchs',),
       actions: [editButton(), deleteButton()]
     ),
-    body: Column(children: [
-      Container(
-        padding: const EdgeInsets.all(8),
-        alignment:  Alignment.centerLeft,
-        child: const Text('Résumé : ', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
-      ),
-      Container(
-        width: double.infinity,
-        height: 150,
-        padding: const EdgeInsets.all(8),
-        child : Card(
-          shape: RoundedRectangleBorder(
-            side : new BorderSide(color: const Color.fromARGB(189, 96, 125, 139)),
-            borderRadius: BorderRadius.circular(4.0)
-          ),
-          elevation: 2,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(8),
-            child: Text(show.resume != null ? show.resume : ''),
+    body: Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          alignment:  Alignment.centerLeft,
+          child: const Text('Summary : ', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
+        ),
+        Container(
+          width: double.infinity,
+          height: 150,
+          padding: const EdgeInsets.all(8),
+          child : Card(
+            shape: RoundedRectangleBorder(
+              side : const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              borderRadius: BorderRadius.circular(4.0)
+            ),
+            elevation: 2,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(8),
+              child: Text(show.resume),
+            )
           )
+        ),
+        const SizedBox(height: 8,),
+        Container(
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.centerLeft,
+          child : const Text('Matches : ', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
+        ),
+        Flexible(
+          child: isLoading
+            ? const CircularProgressIndicator()
+            : matchesList.isEmpty
+              ? const Text('No created matches')
+              : buildUniverseMatches(),
         )
-      ),
-      const SizedBox(height: 8,),
-      Container(
-        padding: const EdgeInsets.all(8),
-        alignment: Alignment.centerLeft,
-        child : const Text('Matchs : ', textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),)
-      ),
-      Flexible(
-        child: isLoading
-          ? const CircularProgressIndicator()
-          : matchesList.isEmpty
-            ? const Text('No created matches')
-            : buildUniverseMatches(),
-      )
-    ]),
+      ]
+    ),
     floatingActionButton: FloatingActionButton(
       backgroundColor: Colors.black,
       child : const Icon(Icons.add),
@@ -97,7 +98,8 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
         );
 
         refreshMatches();
-      } ),
+      } 
+    ),
   );
   
   Widget buildUniverseMatches() => ListView.builder(
@@ -108,79 +110,81 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
       final stipulation = stipulationsList.firstWhere((stipulation) => stipulation.id == match.stipulation);
       final s1 = superstarsList.firstWhere((superstar) => superstar.id == match.s1);
       final s2 = superstarsList.firstWhere((superstar) => superstar.id == match.s2);
-      UniverseSuperstars s3 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
-      UniverseSuperstars s4 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
-      UniverseSuperstars s5 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
-      UniverseSuperstars s6 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
-      UniverseSuperstars s7 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
-      UniverseSuperstars s8 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s3 = const UniverseSuperstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s4 = const UniverseSuperstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s5 = const UniverseSuperstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s6 = const UniverseSuperstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      // UniverseSuperstars s7 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      // UniverseSuperstars s8 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
       if (match.s3 != 0) s3 = superstarsList.firstWhere((superstar) => superstar.id == match.s3);
       if (match.s4 != 0) s4 = superstarsList.firstWhere((superstar) => superstar.id == match.s4);
       if (match.s5 != 0) s5 = superstarsList.firstWhere((superstar) => superstar.id == match.s5);
       if (match.s6 != 0) s6 = superstarsList.firstWhere((superstar) => superstar.id == match.s6);
-      if (match.s7 != 0) s7 = superstarsList.firstWhere((superstar) => superstar.id == match.s7);
-      if (match.s8 != 0) s8 = superstarsList.firstWhere((superstar) => superstar.id == match.s8);
-      final gagnant = superstarsList.firstWhere((superstar) => superstar.id == match.gagnant);
+      // if (match.s7 != 0) s7 = superstarsList.firstWhere((superstar) => superstar.id == match.s7);
+      // if (match.s8 != 0) s8 = superstarsList.firstWhere((superstar) => superstar.id == match.s8);
+      // final gagnant = superstarsList.firstWhere((superstar) => superstar.id == match.gagnant);
 
-    return Container(
-    height: 80,
-    child: Card(
-      shape:RoundedRectangleBorder(
-        side: new BorderSide(color: const Color.fromARGB(189, 96, 125, 139)),
-        borderRadius: BorderRadius.circular(4.0)
-      ),
-      elevation : 2,
-      child: ListTile(
-        onTap: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => UniverseMatchesDetailPage(matchId: match.id!, showId: show.id!,),
-          )).then((value) => refreshMatches());;
-        },
-        // title : Text(s1.nom),
-        title:((){
-          if(stipulation.type == ("1v1")){
-            return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-          }
-          if(stipulation.type == ("2v2")){
-            return Text('${s1.name} & ${s2.name} vs ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-          }
-          if(stipulation.type == ("3v3")){
-            return Text('${s1.name}, ${s2.name}, ${s3.name} vs ${s4.name}, ${s5.name}, ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-          }
-          if(stipulation.type == ("4v4")){
-            return Text('Team ${s1.name} vs Team ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-          }
-          if(stipulation.type == ("Triple Threat")){
-            return Text('${s1.name} vs ${s2.name} vs ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-          }
-          if(stipulation.type == ("Fatal 4-Way")){
-            return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-          }
-        }()),
-        subtitle: Text('${stipulation.type} ${stipulation.stipulation}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+      return SizedBox(
+      height: 80,
+      child: Card(
+        shape:RoundedRectangleBorder(
+          side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+          borderRadius: BorderRadius.circular(4.0)
+        ),
+        elevation : 2,
+        child: ListTile(
+          onTap: () async {
+            await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => UniverseMatchesDetailPage(matchId: match.id!, showId: show.id!,),
+            )).then((value) => refreshMatches());
+          },
+          // title : Text(s1.nom),
+          title:((){
+            if(stipulation.type == ("1v1")){
+              return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+            }
+            if(stipulation.type == ("2v2")){
+              return Text('${s1.name} & ${s2.name} vs ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+            }
+            if(stipulation.type == ("3v3")){
+              return Text('${s1.name}, ${s2.name}, ${s3.name} vs ${s4.name}, ${s5.name}, ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+            }
+            if(stipulation.type == ("4v4")){
+              return Text('Team ${s1.name} vs Team ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+            }
+            if(stipulation.type == ("Triple Threat")){
+              return Text('${s1.name} vs ${s2.name} vs ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+            }
+            if(stipulation.type == ("Fatal 4-Way")){
+              return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+            }
+          }()),
+          subtitle: Text('${stipulation.type} ${stipulation.stipulation}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+        )
       )
-    )
-    );
-  });
+      );
+    }
+  );
 
   Widget editButton() => IconButton(
-      icon: const Icon(Icons.edit_outlined),
-      onPressed: () async {
-        if (isLoading) return;
+    icon: const Icon(Icons.edit_outlined),
+    onPressed: () async {
+      if (isLoading) return;
 
-        await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddEditUniverseShowsPage(show : show),
-        ));
+      await Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => AddEditUniverseShowsPage(show : show),
+      ));
 
-        refreshMatches();
-      });
+      refreshMatches();
+    }
+  );
 
   Widget deleteButton() => IconButton(
-        icon: const Icon(Icons.delete),
-        onPressed: () async {
-          await UniverseDatabase.instance.deleteShow(widget.showId);
-          Navigator.of(context).pop();
-        },
+    icon: const Icon(Icons.delete),
+    onPressed: () async {
+      await UniverseDatabase.instance.deleteShow(widget.showId);
+      if(context.mounted) Navigator.of(context).pop();
+    },
   );
   
 }

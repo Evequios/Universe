@@ -26,16 +26,16 @@ class UniverseShowsFormWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
     child: Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           buildNom(),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           buildAnnee(),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           buildSemaine(),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           buildResume(),
         ],
       ),
@@ -43,17 +43,14 @@ class UniverseShowsFormWidget extends StatelessWidget {
   );
 
   Widget buildNom() => TextFormField(
-    // maxLines: 1,
     initialValue: nom,
     style: const TextStyle(
-      // color: Colors.white70,
       fontWeight: FontWeight.bold,
       fontSize: 24,
     ),
     decoration: const InputDecoration(
       border: InputBorder.none,
       hintText: 'Nom du show',
-      // hintStyle: TextStyle(color: Colors.white70),
     ),
     validator: (nom) =>
       nom != null && nom.isEmpty ? 'Le nom du show ne peut pas être vide' : null,
@@ -62,17 +59,14 @@ class UniverseShowsFormWidget extends StatelessWidget {
 
 
   Widget buildAnnee() => TextFormField(
-    // maxLines: 1,
     initialValue: annee.toString(),
     style: const TextStyle(
-      // color: Colors.white70,
       fontWeight: FontWeight.bold,
       fontSize: 24,
     ),
     decoration: const InputDecoration(
       border: InputBorder.none,
       hintText: 'Annee du show',
-      // hintStyle: TextStyle(color: Colors.white70),
     ),
     validator: (date) =>
       date != null && date.isEmpty ? 'La date du show ne peut pas être vide' : null,
@@ -80,17 +74,14 @@ class UniverseShowsFormWidget extends StatelessWidget {
   );
 
   Widget buildSemaine() => TextFormField(
-    // maxLines: 1,
     initialValue: annee.toString(),
     style: const TextStyle(
-      // color: Colors.white70,
       fontWeight: FontWeight.bold,
       fontSize: 24,
     ),
     decoration: const InputDecoration(
       border: InputBorder.none,
       hintText: 'Semaine du show',
-      // hintStyle: TextStyle(color: Colors.white70),
     ),
     validator: (date) =>
       date != null && date.isEmpty ? 'La date du show ne peut pas être vide' : null,

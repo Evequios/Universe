@@ -1,11 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
-import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/database.dart';
-import 'package:wwe_universe/widget/Universe/UniverseNewsFormWidget.dart';
 import 'package:wwe_universe/widget/Universe/UniverseShowsFormWidget.dart';
-import 'package:intl/intl.dart';
 
 class AddEditUniverseShowsPage extends StatefulWidget {
   final UniverseShows? show;
@@ -59,14 +55,14 @@ class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
     final isFormValid = nom.isNotEmpty && nom.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, 
+          backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateUniverseShows,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -83,7 +79,7 @@ class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
         await addUniverseShows();
       }
 
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
     }
   }
 
