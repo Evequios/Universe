@@ -2,22 +2,22 @@ const String tableMatches = 'matches';
 
 class MatchesFields {
   static final List<String> values = [
-    id, stipulation, s1, s2, s3, s4, s5, s6, s7, s8, gagnant, ordre, showId
+    id, stipulation, s1, s2, s3, s4, s5, s6, s7, s8, winner, matchOrder, showId
   ];
 
   static const String id = '_id';
   static const String stipulation = 'stipulation';
   static const String s1 = 's1';
-  static const String s2= 's2';
-  static const String s3= 's3';
-  static const String s4= 's4';
-  static const String s5= 's5';
-  static const String s6= 's6';
-  static const String s7= 's7';
-  static const String s8= 's8';
-  static const String gagnant= 'gagnant';
-  static const String ordre= 'ordre';
-  static const String showId= 'showId';
+  static const String s2 = 's2';
+  static const String s3 = 's3';
+  static const String s4 = 's4';
+  static const String s5 = 's5';
+  static const String s6 = 's6';
+  static const String s7 = 's7';
+  static const String s8 = 's8';
+  static const String winner = 'winner';
+  static const String matchOrder = 'matchOrder';
+  static const String showId = 'showId';
 }
 
 class UniverseMatches{
@@ -31,8 +31,8 @@ class UniverseMatches{
   final int s6;
   final int s7;
   final int s8;
-  final int gagnant;
-  final int ordre;
+  final int winner;
+  final int matchOrder;
   final int? showId;
 
   const UniverseMatches({
@@ -46,8 +46,8 @@ class UniverseMatches{
     required this.s6,
     required this.s7,
     required this.s8,
-    required this.gagnant,
-    required this.ordre,
+    required this.winner,
+    required this.matchOrder,
     required this.showId
   });
 
@@ -62,8 +62,8 @@ class UniverseMatches{
     int? s6,
     int? s7,
     int? s8,
-    int? gagnant,
-    int? ordre,
+    int? winner,
+    int? matchOrder,
     int? showId
   }) =>
       UniverseMatches(
@@ -77,8 +77,8 @@ class UniverseMatches{
         s6: s6 ?? this.s6,
         s7: s7 ?? this.s7,
         s8: s8 ?? this.s8,
-        gagnant: gagnant ?? this.gagnant,
-        ordre: ordre ?? this.ordre,
+        winner: winner ?? this.winner,
+        matchOrder: matchOrder ?? this.matchOrder,
         showId: showId ?? this.showId
       );
 
@@ -93,8 +93,8 @@ class UniverseMatches{
         s6: json[MatchesFields.s6] as int,
         s7: json[MatchesFields.s7] as int,
         s8: json[MatchesFields.s8] as int,
-        gagnant: json[MatchesFields.gagnant] as int,
-        ordre: json[MatchesFields.ordre] as int,
+        winner: json[MatchesFields.winner] as int,
+        matchOrder: json[MatchesFields.matchOrder] as int,
         showId: json[MatchesFields.showId] as int,
       );
 
@@ -109,8 +109,8 @@ class UniverseMatches{
         MatchesFields.s6: s6,
         MatchesFields.s7: s7,
         MatchesFields.s8: s8,
-        MatchesFields.gagnant: gagnant,
-        MatchesFields.ordre : ordre,
+        MatchesFields.winner: winner,
+        MatchesFields.matchOrder: matchOrder,
         MatchesFields.showId: showId
       };
 }

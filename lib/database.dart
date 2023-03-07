@@ -30,7 +30,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 51, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 59, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -117,8 +117,8 @@ CREATE TABLE IF NOT EXISTS $tableSuperstars (
    ${MatchesFields.s6} $intType,
    ${MatchesFields.s7} $intType,
    ${MatchesFields.s8} $intType,
-   ${MatchesFields.gagnant} $intTypeNN,
-   ${MatchesFields.ordre} $intTypeNN DEFAULT 0,
+   ${MatchesFields.winner} $intTypeNN,
+   ${MatchesFields.matchOrder} $intTypeNN DEFAULT 0,
    ${MatchesFields.showId} $intTypeNN
    ); ''');
 
@@ -153,15 +153,25 @@ CREATE TABLE IF NOT EXISTS $tableTeams (
     final booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
    
-    await db.execute('''DROP TABLE IF EXISTS $tableShows;''');
+   
+    await db.execute('''DROP TABLE IF EXISTS $tableMatches;''');
+    
     await db.execute('''
-   CREATE TABLE IF NOT EXISTS $tableShows( 
-  ${ShowFields.id} $idType, 
-   ${ShowFields.name} $textType,
-   ${ShowFields.year} $intTypeNN,
-   ${ShowFields.week} $intTypeNN,
-   ${ShowFields.summary} $textType
-   ); ''');
+   CREATE TABLE IF NOT EXISTS $tableMatches( 
+    ${MatchesFields.id} $idType,
+    ${MatchesFields.stipulation} $intTypeNN,
+    ${MatchesFields.s1} $intTypeNN,
+    ${MatchesFields.s2} $intTypeNN,
+    ${MatchesFields.s3} $intType,
+    ${MatchesFields.s4} $intType,
+    ${MatchesFields.s5} $intType,
+    ${MatchesFields.s6} $intType,
+    ${MatchesFields.s7} $intType,
+    ${MatchesFields.s8} $intType,
+    ${MatchesFields.winner} $intTypeNN,
+    '${MatchesFields.matchOrder}' $intTypeNN DEFAULT 0,
+    ${MatchesFields.showId} $intTypeNN
+    ); ''');
   }
   }
 
@@ -269,6 +279,16 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
   Future<int> deleteSuperstar(int id) async {
     final db = await instance.database;
 
+    await db.delete(
+      tableMatches,
+      where: '${MatchesFields.s1} = $id OR ${MatchesFields.s2} = $id OR ${MatchesFields.s3} = $id OR ${MatchesFields.s4} = $id OR ${MatchesFields.s5} = $id OR ${MatchesFields.s6} = $id OR ${MatchesFields.s7} = $id OR ${MatchesFields.s8} = $id '
+    );
+
+    await db.delete(
+      tableTeams,
+      where: '${TeamsFields.member1} = $id OR ${TeamsFields.member2} = $id OR ${TeamsFields.member3} = $id OR ${TeamsFields.member4} = ${id} OR ${TeamsFields.member5} = ${id}'
+    );
+    
     return await db.delete(
       tableSuperstars,
       where: '${SuperstarsFields.id} = ?',
@@ -418,12 +438,11 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
   Future<List<UniverseMatches>> readAllMatches(int showId) async {
     final db = await instance.database;
-    // final result =
-    //     await db.rawQuery('SELECT * FROM $tableIRLMatches WHERE showId =?', [showId]);
 
     final result = await db.query(tableMatches,
     where: 'showId = ?',
-    whereArgs: [showId]);
+    whereArgs: [showId],
+    orderBy: MatchesFields.matchOrder);
 
     return result.map((json) => UniverseMatches.fromJson(json)).toList();
   }
