@@ -1,16 +1,9 @@
 ---- A faire
 - Vérifier l'affichage pour toutes les pages d'ajout/edit
 - Affichage conditionnel des listes vides lors de listes vides (superstars, brand)
-- Réfléchir à de potentiels changements dans la BDD
-- Quand plus aucun changements à faire dans la BDD, mise en place de mon mode Universe
-- Vérifier les standards
-- Historisation
-- Integrité des données
+- Historisation?
 - Regarder comment marchent les match handicap
-- Dans titre, remplacer widgetid par id sauf pour le titre
-
-
----- Prochaine grande étape :
+- Ajouter rival ou ally dans les deux superstars
 - Améliorer mise en page
 - Refactor et commentaires
 

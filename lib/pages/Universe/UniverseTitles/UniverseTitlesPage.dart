@@ -77,8 +77,8 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
       final title = titlesList[index];
       UniverseBrands brand = defaultBrand;
       if (title.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == title.brand);
-      if (title.holder1 != 0) final h1 = superstarsList.firstWhere((h1) => h1.id == title.holder1);
-      if (title.holder2 != 0) final h2 = superstarsList.firstWhere((h2) => h2.id == title.holder2);
+      // if (title.holder1 != 0) final h1 = superstarsList.firstWhere((h1) => h1.id == title.holder1);
+      // if (title.holder2 != 0) final h2 = superstarsList.firstWhere((h2) => h2.id == title.holder2);
       return GestureDetector( 
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
