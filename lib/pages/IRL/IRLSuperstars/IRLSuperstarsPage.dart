@@ -1,15 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wwe_universe/classes/IRL/IRLNews.dart';
 import 'package:wwe_universe/classes/IRL/IRLSuperstars.dart';
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/IRL/IRLNews/AddEditIRLNewsPage.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsDetailPage.dart';
 import 'package:wwe_universe/pages/IRL/IRLSuperstars/AddEditIRLSuperstarsPage.dart';
 import 'package:wwe_universe/pages/IRL/IRLSuperstars/IRLSuperstarsDetailPage.dart';
 
 class IRLSuperstarsPage extends StatefulWidget{
+  const IRLSuperstarsPage({super.key});
+
   @override
   _IRLSuperstarsPage createState() => _IRLSuperstarsPage();
 }
@@ -23,7 +21,7 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        drawer: Navbar(),
+        drawer: const Navbar(),
         appBar: AppBar(
           title: const Text(
             'Superstars',
@@ -36,18 +34,18 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
             stream: readAllIRLSuperstars(),
             builder: (BuildContext context, snapshot) {
             if (snapshot.hasError) {
-              return Text('Something went wrong');
+              return const Text('Something went wrong');
             }
 
             else if(snapshot.hasData){
               final irlSuperstars = snapshot.data!;
               return ListView(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 children: irlSuperstars.map(buildIRLSuperstars).toList()
               ,);
             }
             else{
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           }),
         )]),
@@ -56,7 +54,7 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
           child: const Icon(Icons.add),
           onPressed: () async {
             await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => AddEditIRLSuperstarsPage()),
+              MaterialPageRoute(builder: (context) => const AddEditIRLSuperstarsPage()),
             );
           },
         ),
@@ -70,11 +68,11 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
               builder: (context) => IRLSuperstarsDetailPage(irlSuperstars: irlSuperstars),
             ));
             },
-            child :Container(
+            child :SizedBox(
             height: 80,
             child : Card(
               shape:RoundedRectangleBorder(
-              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
               // margin: EdgeInsets.all(12),
               elevation: 2,
@@ -85,12 +83,12 @@ class _IRLSuperstarsPage extends State<IRLSuperstarsPage> {
                   children: [
                     Expanded(
                       child: FittedBox(
-                        fit: BoxFit.scaleDown, 
-                        child: Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                        fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft, 
+                        child: Text('${irlSuperstars.prenom} ${irlSuperstars.nom}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
                       )
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Container(child : ((){ if(irlSuperstars.show != 'Aucun') return Image(image: AssetImage('assets/${irlSuperstars.show.toLowerCase()}.png'));}()))
                   ],
                 )

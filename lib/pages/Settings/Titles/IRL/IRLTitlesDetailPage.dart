@@ -31,32 +31,32 @@ class _IRLTitlesDetailPage extends State<IRLTitlesDetailPage> {
           actions: [editButton(), deleteButton()],
         ),
         body: isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Padding(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   children: [
                     Text(
                       irlTitles!.nom,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text("Show : ${irlTitles!.show}",
-                      style: TextStyle(color: Colors.black, fontSize: 18)
+                      style: const TextStyle(color: Colors.black, fontSize: 18)
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     irlTitles!.tag == 'false' ?
                     Text("Champion : ${irlTitles!.holder1}",
-                      style: TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
                     )
                     :Text("Champions : ${irlTitles!.holder1} & ${irlTitles!.holder2}",
-                      style: TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
                     )
                     ,
                   ],
@@ -65,7 +65,7 @@ class _IRLTitlesDetailPage extends State<IRLTitlesDetailPage> {
       );
 
   Widget editButton() => IconButton(
-      icon: Icon(Icons.edit_outlined),
+      icon: const Icon(Icons.edit_outlined),
       onPressed: () async {
         if (isLoading) return;
 
@@ -75,7 +75,7 @@ class _IRLTitlesDetailPage extends State<IRLTitlesDetailPage> {
       });
 
   Widget deleteButton() => IconButton(
-        icon: Icon(Icons.delete),
+        icon: const Icon(Icons.delete),
         onPressed: () {
           final docIRLTitles = FirebaseFirestore.instance.collection('IRLTitles').doc(irlTitles!.id);
           docIRLTitles.delete();

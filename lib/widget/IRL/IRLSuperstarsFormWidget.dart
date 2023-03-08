@@ -34,16 +34,16 @@ class IRLSuperstarsFormWidget extends StatelessWidget {
   return Scaffold(
     body: 
         Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               buildPrenom(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildNom(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildShow(),
-              SizedBox(height: 16,),
+              const SizedBox(height: 16,),
               buildOrientation(),
             ],
           ),
@@ -89,8 +89,8 @@ class IRLSuperstarsFormWidget extends StatelessWidget {
       onChanged : onChangedShow, 
       items: listShows.map((show){
         return DropdownMenuItem<String>(
-          child: Text(show),
-          value: show == "" ? null : show,);
+          value: show == "" ? null : show,
+          child: Text(show),);
       }).toList(),
     ));
 

@@ -31,7 +31,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
   final ValueChanged<String?> onChangedOrdre;
 
 
-  IRLMatchesFormWidget({
+  const IRLMatchesFormWidget({
     Key? key,
     this.stipulation,
     this.s1= '',
@@ -70,34 +70,34 @@ class IRLMatchesFormWidget extends StatelessWidget {
     body: SingleChildScrollView(
       child: Center(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               buildStipulation(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS1(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS2(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS3(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS4(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS5(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS6(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS7(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS8(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS9(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildS10(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildGagnant(),
-              SizedBox(height: 8,),
+              const SizedBox(height: 8,),
               buildOrdre(),
             ],
           ),
@@ -113,7 +113,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
     return ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
         labelText: 'Stipulation : ',
         labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
@@ -139,7 +139,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       alignedDropdown: true, 
       child : DropdownButtonFormField(
         isExpanded: true,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Superstar 1 : ',
           labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
         ),
@@ -163,7 +163,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Superstar 2 : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),
@@ -187,7 +187,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
         if(!stipulation!.contains('1v1')){
         return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Superstar 3 : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),
@@ -203,7 +203,9 @@ class IRLMatchesFormWidget extends StatelessWidget {
           onChanged: onChangedS3,
           menuMaxHeight: 500,
         ));}
-        else return SizedBox(height: 0);
+        else {
+          return const SizedBox(height: 0);
+        }
       });
   
     Widget buildS4() => StreamBuilder(
@@ -212,7 +214,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
         if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat')){
         return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Superstar 4 : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),
@@ -228,7 +230,9 @@ class IRLMatchesFormWidget extends StatelessWidget {
           onChanged: onChangedS4,
           menuMaxHeight: 500,
         ));}
-        else return SizedBox(height: 0,);
+        else {
+          return const SizedBox(height: 0,);
+        }
       });
 
     Widget buildS5() => StreamBuilder(
@@ -237,7 +241,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
         if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way')){
         return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Superstar 5 : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),
@@ -253,7 +257,9 @@ class IRLMatchesFormWidget extends StatelessWidget {
           onChanged: onChangedS5,
           menuMaxHeight: 500,
         ));}
-        else return SizedBox(height: 0,);
+        else {
+          return const SizedBox(height: 0,);
+        }
       });
 
     Widget buildS6() => StreamBuilder(
@@ -262,7 +268,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
         if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way')){
         return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Superstar 6 : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),
@@ -278,7 +284,9 @@ class IRLMatchesFormWidget extends StatelessWidget {
           onChanged: onChangedS6,
           menuMaxHeight: 500,
         ));}
-        else return SizedBox(height: 0);
+        else {
+          return const SizedBox(height: 0);
+        }
       });
 
     Widget buildS7() => StreamBuilder(
@@ -287,7 +295,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
         if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way') && !stipulation!.contains('3v3') && !stipulation!.contains('2v2v2')){
         return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Superstar 7 : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),
@@ -303,7 +311,9 @@ class IRLMatchesFormWidget extends StatelessWidget {
           onChanged: onChangedS7,
           menuMaxHeight: 500,
         ));}
-        else return SizedBox(height:0);
+        else {
+          return const SizedBox(height:0);
+        }
       });
 
     Widget buildS8() => StreamBuilder(
@@ -312,7 +322,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
         if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way') && !stipulation!.contains('3v3') && !stipulation!.contains('2v2v2')){
         return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Superstar 8 : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),
@@ -328,7 +338,9 @@ class IRLMatchesFormWidget extends StatelessWidget {
           onChanged: onChangedS8,
           menuMaxHeight: 500,
         ));}
-        else return SizedBox(height: 8,);
+        else {
+          return const SizedBox(height: 8,);
+        }
       });
 
   Widget buildS9() => StreamBuilder(
@@ -337,7 +349,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
         if((!stipulation!.contains('1v1')) && !stipulation!.contains('Triple Threat') && !stipulation!.contains('2v2') && !stipulation!.contains('Fatal 4-Way') && !stipulation!.contains('3v3') && !stipulation!.contains('4v4')){
         return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Superstar 9 : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),
@@ -353,7 +365,9 @@ class IRLMatchesFormWidget extends StatelessWidget {
           onChanged: onChangedS9,
           menuMaxHeight: 500,
         ));}
-        else return SizedBox(height: 0,);
+        else {
+          return const SizedBox(height: 0,);
+        }
       });
 
     Widget buildS10() => StreamBuilder(
@@ -362,7 +376,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
         if(stipulation!.contains('5v5')){
         return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Superstar 10 : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),
@@ -378,7 +392,9 @@ class IRLMatchesFormWidget extends StatelessWidget {
           onChanged: onChangedS10,
           menuMaxHeight: 500,
         ));}
-        else return SizedBox(height: 0,);
+        else {
+          return const SizedBox(height: 0,);
+        }
       });
 
   Widget buildGagnant() => StreamBuilder(
@@ -386,7 +402,7 @@ class IRLMatchesFormWidget extends StatelessWidget {
     builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
     return ButtonTheme(alignedDropdown: true, child: DropdownButtonFormField(
           isExpanded: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Gagnant : ',
             labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
           ),

@@ -33,7 +33,7 @@ class _UniverseShowsPage extends State<UniverseShowsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    drawer: Navbar(),
+    drawer: const Navbar(),
     appBar: AppBar(
       title: const Text('Shows'),
     ),

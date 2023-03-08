@@ -8,6 +8,8 @@ import 'package:wwe_universe/pages/Settings/Stipulations/IRL/IRLStipulationsDeta
 
 
 class IRLStipulationsPage extends StatefulWidget{
+  const IRLStipulationsPage({super.key});
+
   @override
   _IRLStipulationsPageState createState() => _IRLStipulationsPageState();
 }
@@ -22,7 +24,7 @@ class _IRLStipulationsPageState extends State<IRLStipulationsPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         // backgroundColor: Color.fromARGB(227, 242, 237, 237),
-        drawer: Navbar(),
+        drawer: const Navbar(),
         appBar: AppBar(
           title: const Text(
             'Stipulations',
@@ -36,19 +38,19 @@ class _IRLStipulationsPageState extends State<IRLStipulationsPage> {
             stream: readAllIRLStipulations(),
             builder: (BuildContext context, snapshot) {
             if (snapshot.hasError) {
-              return Text('Something went wrong');
+              return const Text('Something went wrong');
             }
 
             else if(snapshot.hasData){
               final irlStipulations = snapshot.data!;
 
               return ListView(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 children: irlStipulations.map(buildIRLStipulations).toList()
               ,);
             }
             else{
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           }),
         ),
@@ -57,7 +59,7 @@ class _IRLStipulationsPageState extends State<IRLStipulationsPage> {
           child: const Icon(Icons.add),
           onPressed: () async {
             await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => AddEditIRLStipulationsPage()),
+              MaterialPageRoute(builder: (context) => const AddEditIRLStipulationsPage()),
             );
           },
         ),
@@ -66,7 +68,7 @@ class _IRLStipulationsPageState extends State<IRLStipulationsPage> {
   Widget buildIRLStipulations(IRLStipulations irlStipulations) {
   return Card(
             shape:RoundedRectangleBorder(
-              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
               elevation : 2,
               child: ListTile(
@@ -75,7 +77,7 @@ class _IRLStipulationsPageState extends State<IRLStipulationsPage> {
                 builder: (context) => IRLStipulationsDetailPage(irlStipulations: irlStipulations),
               ));
               },
-              title: Text('${irlStipulations.type} ${irlStipulations.stipulation}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              title: Text('${irlStipulations.type} ${irlStipulations.stipulation}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               // subtitle: Text('${irlStipulations.createdTime.toDate().day}/${irlStipulations.createdTime.toDate().month}/${irlStipulations.createdTime.toDate().year}  ${irlStipulations.createdTime.toDate().hour}h${irlStipulations.createdTime.toDate().minute.toString().padLeft(2, '0')}                                      ${irlStipulations.categorie}'),
               ));
   }

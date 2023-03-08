@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class IRLStipulations{
   final String id;
   final String type;

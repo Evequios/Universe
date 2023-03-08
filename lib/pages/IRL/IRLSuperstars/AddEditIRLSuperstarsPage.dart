@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/IRL/IRLSuperstars.dart';
-import 'package:wwe_universe/classes/IRL/IRLNews.dart';
-import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
 import 'package:wwe_universe/widget/IRL/IRLSuperstarsFormWidget.dart';
 
 class AddEditIRLSuperstarsPage extends StatefulWidget {
@@ -61,14 +59,14 @@ class _AddEditIRLSuperstarsPage extends State<AddEditIRLSuperstarsPage> {
     final isFormValid = prenom.isNotEmpty && nom.isNotEmpty && orientation.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, 
+          backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateIRLSuperstars,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -85,7 +83,7 @@ class _AddEditIRLSuperstarsPage extends State<AddEditIRLSuperstarsPage> {
         await addIRLSuperstars();
       }
 
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
     }
   }
 

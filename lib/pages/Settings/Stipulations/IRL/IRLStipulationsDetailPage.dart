@@ -31,25 +31,25 @@ class _IRLStipulationsDetailPage extends State<IRLStipulationsDetailPage> {
           actions: [editButton(), deleteButton()],
         ),
         body: isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Padding(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   children: [
                     Text(
                       irlStipulations!.type,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       irlStipulations!.stipulation,
-                      style: TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
                   ],
                 ),
@@ -57,7 +57,7 @@ class _IRLStipulationsDetailPage extends State<IRLStipulationsDetailPage> {
       );
 
   Widget editButton() => IconButton(
-      icon: Icon(Icons.edit_outlined),
+      icon: const Icon(Icons.edit_outlined),
       onPressed: () async {
         if (isLoading) return;
 
@@ -67,7 +67,7 @@ class _IRLStipulationsDetailPage extends State<IRLStipulationsDetailPage> {
       });
 
   Widget deleteButton() => IconButton(
-        icon: Icon(Icons.delete),
+        icon: const Icon(Icons.delete),
         onPressed: () {
           final docIRLStipulations = FirebaseFirestore.instance.collection('IRLStipulations').doc(irlStipulations!.id);
           docIRLStipulations.delete();

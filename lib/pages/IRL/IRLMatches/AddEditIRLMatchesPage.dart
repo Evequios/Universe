@@ -2,10 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/IRL/IRLMatches.dart';
 import 'package:wwe_universe/classes/IRL/IRLShows.dart';
-import 'package:wwe_universe/classes/IRL/IRLNews.dart';
-import 'package:wwe_universe/classes/IRL/IRLStipulations.dart';
 import 'package:wwe_universe/widget/IRL/IRLMatchesFormWidget.dart';
-import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
 
 class AddEditIRLMatchesPage extends StatefulWidget {
   final IRLMatches? irlMatches;
@@ -97,18 +94,17 @@ class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
       );
 
   Widget buildButton() {
-    // final isFormValid = stipulation.isNotEmpty;
-    final isFormValid = (stipulation == null);
+    final isFormValid = stipulation.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, 
+          backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateIRLMatches,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -125,7 +121,7 @@ class _AddEditIRLMatchesPage extends State<AddEditIRLMatchesPage> {
         await addIRLMatches();
       }
 
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
     }
   }
 

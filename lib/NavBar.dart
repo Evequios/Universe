@@ -14,6 +14,8 @@ import 'package:wwe_universe/pages/Universe/UniverseTitles/UniverseTitlesPage.da
 
 
 class Navbar extends StatelessWidget{
+  const Navbar({super.key});
+
   @override
   Widget build(BuildContext context){
     return Drawer(
@@ -23,74 +25,74 @@ class Navbar extends StatelessWidget{
             title: const Text('IRL'),
             children: [
               ListTile(
-                title : Text('News'),
+                title : const Text('News'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => IRLNewsPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLNewsPage(),));
                 }
               ),
               ListTile(
-                title : Text('Résultats'),
+                title : const Text('Résultats'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => IRLShowsPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLShowsPage(),));
                 }
               ),
               ListTile(
-                title : Text('Storylines'),
+                title : const Text('Storylines'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => IRLStorylinesPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLStorylinesPage(),));
                 }
               ),
               ListTile(
-                title : Text('Superstars'),
+                title : const Text('Superstars'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => IRLSuperstarsPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLSuperstarsPage(),));
                 }
               ),
             ],
             ),
           ExpansionTile(
-            title: Text('Universe'),
+            title: const Text('Universe'),
             children: [
               ListTile(
-                title : Text('News'),
+                title : const Text('News'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseNewsPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseNewsPage(),));
                 }
               ),
               ListTile(
-                title : Text('Results'),
+                title : const Text('Results'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseShowsPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseShowsPage(),));
                 }
               ),
               ListTile(
-                title : Text('Storylines'),
+                title : const Text('Storylines'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseStorylinesPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseStorylinesPage(),));
                 }
               ),
               ListTile(
-                title : Text('Superstars'),
+                title : const Text('Superstars'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseSuperstarsPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseSuperstarsPage(),));
                 }
               ),
               ListTile(
-                title : Text('Brands'),
+                title : const Text('Brands'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseBrandsPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseBrandsPage(),));
                 }
               ),
               ListTile(
-                title : Text('Titles'),
+                title : const Text('Titles'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseTitlesPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseTitlesPage(),));
                 }
               ),
               ListTile(
-                title : Text('Teams'),
+                title : const Text('Teams'),
                 onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseTeamsPage(),));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseTeamsPage(),));
                 }
               ),
             ],
@@ -98,9 +100,9 @@ class Navbar extends StatelessWidget{
           const SizedBox(height: 10,),
           const Divider(thickness: 1, height: 10, color: Colors.grey,),
           ListTile(
-            title : Icon(Icons.settings),
+            title : const Icon(Icons.settings),
             onTap:() {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => SettingsPage(),));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const SettingsPage(),));
             }
           ),
         ]

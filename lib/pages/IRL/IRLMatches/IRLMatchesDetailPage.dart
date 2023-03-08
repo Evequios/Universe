@@ -2,10 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/IRL/IRLMatches.dart';
 import 'package:wwe_universe/classes/IRL/IRLShows.dart';
-import 'package:wwe_universe/classes/IRL/IRLNews.dart';
 import 'package:wwe_universe/pages/IRL/IRLMatches/AddEditIRLMatchesPage.dart';
-import 'package:wwe_universe/pages/IRL/IRLNews/AddEditIRLNewsPage.dart';
-// import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class IRLMatchesDetailPage extends StatefulWidget {
   final IRLMatches irlMatches;
@@ -36,49 +33,49 @@ class _IRLMatchesDetailPage extends State<IRLMatchesDetailPage> {
       actions: [editButton(), deleteButton()],
     ),
     body: isLoading ? 
-      Center(child: CircularProgressIndicator())
+      const Center(child: CircularProgressIndicator())
       : Padding(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           child: ListView(
-            padding: EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             children: [
               Text(
                 irlMatches!.stipulation,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   decoration: TextDecoration.underline,
                   color: Colors.black,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,              
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Container(child:(() {
                 if(irlMatches!.stipulation.contains("1v1")){
-                  return Text('${irlMatches!.s1.trim()} vs ${irlMatches!.s2.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${irlMatches!.s1.trim()} vs ${irlMatches!.s2.trim()}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
                 }
                 if(irlMatches!.stipulation.contains("2v2")){
-                  return Text('${irlMatches!.s1.trim()} & ${irlMatches!.s2.trim()} vs ${irlMatches!.s3.trim()} & ${irlMatches!.s4.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${irlMatches!.s1.trim()} & ${irlMatches!.s2.trim()} vs ${irlMatches!.s3.trim()} & ${irlMatches!.s4.trim()}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
                 }
                 if(irlMatches!.stipulation.contains("3v3")){
-                  return Text('${irlMatches!.s1.trim()}, ${irlMatches!.s2.trim()}, ${irlMatches!.s3.trim()} vs ${irlMatches!.s4.trim()}, ${irlMatches!.s5.trim()}, ${irlMatches!.s6.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${irlMatches!.s1.trim()}, ${irlMatches!.s2.trim()}, ${irlMatches!.s3.trim()} vs ${irlMatches!.s4.trim()}, ${irlMatches!.s5.trim()}, ${irlMatches!.s6.trim()}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
                 }
                 if(irlMatches!.stipulation.contains("4v4")){
-                  return Text('${irlMatches!.s1.trim()}, ${irlMatches!.s2.trim()}, ${irlMatches!.s3.trim()}, ${irlMatches!.s4.trim()} vs ${irlMatches!.s5.trim()}, ${irlMatches!.s6.trim()}, ${irlMatches!.s7.trim()}, ${irlMatches!.s8.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${irlMatches!.s1.trim()}, ${irlMatches!.s2.trim()}, ${irlMatches!.s3.trim()}, ${irlMatches!.s4.trim()} vs ${irlMatches!.s5.trim()}, ${irlMatches!.s6.trim()}, ${irlMatches!.s7.trim()}, ${irlMatches!.s8.trim()}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
                 }
                 if(irlMatches!.stipulation.contains("5v5")){
-                  return Text('${irlMatches!.s1.trim()}, ${irlMatches!.s2.trim()}, ${irlMatches!.s3.trim()}, ${irlMatches!.s4.trim()}, ${irlMatches!.s5.trim()} vs ${irlMatches!.s6.trim()}, ${irlMatches!.s7.trim()}, ${irlMatches!.s8.trim()}, ${irlMatches!.s9.trim()}, ${irlMatches!.s10.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${irlMatches!.s1.trim()}, ${irlMatches!.s2.trim()}, ${irlMatches!.s3.trim()}, ${irlMatches!.s4.trim()}, ${irlMatches!.s5.trim()} vs ${irlMatches!.s6.trim()}, ${irlMatches!.s7.trim()}, ${irlMatches!.s8.trim()}, ${irlMatches!.s9.trim()}, ${irlMatches!.s10.trim()}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
                 }
                 if(irlMatches!.stipulation.contains("Triple Threat")){
-                  return Text('${irlMatches!.s1.trim()} vs ${irlMatches!.s2.trim()} vs ${irlMatches!.s3.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${irlMatches!.s1.trim()} vs ${irlMatches!.s2.trim()} vs ${irlMatches!.s3.trim()}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
                 }
                 if(irlMatches!.stipulation.contains("Fatal 4-Way")){
-                  return Text('${irlMatches!.s1.trim()} vs ${irlMatches!.s2.trim()} vs ${irlMatches!.s3.trim()} vs ${irlMatches!.s4.trim()}', textAlign: TextAlign.center, style: TextStyle(fontSize: 18));
+                  return Text('${irlMatches!.s1.trim()} vs ${irlMatches!.s2.trim()} vs ${irlMatches!.s3.trim()} vs ${irlMatches!.s4.trim()}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
                 }
               }())),
-              SizedBox(height: 30,),
+              const SizedBox(height: 30,),
               Text('Gagnant : ${irlMatches!.gagnant}',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -91,7 +88,7 @@ class _IRLMatchesDetailPage extends State<IRLMatchesDetailPage> {
   );
 
   Widget editButton() => IconButton(
-    icon: Icon(Icons.edit_outlined),
+    icon: const Icon(Icons.edit_outlined),
     onPressed: () async {
       if (isLoading) return;
       await Navigator.of(context).push(MaterialPageRoute(
@@ -100,7 +97,7 @@ class _IRLMatchesDetailPage extends State<IRLMatchesDetailPage> {
     });
 
   Widget deleteButton() => IconButton(
-    icon: Icon(Icons.delete),
+    icon: const Icon(Icons.delete),
     onPressed: () {
       final docIRLMatches= FirebaseFirestore.instance.collection('IRLMatches').doc(irlMatches!.id);
       docIRLMatches.delete();

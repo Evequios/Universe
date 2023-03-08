@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class IRLStorylinesFormWidget extends StatelessWidget {
   final String? titre;
@@ -26,18 +25,18 @@ class IRLStorylinesFormWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               buildTitre(),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               buildTexte(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               buildDebut(),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               buildFin(),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
             ],
           ),
         ),

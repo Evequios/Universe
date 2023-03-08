@@ -35,7 +35,7 @@ class _UniverseNewsPageState extends State<UniverseNewsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    drawer: Navbar(),
+    drawer: const Navbar(),
     appBar: AppBar(
       title: const Text(
         'News',

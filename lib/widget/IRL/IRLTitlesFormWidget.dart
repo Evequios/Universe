@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 const List<String> listTag = <String>['true', 'false'];
@@ -34,16 +33,16 @@ class IRLTitlesFormWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               buildNom(),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               buildShow(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               buildTag(),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               buildHolder1(),
               buildHolder2(),
             ],
@@ -85,7 +84,7 @@ class IRLTitlesFormWidget extends StatelessWidget {
       );
 
     Widget buildTag() => Container(alignment: Alignment.bottomLeft,child: DropdownButton(
-      hint: Text("Tag"),
+      hint: const Text("Tag"),
       value: tag == "" ? null : tag,
       onChanged : onChangedTag, 
       items: listTag.map((tag){
@@ -99,7 +98,7 @@ class IRLTitlesFormWidget extends StatelessWidget {
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
-          hint: Text('Champion'),
+          hint: const Text('Champion'),
           value: holder1 == "" ? null : holder1,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){
@@ -117,7 +116,7 @@ class IRLTitlesFormWidget extends StatelessWidget {
       stream: FirebaseFirestore.instance.collection('IRLSuperstars').orderBy('prenom').snapshots(),
       builder : (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return DropdownButton(
-          hint: Text('Champion 2'),
+          hint: const Text('Champion 2'),
           value: holder2 == "" ? null : holder2,
           items:
           snapshot.data?.docs.map((DocumentSnapshot document){

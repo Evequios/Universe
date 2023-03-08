@@ -8,6 +8,8 @@ import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsDetailPage.dart';
 
 
 class IRLNewsPage extends StatefulWidget{
+  const IRLNewsPage({super.key});
+
   @override
   _IRLNewsPageState createState() => _IRLNewsPageState();
 }
@@ -21,34 +23,30 @@ class _IRLNewsPageState extends State<IRLNewsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        // backgroundColor: Color.fromARGB(227, 242, 237, 237),
-        drawer: Navbar(),
+        drawer: const Navbar(),
         appBar: AppBar(
           title: const Text(
             'News',
-            // style : TextStyle(fontWeight: FontWeight.bold,fontSize: 22)
           ),
-          // actions: const [Icon(Icons.search), SizedBox(width: 12)],
-          
         ),
         body: Center(
           child: StreamBuilder<List<IRLNews>>(
             stream: readAllIRLNews(),
             builder: (BuildContext context, snapshot) {
             if (snapshot.hasError) {
-              return Text('Something went wrong');
+              return const Text('Something went wrong');
             }
 
             else if(snapshot.hasData){
               final irlNews = snapshot.data!;
 
               return ListView(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 children: irlNews.map(buildIRLNews).toList()
               ,);
             }
             else{
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           }),
         ),
@@ -57,7 +55,7 @@ class _IRLNewsPageState extends State<IRLNewsPage> {
           child: const Icon(Icons.add),
           onPressed: () async {
             await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => AddEditIRLNewsPage()),
+              MaterialPageRoute(builder: (context) => const AddEditIRLNewsPage()),
             );
           },
         ),
@@ -66,7 +64,7 @@ class _IRLNewsPageState extends State<IRLNewsPage> {
   Widget buildIRLNews(IRLNews irlNews) {
   return Card(
             shape:RoundedRectangleBorder(
-              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
               elevation : 2,
               child: ListTile(
@@ -75,14 +73,14 @@ class _IRLNewsPageState extends State<IRLNewsPage> {
                 builder: (context) => IRLNewsDetailPage(irlNews: irlNews),
               ));
               },
-              title: Text(irlNews.titre, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              title: Text(irlNews.titre, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               subtitle: Row(
                 children: [
                   Text('${irlNews.createdTime.toDate().day}/${irlNews.createdTime.toDate().month}/${irlNews.createdTime.toDate().year}  ${irlNews.createdTime.toDate().hour}h${irlNews.createdTime.toDate().minute.toString().padLeft(2, '0')}',
-                  style: TextStyle(color:Colors.blueGrey)
+                  style: const TextStyle(color:Colors.blueGrey)
                   ),
                   const Spacer(),
-                  Text(irlNews.categorie, textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color:Colors.blueGrey)),
+                  Text(irlNews.categorie, textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color:Colors.blueGrey)),
                 ]),
               // subtitle: Text('${irlNews.createdTime.toDate().day}/${irlNews.createdTime.toDate().month}/${irlNews.createdTime.toDate().year}  ${irlNews.createdTime.toDate().hour}h${irlNews.createdTime.toDate().minute.toString().padLeft(2, '0')}                                      ${irlNews.categorie}'),
               ));

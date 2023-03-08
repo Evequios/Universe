@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/IRL/IRLNews.dart';
 import 'package:wwe_universe/pages/IRL/IRLNews/AddEditIRLNewsPage.dart';
-// import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class IRLNewsDetailPage extends StatefulWidget {
   final IRLNews irlNews;
@@ -31,32 +30,32 @@ class _IRLNewsDetailPage extends State<IRLNewsDetailPage> {
           actions: [editButton(), deleteButton()],
         ),
         body: isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Padding(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 child: ListView(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   children: [
                     Text(
                       irlNews!.titre,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       irlNews!.texte,
-                      style: TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
-                    SizedBox(height: 20,),
+                    const SizedBox(height: 20,),
                     Row(children: [
                       Text('${irlNews!.createdTime.toDate().day}/${irlNews!.createdTime.toDate().month}/${irlNews!.createdTime.toDate().year}  ${irlNews!.createdTime.toDate().hour}h${irlNews!.createdTime.toDate().minute.toString().padLeft(2, '0')}'
-                      , style: TextStyle(color:Colors.blueGrey, fontWeight: FontWeight.bold)),
-                      Spacer(),
-                      Text(irlNews!.categorie, textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color:Colors.blueGrey)),
+                      , style: const TextStyle(color:Colors.blueGrey, fontWeight: FontWeight.bold)),
+                      const Spacer(),
+                      Text(irlNews!.categorie, textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color:Colors.blueGrey)),
                     ],)
                   ],
                 ),
@@ -64,7 +63,7 @@ class _IRLNewsDetailPage extends State<IRLNewsDetailPage> {
       );
 
   Widget editButton() => IconButton(
-      icon: Icon(Icons.edit_outlined),
+      icon: const Icon(Icons.edit_outlined),
       onPressed: () async {
         if (isLoading) return;
 
@@ -74,7 +73,7 @@ class _IRLNewsDetailPage extends State<IRLNewsDetailPage> {
       });
 
   Widget deleteButton() => IconButton(
-        icon: Icon(Icons.delete),
+        icon: const Icon(Icons.delete),
         onPressed: () {
           final docIRLNews = FirebaseFirestore.instance.collection('IRLNews').doc(irlNews!.id);
           docIRLNews.delete();

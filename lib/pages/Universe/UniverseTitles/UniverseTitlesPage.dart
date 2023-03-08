@@ -42,7 +42,7 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    drawer: Navbar(),
+    drawer: const Navbar(),
     appBar: AppBar(
       title: const Text(
         'Titles',

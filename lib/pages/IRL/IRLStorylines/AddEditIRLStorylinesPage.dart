@@ -55,14 +55,14 @@ class _AddEditIRLStorylinesPage extends State<AddEditIRLStorylinesPage> {
     final isFormValid = titre.isNotEmpty && texte.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, 
+          backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateIRLStorylines,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -78,7 +78,7 @@ class _AddEditIRLStorylinesPage extends State<AddEditIRLStorylinesPage> {
       } else {
         await addIRLStorylines();
       }
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
     }
   }
 

@@ -21,7 +21,7 @@ class _SettingsPage extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    drawer: Navbar(),
+    drawer: const Navbar(),
     appBar: AppBar(
       title: const Text(
         'Settings',
@@ -33,7 +33,7 @@ class _SettingsPage extends State<SettingsPage> {
         children: [
           GestureDetector( 
             onTap: () async {
-              await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => IRLStipulationsPage(),));
+              await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLStipulationsPage(),));
             },
             child :SizedBox(
               height: 100,
@@ -59,7 +59,7 @@ class _SettingsPage extends State<SettingsPage> {
           GestureDetector( 
             onTap: () {
               // await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseStipulationsPage(),));
-               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UniverseStipulationsPage()),
+               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const UniverseStipulationsPage()),
             );
             },
             child :SizedBox(

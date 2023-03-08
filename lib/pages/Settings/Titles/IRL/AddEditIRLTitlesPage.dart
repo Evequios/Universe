@@ -59,14 +59,14 @@ class _AddEditIRLTitlesPage extends State<AddEditIRLTitlesPage> {
     final isFormValid = nom.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, 
+          backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateIRLTitles,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -83,7 +83,7 @@ class _AddEditIRLTitlesPage extends State<AddEditIRLTitlesPage> {
         await addIRLTitles();
       }
 
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
     }
   }
 

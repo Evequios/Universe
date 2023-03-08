@@ -1,5 +1,3 @@
-import 'package:wwe_universe/classes/IRL/IRLShows.dart';
-
 class IRLSuperstars{
   final String id;
   final String prenom;

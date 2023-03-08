@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 
@@ -20,14 +19,14 @@ class IRLStipulationsFormWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               buildType(),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               buildStipulation(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
           ),
         ),

@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/IRL/IRLSuperstars.dart';
-import 'package:wwe_universe/classes/IRL/IRLNews.dart';
-import 'package:wwe_universe/pages/IRL/IRLNews/AddEditIRLNewsPage.dart';
 import 'package:wwe_universe/pages/IRL/IRLSuperstars/AddEditIRLSuperstarsPage.dart';
-// import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class IRLSuperstarsDetailPage extends StatefulWidget {
   final IRLSuperstars? irlSuperstars;
@@ -33,23 +30,23 @@ class _IRLSuperstarsDetailPage extends State<IRLSuperstarsDetailPage> {
           actions: [editButton(), deleteButton()],
         ),
         body: isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : ListView(
               children: [
               Container(
                 child: ((){ if(irlSuperstars!.show != 'Aucun') return Image(image: AssetImage('assets/banners/${irlSuperstars!.show.toLowerCase()}.jpg'));}()),
               ),
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
               Column(mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                Text('${irlSuperstars!.prenom} ${irlSuperstars!.nom}', style: TextStyle(color: Colors.black, fontSize: 36, fontWeight: FontWeight.bold),),
-                SizedBox(height:8),
-                Text('${irlSuperstars!.orientation}', style: TextStyle(color: Colors.black, fontSize: 18))]),
+                Text('${irlSuperstars!.prenom} ${irlSuperstars!.nom}', style: const TextStyle(color: Colors.black, fontSize: 36, fontWeight: FontWeight.bold),),
+                const SizedBox(height:8),
+                Text(irlSuperstars!.orientation, style: const TextStyle(color: Colors.black, fontSize: 18))]),
             ]),
       );
 
   Widget editButton() => IconButton(
-      icon: Icon(Icons.edit_outlined),
+      icon: const Icon(Icons.edit_outlined),
       onPressed: () async {
         if (isLoading) return;
 
@@ -59,7 +56,7 @@ class _IRLSuperstarsDetailPage extends State<IRLSuperstarsDetailPage> {
       });
 
   Widget deleteButton() => IconButton(
-        icon: Icon(Icons.delete),
+        icon: const Icon(Icons.delete),
         onPressed: () {
           final docIRLSuperstars= FirebaseFirestore.instance.collection('IRLSuperstars').doc(irlSuperstars!.id);
           docIRLSuperstars.delete();

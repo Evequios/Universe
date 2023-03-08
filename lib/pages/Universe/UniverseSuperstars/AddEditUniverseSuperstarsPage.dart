@@ -1,10 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
-import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
 import 'package:wwe_universe/database.dart';
-import 'package:wwe_universe/widget/Universe/UniverseNewsFormWidget.dart';
 import 'package:wwe_universe/widget/Universe/UniverseSuperstarsFormWidget.dart';
 
 class AddEditUniverseSuperstarsPage extends StatefulWidget {

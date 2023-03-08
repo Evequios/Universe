@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 const List<String> listCategories = <String>['Annonce', 'Blessure', 'Retour', 'Autre'];
@@ -25,14 +24,14 @@ class UniverseNewsFormWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               buildTitre(),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               buildTexte(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               buildCategorie()
             ],
           ),
@@ -79,7 +78,7 @@ class UniverseNewsFormWidget extends StatelessWidget {
       onChanged : onChangedType, 
       items: listCategories.map((categorie){
         return DropdownMenuItem<String>(
-          value: categorie != '' && categorie != null ? categorie : listCategories[0],
+          value: categorie != '' ? categorie : listCategories[0],
           child: Text(categorie),);
       }).toList(),
     ),);

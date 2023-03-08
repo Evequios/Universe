@@ -8,6 +8,8 @@ import 'package:wwe_universe/pages/Settings/Titles/IRL/IRLTitlesDetailPage.dart'
 
 
 class IRLTitlesPage extends StatefulWidget{
+  const IRLTitlesPage({super.key});
+
   @override
   _IRLTitlesPageState createState() => _IRLTitlesPageState();
 }
@@ -22,7 +24,7 @@ class _IRLTitlesPageState extends State<IRLTitlesPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         // backgroundColor: Color.fromARGB(227, 242, 237, 237),
-        drawer: Navbar(),
+        drawer: const Navbar(),
         appBar: AppBar(
           title: const Text(
             'Titles',
@@ -36,19 +38,19 @@ class _IRLTitlesPageState extends State<IRLTitlesPage> {
             stream: readAllIRLTitles(),
             builder: (BuildContext context, snapshot) {
             if (snapshot.hasError) {
-              return Text('Something went wrong');
+              return const Text('Something went wrong');
             }
 
             else if(snapshot.hasData){
               final irlTitles = snapshot.data!;
 
               return ListView(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 children: irlTitles.map(buildIRLTitles).toList()
               ,);
             }
             else{
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           }),
         ),
@@ -57,7 +59,7 @@ class _IRLTitlesPageState extends State<IRLTitlesPage> {
           child: const Icon(Icons.add),
           onPressed: () async {
             await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => AddEditIRLTitlesPage()),
+              MaterialPageRoute(builder: (context) => const AddEditIRLTitlesPage()),
             );
           },
         ),
@@ -66,7 +68,7 @@ class _IRLTitlesPageState extends State<IRLTitlesPage> {
   Widget buildIRLTitles(IRLTitles irlTitles) {
   return Card(
             shape:RoundedRectangleBorder(
-              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
               elevation : 2,
               child: ListTile(
@@ -75,9 +77,9 @@ class _IRLTitlesPageState extends State<IRLTitlesPage> {
                 builder: (context) => IRLTitlesDetailPage(irlTitles: irlTitles),
               ));
               },
-              title: Text('${irlTitles.nom} Championship', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              title: Text('${irlTitles.nom} Championship', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               subtitle: irlTitles.tag == 'false' ? 
-                Text('${irlTitles.holder1}')
+                Text(irlTitles.holder1)
                 : Text('${irlTitles.holder1} & ${irlTitles.holder2}'),
               // subtitle: Text('${irlTitles.createdTime.toDate().day}/${irlTitles.createdTime.toDate().month}/${irlTitles.createdTime.toDate().year}  ${irlTitles.createdTime.toDate().hour}h${irlTitles.createdTime.toDate().minute.toString().padLeft(2, '0')}                                      ${irlTitles.categorie}'),
               ));

@@ -9,7 +9,6 @@ import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/classes/Universe/UniverseTeams.dart';
 import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
 import 'package:path/path.dart';
-import 'package:flutter/material.dart';
 
 
 class UniverseDatabase {
@@ -297,8 +296,7 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     String queryR4 = "UPDATE $tableSuperstars SET ${SuperstarsFields.rival4} = 0 WHERE ${SuperstarsFields.rival4} = $id;";
     String queryR5 = "UPDATE $tableSuperstars SET ${SuperstarsFields.rival5} = 0 WHERE ${SuperstarsFields.rival5} = $id;";
 
-    int count  = await db.rawUpdate(queryA1);
-    print(count);
+    await db.rawUpdate(queryA1);
     await db.rawUpdate(queryA2);
     await db.rawUpdate(queryA3);
     await db.rawUpdate(queryA4);
@@ -318,7 +316,7 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
     await db.delete(
       tableTeams,
-      where: '${TeamsFields.member1} = $id OR ${TeamsFields.member2} = $id OR ${TeamsFields.member3} = $id OR ${TeamsFields.member4} = ${id} OR ${TeamsFields.member5} = ${id}'
+      where: '${TeamsFields.member1} = $id OR ${TeamsFields.member2} = $id OR ${TeamsFields.member3} = $id OR ${TeamsFields.member4} = $id OR ${TeamsFields.member5} = $id'
     );
     
     return await db.delete(

@@ -51,14 +51,14 @@ class _AddEditIRLNewsPage extends State<AddEditIRLNewsPage> {
     final isFormValid = titre.isNotEmpty && texte.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? null : Colors.grey.shade700,
+          foregroundColor: Colors.white, 
+          backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateIRLNews,
-        child: Text('Save'),
+        child: const Text('Save'),
       ),
     );
   }
@@ -75,7 +75,7 @@ class _AddEditIRLNewsPage extends State<AddEditIRLNewsPage> {
         await addIRLNews();
       }
 
-      Navigator.of(context).pop();
+      if(context.mounted) Navigator.of(context).pop();
     }
   }
 

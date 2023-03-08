@@ -40,7 +40,7 @@ class _UniverseTeamsPageState extends State<UniverseTeamsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    drawer: Navbar(),
+    drawer: const Navbar(),
     appBar: AppBar(
       title: const Text(
         'Teams',
@@ -84,11 +84,11 @@ class _UniverseTeamsPageState extends State<UniverseTeamsPage> {
             builder: (context) => UniverseTeamsDetailPage(teamId: team.id!),
           )).then((value) => refreshTeams());
         },
-        child :Container(
+        child :SizedBox(
           height: 100,
           child : Card(
             shape:RoundedRectangleBorder(
-              side: new BorderSide(color: const Color.fromARGB(189, 96, 125, 139)),
+              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)
             ),
             elevation: 2,

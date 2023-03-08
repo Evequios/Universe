@@ -90,6 +90,6 @@ class SplashScreen extends StatelessWidget{
       splashIconSize: double.infinity,
       splashTransition: SplashTransition.fadeTransition,
       backgroundColor: Colors.black,
-      nextScreen: IRLNewsPage());
+      nextScreen: const IRLNewsPage());
   }
 }

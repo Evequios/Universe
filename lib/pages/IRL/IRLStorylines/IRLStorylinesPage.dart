@@ -6,6 +6,8 @@ import 'package:wwe_universe/pages/IRL/IRLStorylines/AddEditIRLStorylinesPage.da
 import 'package:wwe_universe/pages/IRL/IRLStorylines/IRLStorylinesDetailPage.dart';
 
 class IRLStorylinesPage extends StatefulWidget{
+  const IRLStorylinesPage({super.key});
+
   @override
   _IRLStorylinesPage createState() => _IRLStorylinesPage();
 }
@@ -20,7 +22,7 @@ class _IRLStorylinesPage extends State<IRLStorylinesPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        drawer: Navbar(),
+        drawer: const Navbar(),
         appBar: AppBar(
           title: const Text(
             'Storylines',
@@ -32,19 +34,19 @@ class _IRLStorylinesPage extends State<IRLStorylinesPage> {
             stream: readAllIRLStorylines(),
             builder: (BuildContext context, snapshot) {
             if (snapshot.hasError) {
-              return Text('Something went wrong');
+              return const Text('Something went wrong');
             }
 
             else if(snapshot.hasData){
               final irlStorylines = snapshot.data!;
 
               return ListView(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 children: irlStorylines.map(buildIRLStorylines).toList()
               ,);
             }
             else{
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           }),
         ),
@@ -53,7 +55,7 @@ class _IRLStorylinesPage extends State<IRLStorylinesPage> {
           child: const Icon(Icons.add),
           onPressed: () async {
             await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => AddEditIRLStorylinesPage()),
+              MaterialPageRoute(builder: (context) => const AddEditIRLStorylinesPage()),
             );
           },
         ),
@@ -64,7 +66,7 @@ class _IRLStorylinesPage extends State<IRLStorylinesPage> {
             return Card(
               color : irlStorylines.fin != '' ? Colors.white70 : Colors.white,
               shape:RoundedRectangleBorder(
-              side: new BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)),
               elevation : 2,
               child: ListTile(
@@ -74,12 +76,12 @@ class _IRLStorylinesPage extends State<IRLStorylinesPage> {
                 builder: (context) => IRLStorylinesDetailPage(irlStorylines: irlStorylines),
               ));
               },
-              title: Text(irlStorylines.titre, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              title: Text(irlStorylines.titre, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               subtitle: Row(
                 children: [
-                Text('Début : ${irlStorylines.debut}',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
+                Text('Début : ${irlStorylines.debut}',style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
                 const Spacer(),
-                Text('Fin : ${irlStorylines.fin}', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
+                Text('Fin : ${irlStorylines.fin}', textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)),
               ])
             ));
   }
