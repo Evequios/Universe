@@ -261,6 +261,20 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     return result.map((json) => UniverseSuperstars.fromJson(json)).toList();
   }
 
+  Future<List<UniverseSuperstars>> readAllSuperstarsFilter(int brandId) async {
+    final db = await instance.database;
+    const orderBy = '${SuperstarsFields.name} ASC';
+
+    final result = await db.query(
+      tableSuperstars, 
+      where: '${SuperstarsFields.brand} = ? ',
+      whereArgs: [brandId],
+      orderBy: orderBy
+    );
+
+    return result.map((json) => UniverseSuperstars.fromJson(json)).toList();
+  }
+
   Future<int> updateSuperstar(UniverseSuperstars universeSuperstars) async {
     final db = await instance.database;
 

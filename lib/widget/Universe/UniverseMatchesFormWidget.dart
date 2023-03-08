@@ -170,7 +170,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
               const SizedBox(height: 8,),
               buildS2(),
               const SizedBox(height: 8,),
-              buildS3(),
+              if(stip.type != '1v1') buildS3(),
               const SizedBox(height: 8,),
               buildS4(),
               const SizedBox(height: 8,),

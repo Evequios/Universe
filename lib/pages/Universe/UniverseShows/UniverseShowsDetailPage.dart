@@ -138,6 +138,7 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
               builder: (context) => UniverseMatchesDetailPage(matchId: match.id!, showId: show.id!,),
             )).then((value) => refreshMatches());
           },
+          
           title:((){
             if(stipulation.type == ("1v1")){
               return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));

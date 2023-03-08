@@ -97,8 +97,8 @@ class Navbar extends StatelessWidget{
               ),
             ],
           ),
-          const SizedBox(height: 10,),
-          const Divider(thickness: 1, height: 10, color: Colors.grey,),
+          // const SizedBox(height: 10,),
+          const Divider(thickness: 1, height: 0, color: Colors.grey,),
           ListTile(
             title : const Icon(Icons.settings),
             onTap:() {
