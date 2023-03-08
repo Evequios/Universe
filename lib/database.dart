@@ -495,6 +495,15 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     return result.map((json) => UniverseMatches.fromJson(json)).toList();
   }
 
+  Future<List<UniverseMatches>> readAllMatchesSuperstar(int id) async {
+    final db = await instance.database;
+
+    final result = await db.query(tableMatches,
+    where: 's1 = $id OR s2 = $id OR s3 = $id OR s4 = $id OR s5 = $id OR s6 = $id OR s7 = $id OR s8 = $id');
+
+    return result.map((json) => UniverseMatches.fromJson(json)).toList();
+  }
+
   Future<int> updateMatches(UniverseMatches universeMatches) async {
     final db = await instance.database;
 

@@ -8,6 +8,15 @@
 - Refactor et commentaires
 - Build les dropdown des superstars en fonction de la stipulation
 
+- Comment faire le win/loose record ?
+    Win si gagnant en solo
+        Si stip = 1v1 & winner = superstar.id, +1
+    Win si gagnant en team ?
+    Loose si perdant en solo 
+        Si stip = 1v1 & winner != superstar.id, +1
+    Loose si perdant en team ?
+    Séparer les teams en listes 
+
 Tout faire pour pouvoir représenter au mieux les statistiques.
 
 

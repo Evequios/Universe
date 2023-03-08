@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
+import 'package:wwe_universe/classes/Universe/UniverseMatches.dart';
+import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseSuperstars/AddEditUniverseSuperstarsPage.dart';
@@ -17,8 +19,14 @@ class UniverseSuperstarsDetailPage extends StatefulWidget {
 }
 
 class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> {
+  int wins = 0;
+  int looses = 0;
+  List<int> team1 = [];
+  List<int> team2 = [];
+  List<int> team3 = [];
   late UniverseSuperstars superstar;
   late UniverseBrands brand;
+  late List<UniverseMatches> listMatches;
   late List<UniverseBrands> listBrands = [];
   late List<UniverseSuperstars> listSuperstars = [];
   UniverseBrands defaultBrand = const UniverseBrands(name: '');
@@ -46,7 +54,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
 
   Future refreshSuperstars() async {
     setState(() => isLoading = true);
-
+    
     superstar = await UniverseDatabase.instance.readSuperstar(widget.superstarId);
     if(superstar.ally1 != 0) ally1 = await UniverseDatabase.instance.readSuperstar(superstar.ally1);
     if(superstar.ally2 != 0) ally2 = await UniverseDatabase.instance.readSuperstar(superstar.ally2);
@@ -68,8 +76,102 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
     }
     listBrands = await UniverseDatabase.instance.readAllBrands();
     listSuperstars = await UniverseDatabase.instance.readAllSuperstars();
+    listMatches = await UniverseDatabase.instance.readAllMatchesSuperstar(superstar.id!);
 
+    await getRecord();
+    
     setState(() => isLoading = false);  
+  }
+
+  Future<int> getRecord() async {
+    int w = 0;
+    int l = 0;
+    late UniverseStipulations stip;
+    List<String> soloType = ['1v1', 'Triple Threat', 'Fatal 4-Way', '5-Way', '6-Way', '8-Way'];
+    List<String> tagType = ['2v2', '3v3', '4v4', '2v2v2'];
+    for(UniverseMatches m in listMatches){
+      stip = await UniverseDatabase.instance.readStipulation(m.stipulation);
+      switch(stip.type){
+        case '2v2':
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s1)).id!);
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s2)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s3)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s4)).id!);
+          break;
+        case '3v3':
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s1)).id!);
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s2)).id!);
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s3)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s4)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s5)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s6)).id!);
+          break;
+        case '4v4':
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s1)).id!);
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s2)).id!);
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s3)).id!);
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s4)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s5)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s6)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s7)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s8)).id!);
+          break;
+        case '2v2v2':
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s1)).id!);
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s2)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s3)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s4)).id!);
+          team3.add((await UniverseDatabase.instance.readSuperstar(m.s5)).id!);
+          team3.add((await UniverseDatabase.instance.readSuperstar(m.s6)).id!);
+          break;  
+        default:
+          break;
+      }
+
+      if(soloType.contains(stip.type)){
+        if(m.winner == superstar.id){
+          w++;
+        }
+        else{
+          l++;
+        }
+      }
+
+      if(tagType.contains(stip.type)){
+        int winnerList = 0;
+        int superstarList = 0;
+
+        if(team1.contains(m.winner)){
+          winnerList = 1;
+        }
+        else if(team2.contains(m.winner)){
+          winnerList = 2;
+        }
+        else if(team3.contains(m.winner)){
+          winnerList = 3;
+        }
+
+        if(team1.contains(superstar.id)){
+          superstarList = 1;
+        }
+        else if(team2.contains(superstar.id)){
+          superstarList = 2;
+        }
+        else if(team3.contains(superstar.id)){
+          superstarList = 3;
+        }
+
+        if(winnerList == superstarList){
+          w++;
+        }
+        else{
+          l++;
+        }
+      }
+    }
+    wins = w;
+    looses = l;
+    return 1;
   }
 
   @override
@@ -157,12 +259,26 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
                 superstar.rival5 != 0 ? Text(
                   'Rival5 : ${rival5.name}',
                   style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,)
+                ) : const SizedBox(height: 0,),
+
+                const SizedBox(height: 8),
+                Text(
+                  'Wins : $wins',
+                  style: const TextStyle(color: Colors.black, fontSize: 18),
+                ),
+
+                const SizedBox(height: 8),
+                Text(
+                  'Looses : $looses',
+                  style: const TextStyle(color: Colors.black, fontSize: 18),
+                ),
+
               ],
             ),
           ),
   );
 
+  
   Widget editButton() => IconButton(
       icon: const Icon(Icons.edit_outlined),
       onPressed: () async {
