@@ -574,6 +574,12 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
   Future<int> deleteStipulation(int id) async {
     final db = await instance.database;
 
+    await db.delete(
+      tableMatches,
+      where: '${MatchesFields.stipulation} = ?',
+      whereArgs: [id],
+    );
+
     return await db.delete(
       tableStipulations,
       where: '${StipulationsFields.id} = ?',
