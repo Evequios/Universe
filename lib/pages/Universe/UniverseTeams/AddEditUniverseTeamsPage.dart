@@ -37,7 +37,7 @@ class _AddEditUniverseTeamsPage extends State<AddEditUniverseTeamsPage> {
     m3 = widget.team?.member3 ?? 0;
     m4 = widget.team?.member4 ?? 0;
     m5 = widget.team?.member5 ?? 0;
-    listSuperstars = widget.listSuperstars!;
+    if(widget.listSuperstars != null) listSuperstars = widget.listSuperstars!;
   }
 
   @override
