@@ -268,6 +268,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
         hint : const Text("Superstar 3"),
+        value: s3 != 0 ? s3 : defaultSup.id,
         onChanged: onChangedS3,
         items: disable(3) ? null : listSuperstars!.map((s3){
         return DropdownMenuItem(
@@ -286,6 +287,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
         hint : const Text("Superstar 4"),
+        value: s4 != 0 ? s4 : defaultSup.id,
         onChanged: onChangedS4,
         items: disable(4) ? null : listSuperstars!.map((s4){
         return DropdownMenuItem(
@@ -304,6 +306,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
         hint : const Text("Superstar 5"),
+        value: s5 != 0 ? s5 : defaultSup.id,
         onChanged: onChangedS5,
         items: disable(5) ? null : listSuperstars!.map((s5){
         return DropdownMenuItem(
@@ -322,6 +325,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
         hint : const Text("Superstar 6"),
+        value: s6 != 0 ? s6 : defaultSup.id,
         onChanged: onChangedS6,
         items: disable(6) ? null : listSuperstars!.map((s6){
         return DropdownMenuItem(
@@ -340,6 +344,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
         hint : const Text("Superstar 7"),
+        value: s7 != 0 ? s7 : defaultSup.id,
         onChanged: onChangedS7,
         items: disable(7) ? null : listSuperstars!.map((s7){
         return DropdownMenuItem(
@@ -358,6 +363,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
       ),
         hint : const Text("Superstar 8"),
+        value: s8 != 0 ? s8 : defaultSup.id,
         onChanged: onChangedS8,
         items: disable(8) ? null : listSuperstars!.map((s8){
         return DropdownMenuItem(
