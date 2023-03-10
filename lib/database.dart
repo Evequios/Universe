@@ -501,6 +501,20 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     return result.map((json) => UniverseStorylines.fromJson(json)).toList();
   }
 
+  Future<List<UniverseStorylines>> readAllStorylinesSearch(String n) async {
+    final db = await instance.database;
+    const orderBy = '${StorylinesFields.id} DESC';
+
+    final result = await db.query(
+      tableStorylines, 
+      where: '${StorylinesFields.title} LIKE ? OR ${StorylinesFields.text} LIKE ?',
+      whereArgs: ['%$n%', '%$n%'],
+      orderBy: orderBy
+    );
+
+    return result.map((json) => UniverseStorylines.fromJson(json)).toList();
+  }
+
   Future<int> updateStoryline(UniverseStorylines storyline) async {
     final db = await instance.database;
 
@@ -808,6 +822,20 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
   Future<List<UniverseTitles>> readAllTitles() async {
     final db = await instance.database;
     final result = await db.query(tableTitles);
+
+    return result.map((json) => UniverseTitles.fromJson(json)).toList();
+  }
+
+  Future<List<UniverseTitles>> readAllTitlesSearch(String n) async {
+    final db = await instance.database;
+    const orderBy = '${TitlesFields.name} ASC';
+
+    final result = await db.query(
+      tableTitles, 
+      where: '${TitlesFields.name} LIKE ?',
+      whereArgs: ['%$n%'],
+      orderBy: orderBy
+    );
 
     return result.map((json) => UniverseTitles.fromJson(json)).toList();
   }

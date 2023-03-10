@@ -16,18 +16,32 @@ class UniverseTitlesPage extends StatefulWidget{
   _UniverseTitlesPageState createState() => _UniverseTitlesPageState();
 }
 
-class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
+class _UniverseTitlesPageState extends State<UniverseTitlesPage> with AutomaticKeepAliveClientMixin {
   UniverseBrands defaultBrand = const UniverseBrands(name: 'nom');
   late List<UniverseTitles> titlesList;
   late List<UniverseSuperstars> superstarsList;
   late List<UniverseBrands> brandsList;
   bool isLoading = false;
+  Icon customIcon = const Icon(Icons.search);
+  Widget customSearchBar = const Text('Titles');
+  String searchString = '';
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
 
     refreshTitles();
+  }
+
+  void setTitlesList(String search) async {
+    setState(() => isLoading = true);
+
+    titlesList = await UniverseDatabase.instance.readAllTitlesSearch(search);
+  
+    setState(() => isLoading = false); 
   }
 
   Future refreshTitles() async {
@@ -41,12 +55,53 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
     drawer: const Navbar(),
     appBar: AppBar(
-      title: const Text(
-        'Titles',
-      ),
+      title: customSearchBar,
+      actions: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              if (customIcon.icon == Icons.search) {
+                customIcon = const Icon(Icons.cancel);
+                customSearchBar =  ListTile(
+                  leading: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  title: TextFormField(
+                    initialValue: searchString,
+                    decoration: const InputDecoration(
+                      hintText: "type in title name...",
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    onChanged: (searchString) => ((){this.searchString = searchString; setTitlesList(searchString);}()),
+                  ),
+                );
+              } else {
+                  searchString = '';
+                  customIcon = const Icon(Icons.search);
+                  customSearchBar = const Text('Titles');
+                  setTitlesList(searchString);
+              }
+            });
+          },
+          icon : customIcon,
+        ),
+      ],
+      centerTitle: true,
     ),
     body: Center(
       child: isLoading
@@ -69,6 +124,7 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> {
       },
     ),
   );
+  }
 
   Widget buildUniverseTitles() => ListView.builder(
     padding : const EdgeInsets.all(8),
