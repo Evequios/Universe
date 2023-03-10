@@ -12,9 +12,15 @@ class UniverseNewsPage extends StatefulWidget{
   _UniverseNewsPageState createState() => _UniverseNewsPageState();
 }
 
-class _UniverseNewsPageState extends State<UniverseNewsPage> {
+class _UniverseNewsPageState extends State<UniverseNewsPage> with AutomaticKeepAliveClientMixin {
   late List<UniverseNews> newsList;
   bool isLoading = false;
+  Icon customIcon = const Icon(Icons.search);
+  Widget customSearchBar = const Text('News');
+  String searchString = '';
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -31,15 +37,64 @@ class _UniverseNewsPageState extends State<UniverseNewsPage> {
     setState(() => isLoading = false);
   }
 
+  void setNewsList(String search) async {
+    setState(() => isLoading = true);
+
+    newsList = await UniverseDatabase.instance.readAllNewsSearch(search);
+  
+    setState(() => isLoading = false); 
+  }
+
 
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
     drawer: const Navbar(),
     appBar: AppBar(
-      title: const Text(
-        'News',
-      ),
+      title: customSearchBar,
+      actions: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              if (customIcon.icon == Icons.search) {
+                customIcon = const Icon(Icons.cancel);
+                customSearchBar =  ListTile(
+                  leading: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  title: TextFormField(
+                    initialValue: searchString,
+                    decoration: const InputDecoration(
+                      hintText: "type in news content...",
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    onChanged: (searchString) => ((){this.searchString = searchString; setNewsList(searchString);}()),
+                  ),
+                );
+              } else {
+                  searchString = '';
+                  customIcon = const Icon(Icons.search);
+                  customSearchBar = const Text('News');
+                  setNewsList(searchString);
+              }
+            });
+          },
+          icon : customIcon,
+        ),
+      ],
+      centerTitle: true,
     ),
     body: Center(
       child: isLoading
@@ -62,6 +117,7 @@ class _UniverseNewsPageState extends State<UniverseNewsPage> {
       },
     ),
   );
+  }
 
   Widget buildUniverseNews() => ListView.builder(
     padding : const EdgeInsets.all(8),

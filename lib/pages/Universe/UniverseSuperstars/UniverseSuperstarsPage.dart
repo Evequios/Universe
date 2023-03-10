@@ -41,7 +41,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> with Automat
     setState(() => isLoading = false);
   }
 
-  void setSuperStarsList(String search) async {
+  void setSuperstarsList(String search) async {
     setState(() => isLoading = true);
 
     superstarsList = await UniverseDatabase.instance.readAllSuperstarsSearch(search);
@@ -68,7 +68,8 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> with Automat
                     color: Colors.white,
                     size: 28,
                   ),
-                  title: TextField(
+                  title: TextFormField(
+                    initialValue: searchString,
                     decoration: const InputDecoration(
                       hintText: "type in superstar's name...",
                       hintStyle: TextStyle(
@@ -81,12 +82,14 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> with Automat
                     style: const TextStyle(
                       color: Colors.white,
                     ),
-                    onChanged: (searchString) => ((){this.searchString = searchString; setSuperStarsList(searchString);}()),
+                    onChanged: (searchString) => ((){this.searchString = searchString; setSuperstarsList(searchString);}()),
                   ),
                 );
               } else {
-              customIcon = const Icon(Icons.search);
-              customSearchBar = const Text('Superstars');
+                  searchString = '';
+                  customIcon = const Icon(Icons.search);
+                  customSearchBar = const Text('Superstars');
+                  setSuperstarsList(searchString);
               }
             });
           },

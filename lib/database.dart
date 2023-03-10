@@ -305,6 +305,20 @@ class UniverseDatabase {
     return result.map((json) => UniverseNews.fromJson(json)).toList();
   }
 
+  Future<List<UniverseNews>> readAllNewsSearch(String n) async {
+    final db = await instance.database;
+    const orderBy = '${NewsFields.createdTime} DESC';
+
+    final result = await db.query(
+      tableNews, 
+      where: '${NewsFields.title} LIKE ? OR ${NewsFields.text} LIKE ?',
+      whereArgs: ['%$n%', '%$n%'],
+      orderBy: orderBy
+    );
+
+    return result.map((json) => UniverseNews.fromJson(json)).toList();
+  }
+
   Future<int> updateNews(UniverseNews news) async {
     final db = await instance.database;
 
