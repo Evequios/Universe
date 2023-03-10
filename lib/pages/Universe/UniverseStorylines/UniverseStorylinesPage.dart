@@ -12,9 +12,15 @@ class UniverseStorylinesPage extends StatefulWidget{
   _UniverseStorylinesPage createState() => _UniverseStorylinesPage();
 }
 
-class _UniverseStorylinesPage extends State<UniverseStorylinesPage> {
+class _UniverseStorylinesPage extends State<UniverseStorylinesPage> with AutomaticKeepAliveClientMixin {
   late List<UniverseStorylines> storylinesList;
   bool isLoading = false;
+  Icon customIcon = const Icon(Icons.search);
+  Widget customSearchBar = const Text('Storylines');
+  String searchString = '';
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -31,13 +37,62 @@ class _UniverseStorylinesPage extends State<UniverseStorylinesPage> {
     setState(() => isLoading = false);
   }
 
+  void setStorylinesList(String search) async {
+    setState(() => isLoading = true);
+
+    storylinesList = await UniverseDatabase.instance.readAllStorylinesSearch(search);
+  
+    setState(() => isLoading = false); 
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
     drawer: const Navbar(),
     appBar: AppBar(
-      title: const Text(
-        'Storylines',
-      ),
+      title: customSearchBar,
+      actions: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              if (customIcon.icon == Icons.search) {
+                customIcon = const Icon(Icons.cancel);
+                customSearchBar =  ListTile(
+                  leading: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  title: TextFormField(
+                    initialValue: searchString,
+                    decoration: const InputDecoration(
+                      hintText: "type in storylines content...",
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    onChanged: (searchString) => ((){this.searchString = searchString; setStorylinesList(searchString);}()),
+                  ),
+                );
+              } else {
+                  searchString = '';
+                  customIcon = const Icon(Icons.search);
+                  customSearchBar = const Text('Storylines');
+                  setStorylinesList(searchString);
+              }
+            });
+          },
+          icon : customIcon,
+        ),
+      ],
+      centerTitle: true,
     ),
     body: Center(
       child: isLoading
@@ -60,6 +115,7 @@ class _UniverseStorylinesPage extends State<UniverseStorylinesPage> {
       },
     ),
   );
+  }
 
 
   Widget buildUniverseStorylines() => ListView.builder(
