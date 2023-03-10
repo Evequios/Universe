@@ -20,7 +20,7 @@ class AddEditUniverseTeamsPage extends StatefulWidget {
 class _AddEditUniverseTeamsPage extends State<AddEditUniverseTeamsPage> {
   final _formKey = GlobalKey<FormState>();
   late List<UniverseSuperstars> listSuperstars = [];
-  late String nom;
+  late String name;
   late int m1;
   late int m2;
   late int m3;
@@ -31,7 +31,7 @@ class _AddEditUniverseTeamsPage extends State<AddEditUniverseTeamsPage> {
   void initState() {
     super.initState();
 
-    nom = widget.team?.nom ?? '';
+    name = widget.team?.name ?? '';
     m1 = widget.team?.member1 ?? 0;
     m2 = widget.team?.member2 ?? 0;
     m3 = widget.team?.member3 ?? 0;
@@ -49,13 +49,13 @@ class _AddEditUniverseTeamsPage extends State<AddEditUniverseTeamsPage> {
           key: _formKey,
           child: UniverseTeamsFormWidget(
             listSuperstars: listSuperstars,
-            nom: nom,
+            name: name,
             m1: m1,
             m2: m2,
             m3: m3,
             m4: m4,
             m5: m5,
-            onChangedNom: (nom) => setState(() => this.nom = nom!),
+            onChangedName: (name) => setState(() => this.name = name!),
             onChangedM1: (m1) => setState(() => this.m1 = m1!),
             onChangedM2: (m2) => setState(() => this.m2 = m2!),
             onChangedM3: (m3) => setState(() => this.m3 = m3!),
@@ -66,7 +66,7 @@ class _AddEditUniverseTeamsPage extends State<AddEditUniverseTeamsPage> {
       );
 
   Widget buildButton() {
-    final isFormValid = nom.isNotEmpty;
+    final isFormValid = name.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -100,7 +100,7 @@ class _AddEditUniverseTeamsPage extends State<AddEditUniverseTeamsPage> {
 
   Future updateUniverseTeams() async {
     final team = widget.team!.copy(
-      nom: nom,
+      name: name,
       member1: m1,
       member2: m2,
       member3: m3,
@@ -112,7 +112,7 @@ class _AddEditUniverseTeamsPage extends State<AddEditUniverseTeamsPage> {
 
   Future addUniverseTeams() async {
     final team = UniverseTeams(
-      nom: nom,
+      name: name,
       member1 : m1,
       member2 : m2,
       member3 : m3,

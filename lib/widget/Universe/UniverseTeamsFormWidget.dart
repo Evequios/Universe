@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 
-UniverseSuperstars defaultSup = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+UniverseSuperstars defaultSup = const UniverseSuperstars(name: 'name', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
 
 class UniverseTeamsFormWidget extends StatelessWidget {
   final List<UniverseSuperstars>? listSuperstars;
-  final String? nom;
+  final String? name;
   final int? m1;
   final int? m2;
   final int? m3;
   final int? m4;
   final int? m5;
-  final ValueChanged<String?> onChangedNom;
+  final ValueChanged<String?> onChangedName;
   final ValueChanged<int?> onChangedM1;
   final ValueChanged<int?> onChangedM2;
   final ValueChanged<int?> onChangedM3;
@@ -21,13 +21,13 @@ class UniverseTeamsFormWidget extends StatelessWidget {
   const UniverseTeamsFormWidget({
     Key? key,
     required this.listSuperstars,
-    this.nom = '',
+    this.name = '',
     this.m1,
     this.m2,
     this.m3,
     this.m4,
     this.m5,
-    required this.onChangedNom,
+    required this.onChangedName,
     required this.onChangedM1,
     required this.onChangedM2,
     required this.onChangedM3,
@@ -42,7 +42,7 @@ class UniverseTeamsFormWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          buildNom(),
+          buildName(),
           const SizedBox(height: 8),
           buildM1(),
           const SizedBox(height: 8),
@@ -59,8 +59,8 @@ class UniverseTeamsFormWidget extends StatelessWidget {
     ),
   );
 
-  Widget buildNom() => TextFormField(
-    initialValue: nom,
+  Widget buildName() => TextFormField(
+    initialValue: name,
     style: const TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 24,
@@ -69,9 +69,9 @@ class UniverseTeamsFormWidget extends StatelessWidget {
       border: InputBorder.none,
       hintText: 'Name',
     ),
-    validator: (nom) =>
-        nom != null && nom.isEmpty ? "The name can't be empty" : null,
-    onChanged: onChangedNom,
+    validator: (name) =>
+        name != null && name.isEmpty ? "The name can't be empty" : null,
+    onChanged: onChangedName,
   );
 
 

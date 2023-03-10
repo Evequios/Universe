@@ -2,11 +2,11 @@ const String tableTeams = 'teams';
 
 class TeamsFields {
   static final List<String> values = [
-    id, nom, member1, member2, member3, member4, member5
+    id, name, member1, member2, member3, member4, member5
   ];
 
   static const String id = '_id';
-  static const String nom = 'nom';
+  static const String name = 'name';
   static const String member1 = 'member1';
   static const String member2 = 'member2';
   static const String member3 = 'member3';
@@ -16,7 +16,7 @@ class TeamsFields {
 
 class UniverseTeams{
   final int? id;
-  final String nom;
+  final String name;
   final int member1;
   final int member2;
   final int member3;
@@ -25,7 +25,7 @@ class UniverseTeams{
 
   const UniverseTeams({
     this.id,
-    required this.nom,
+    required this.name,
     required this.member1,
     required this.member2,
     required this.member3,
@@ -35,7 +35,7 @@ class UniverseTeams{
 
   UniverseTeams copy ({
     int? id,
-    String? nom,
+    String? name,
     int? member1,
     int? member2,
     int? member3,
@@ -44,7 +44,7 @@ class UniverseTeams{
   }) =>
     UniverseTeams(
       id : id ?? this.id,
-      nom : nom ?? this.nom,
+      name : name ?? this.name,
       member1: member1 ?? this.member1,
       member2: member2 ?? this.member2,
       member3: member3 ?? this.member3,
@@ -54,7 +54,7 @@ class UniverseTeams{
 
   static UniverseTeams fromJson(Map<String, dynamic> json) => UniverseTeams(
     id: json[TeamsFields.id] as int ?,
-    nom: json[TeamsFields.nom] as String,
+    name: json[TeamsFields.name] as String,
     member1: json[TeamsFields.member1] as int,
     member2: json[TeamsFields.member2] as int,
     member3: json[TeamsFields.member3] as int,
@@ -64,7 +64,7 @@ class UniverseTeams{
 
   Map<String, dynamic> toJson() => {
     TeamsFields.id: id,
-    TeamsFields.nom: nom,
+    TeamsFields.name: name,
     TeamsFields.member1: member1,
     TeamsFields.member2: member2,
     TeamsFields.member3: member3,
