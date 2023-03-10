@@ -13,11 +13,17 @@ class UniverseSuperstarsPage extends StatefulWidget{
   _UniverseSuperstarsPage createState() => _UniverseSuperstarsPage();
 }
 
-class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
+class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> with AutomaticKeepAliveClientMixin {
   UniverseBrands defaultBrand = const UniverseBrands(name: 'name');
   late List<UniverseSuperstars> superstarsList;
   late List<UniverseBrands> brandsList;
   bool isLoading = false;
+  Icon customIcon = const Icon(Icons.search);
+  Widget customSearchBar = const Text('Superstars');
+  String searchString = '';
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -35,13 +41,59 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
     setState(() => isLoading = false);
   }
 
+  void setSuperStarsList(String search) async {
+    setState(() => isLoading = true);
+
+    superstarsList = await UniverseDatabase.instance.readAllSuperstarsSearch(search);
+  
+    setState(() => isLoading = false); 
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
     drawer: const Navbar(),
     appBar: AppBar(
-      title: const Text(
-        'Superstars',
-      ),
+      title: customSearchBar,
+      actions: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              if (customIcon.icon == Icons.search) {
+                customIcon = const Icon(Icons.cancel);
+                customSearchBar =  ListTile(
+                  leading: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  title: TextField(
+                    decoration: const InputDecoration(
+                      hintText: "type in superstar's name...",
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    onChanged: (searchString) => ((){this.searchString = searchString; setSuperStarsList(searchString);}()),
+                  ),
+                );
+              } else {
+              customIcon = const Icon(Icons.search);
+              customSearchBar = const Text('Superstars');
+              }
+            });
+          },
+          icon : customIcon,
+        ),
+      ],
+      centerTitle: true,
     ),
     body: Center(
       child: isLoading
@@ -64,6 +116,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> {
       },
     ),
   );
+  }
 
 
   Widget buildUniverseSuperstars() => ListView.builder(

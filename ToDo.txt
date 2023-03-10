@@ -1,23 +1,12 @@
 ---- A faire
 - Vérifier l'affichage pour toutes les pages d'ajout/edit
-- Affichage conditionnel des listes vides lors de listes vides (superstars, brand)
 - Historisation?
 - Regarder comment marchent les match handicap
 - Ajouter rival ou ally dans les deux superstars
 - Améliorer mise en page
 - Refactor et commentaires
-- Build les dropdown des superstars en fonction de la stipulation
 
-- Comment faire le win/loose record ?
-    Win si gagnant en solo
-        Si stip = 1v1 & winner = superstar.id, +1
-    Win si gagnant en team ?
-    Loose si perdant en solo 
-        Si stip = 1v1 & winner != superstar.id, +1
-    Loose si perdant en team ?
-    Séparer les teams en listes 
 
-Tout faire pour pouvoir représenter au mieux les statistiques.
 
 
 ---- Idées :

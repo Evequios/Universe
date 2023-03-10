@@ -29,7 +29,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 59, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 60, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -151,26 +151,125 @@ class UniverseDatabase {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const intTypeNN = 'INTEGER NOT NULL';
     const intType = 'INTEGER';
+    const textType = 'TEXT NOT NULL';
+    const booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
       await db.execute('''DROP TABLE IF EXISTS $tableMatches;''');
+      await db.execute('''DROP TABLE IF EXISTS $tableShows;''');
+      await db.execute('''DROP TABLE IF EXISTS $tableStipulations;''');
+      await db.execute('''DROP TABLE IF EXISTS $tableBrands;''');
+      await db.execute('''DROP TABLE IF EXISTS $tableNews;''');
+      await db.execute('''DROP TABLE IF EXISTS $tableStorylines;''');
+      await db.execute('''DROP TABLE IF EXISTS $tableTeams;''');
+      await db.execute('''DROP TABLE IF EXISTS $tableTitles;''');
+      await db.execute('''DROP TABLE IF EXISTS $tableSuperstars;''');
       
       await db.execute('''
-        CREATE TABLE IF NOT EXISTS $tableMatches( 
-          ${MatchesFields.id} $idType,
-          ${MatchesFields.stipulation} $intTypeNN,
-          ${MatchesFields.s1} $intTypeNN,
-          ${MatchesFields.s2} $intTypeNN,
-          ${MatchesFields.s3} $intType,
-          ${MatchesFields.s4} $intType,
-          ${MatchesFields.s5} $intType,
-          ${MatchesFields.s6} $intType,
-          ${MatchesFields.s7} $intType,
-          ${MatchesFields.s8} $intType,
-          ${MatchesFields.winner} $intTypeNN,
-          ${MatchesFields.matchOrder} $intTypeNN DEFAULT 0,
-          ${MatchesFields.showId} $intTypeNN
-        ); '''
+      CREATE TABLE IF NOT EXISTS $tableNews ( 
+        ${NewsFields.id} $idType, 
+        ${NewsFields.title} $textType,
+        ${NewsFields.text} $textType,
+        ${NewsFields.createdTime} $textType,
+        ${NewsFields.type} $textType DEFAULT 'Other'
+      ); '''
+    );
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableBrands ( 
+        ${BrandsFields.id} $idType, 
+        ${BrandsFields.name} $textType
+      ); '''
+    );
+  
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableSuperstars ( 
+        ${SuperstarsFields.id} $idType, 
+        ${SuperstarsFields.name} $textType,
+        ${SuperstarsFields.brand} $intType,
+        ${SuperstarsFields.orientation} $textType,
+        ${SuperstarsFields.ally1} $intType DEFAULT 0,
+        ${SuperstarsFields.ally2} $intType DEFAULT 0,
+        ${SuperstarsFields.ally3} $intType DEFAULT 0,
+        ${SuperstarsFields.ally4} $intType DEFAULT 0,
+        ${SuperstarsFields.ally5} $intType DEFAULT 0,
+        ${SuperstarsFields.rival1} $intType DEFAULT 0,
+        ${SuperstarsFields.rival2} $intType DEFAULT 0,
+        ${SuperstarsFields.rival3} $intType DEFAULT 0,
+        ${SuperstarsFields.rival4} $intType DEFAULT 0,
+        ${SuperstarsFields.rival5} $intType DEFAULT 0
+      ); '''
+    );
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableStorylines ( 
+        ${StorylinesFields.id} $idType, 
+        ${StorylinesFields.title} $textType,
+        ${StorylinesFields.text} $textType,
+        ${StorylinesFields.yearStart} $intTypeNN,
+        ${StorylinesFields.yearEnd} $intTypeNN,
+        ${StorylinesFields.start} $intTypeNN,
+        ${StorylinesFields.end} $intTypeNN
+      ); '''
+    );
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableShows( 
+      ${ShowFields.id} $idType, 
+      ${ShowFields.name} $textType,
+      ${ShowFields.year} $intTypeNN,
+      ${ShowFields.week} $intTypeNN,
+      ${ShowFields.summary} $textType
+      ); '''
+    );
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableStipulations(
+        ${StipulationsFields.id} $idType,
+        ${StipulationsFields.type} $textType,
+        ${StipulationsFields.stipulation} $textType
+      );'''
+    );
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableMatches( 
+        ${MatchesFields.id} $idType, 
+        ${MatchesFields.stipulation} $intTypeNN,
+        ${MatchesFields.s1} $intTypeNN,
+        ${MatchesFields.s2} $intTypeNN,
+        ${MatchesFields.s3} $intType,
+        ${MatchesFields.s4} $intType,
+        ${MatchesFields.s5} $intType,
+        ${MatchesFields.s6} $intType,
+        ${MatchesFields.s7} $intType,
+        ${MatchesFields.s8} $intType,
+        ${MatchesFields.winner} $intTypeNN,
+        ${MatchesFields.matchOrder} $intTypeNN DEFAULT 0,
+        ${MatchesFields.showId} $intTypeNN
+      ); '''
+    );
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableTitles ( 
+        ${TitlesFields.id} $idType, 
+        ${TitlesFields.name} $textType,
+        ${TitlesFields.brand} $intType,
+        ${TitlesFields.tag} $booleanTypeNN,
+        ${TitlesFields.holder1} $intType,
+        ${TitlesFields.holder2} $intType
+      ); '''
+    );
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableTeams (
+        ${TeamsFields.id} $idType,
+        ${TeamsFields.nom} $textType,
+        ${TeamsFields.member1} $intTypeNN,
+        ${TeamsFields.member2} $intTypeNN,
+        ${TeamsFields.member3} $intType,
+        ${TeamsFields.member4} $intType,
+        ${TeamsFields.member5} $intType
       );
+  ''');
     }
   }
 
@@ -269,6 +368,20 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       tableSuperstars, 
       where: '${SuperstarsFields.brand} = ? ',
       whereArgs: [brandId],
+      orderBy: orderBy
+    );
+
+    return result.map((json) => UniverseSuperstars.fromJson(json)).toList();
+  }
+
+  Future<List<UniverseSuperstars>> readAllSuperstarsSearch(String n) async {
+    final db = await instance.database;
+    const orderBy = '${SuperstarsFields.name} ASC';
+
+    final result = await db.query(
+      tableSuperstars, 
+      where: '${SuperstarsFields.name} LIKE ?',
+      whereArgs: ['%$n%'],
       orderBy: orderBy
     );
 

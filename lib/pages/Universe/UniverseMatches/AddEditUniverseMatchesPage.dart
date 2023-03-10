@@ -83,7 +83,7 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
         winner : winner,
         order : order,
         showId : widget.show!.id,
-        onChangedStipulation: (stipulation) { setState(() => this.stipulation = stipulation!); getDetails(stipulation); winner = 0;},
+        onChangedStipulation: (stipulation) async { setState(() => {this.stipulation = stipulation!, getDetails(stipulation), winner = 0});},
         onChangedS1: (s1) => setState(() => this.s1 = s1!),
         onChangedS2: (s2) => setState(() => this.s2 = s2!),
         onChangedS3: (s3) => setState(() => this.s3 = s3!),

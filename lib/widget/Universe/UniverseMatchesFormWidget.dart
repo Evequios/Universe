@@ -6,9 +6,10 @@ import 'package:wwe_universe/database.dart';
 UniverseStipulations defaultStip = const UniverseStipulations(type: 'type', stipulation: 'stipulation');
 UniverseSuperstars defaultSup = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
 UniverseStipulations stip = const UniverseStipulations(type: 'type', stipulation: 'stipulation');
-Future getDetails(id) async {
+
+void getDetails(id) async {
   stip = await UniverseDatabase.instance.readStipulation(id);
-  
+  // print(stip.type);
 }
 
 bool disable(int nb){
@@ -31,7 +32,6 @@ bool disable(int nb){
       return stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == '3v3' || stip.type == '2v2v2' || stip.type == '6-Way' ? true : false;
     default :
       return true;
-    
   }
 }
 
@@ -170,17 +170,17 @@ class UniverseMatchesFormWidget extends StatelessWidget {
               const SizedBox(height: 8,),
               buildS2(),
               const SizedBox(height: 8,),
-              if(stip.type != '1v1') buildS3(),
+              if(!disable(3)) buildS3(),
               const SizedBox(height: 8,),
-              buildS4(),
+              if(!disable(4)) buildS4(),
               const SizedBox(height: 8,),
-              buildS5(),
+              if(!disable(5)) buildS5(),
               const SizedBox(height: 8,),
-              buildS6(),
+              if(!disable(6)) buildS6(),
               const SizedBox(height: 8,),
-              buildS7(),
+              if(!disable(7)) buildS7(),
               const SizedBox(height: 8,),
-              buildS8(),
+              if(!disable(8)) buildS8(),
               const SizedBox(height: 8,),
               buildWinner(),
               const SizedBox(height: 8,),
