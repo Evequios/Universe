@@ -38,6 +38,7 @@ class _UniverseBrandsPageState extends State<UniverseBrandsPage> {
       title: const Text(
         'Brands',
       ), 
+      centerTitle: true,
     ),
     body: Center(
       child: isLoading

@@ -39,6 +39,7 @@ class _UniverseShowsPage extends State<UniverseShowsPage> with AutomaticKeepAliv
     drawer: const Navbar(),
     appBar: AppBar(
       title: const Text('Shows'),
+      centerTitle: true,
     ),
     body: Center(
       child: isLoading

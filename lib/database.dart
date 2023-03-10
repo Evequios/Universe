@@ -615,6 +615,21 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     return result.map((json) => UniverseStipulations.fromJson(json)).toList();
   }
 
+  Future<List<UniverseStipulations>> readAllStipulationsSearch(String n) async {
+    final db = await instance.database;
+    const orderBy = '${StipulationsFields.type} ASC, ${StipulationsFields.stipulation} ASC';
+
+    final result = await db.query(
+      tableStipulations, 
+      where: '${StipulationsFields.type} LIKE ? OR ${StipulationsFields.stipulation} LIKE ?',
+      whereArgs: ['%$n%', '%$n%'],
+      orderBy: orderBy
+    );
+
+    return result.map((json) => UniverseStipulations.fromJson(json)).toList();
+  }
+
+
   Future<int> updateStipulation(UniverseStipulations stipulation) async {
     final db = await instance.database;
 
@@ -814,6 +829,20 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
     final result = await db.query(
       tableTeams,
+      orderBy: orderBy
+    );
+
+    return result.map((json) => UniverseTeams.fromJson(json)).toList();
+  }
+
+  Future<List<UniverseTeams>> readAllTeamsSearch(String n) async {
+    final db = await instance.database;
+    const orderBy = '${TeamsFields.name} ASC';
+
+    final result = await db.query(
+      tableTeams, 
+      where: '${TeamsFields.name} LIKE ?',
+      whereArgs: ['%$n%'],
       orderBy: orderBy
     );
 
