@@ -12,9 +12,12 @@ class UniverseShowsPage extends StatefulWidget{
   _UniverseShowsPage createState() => _UniverseShowsPage();
 }
 
-class _UniverseShowsPage extends State<UniverseShowsPage> {
+class _UniverseShowsPage extends State<UniverseShowsPage> with AutomaticKeepAliveClientMixin {
   late List<UniverseShows> showsList;
   bool isLoading = false;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
