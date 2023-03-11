@@ -13,7 +13,7 @@ class UniverseSuperstarsPage extends StatefulWidget{
   _UniverseSuperstarsPage createState() => _UniverseSuperstarsPage();
 }
 
-class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> with AutomaticKeepAliveClientMixin {
+class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> with AutomaticKeepAliveClientMixin<UniverseSuperstarsPage> {
   UniverseBrands defaultBrand = const UniverseBrands(name: 'name');
   late List<UniverseSuperstars> superstarsList;
   late List<UniverseBrands> brandsList;

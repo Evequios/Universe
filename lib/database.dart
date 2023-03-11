@@ -154,20 +154,20 @@ class UniverseDatabase {
     const textType = 'TEXT NOT NULL';
     const booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
-      await db.execute('''DROP TABLE IF EXISTS $tableTeams;''');
+  //     await db.execute('''DROP TABLE IF EXISTS $tableTeams;''');
       
 
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS $tableTeams (
-        ${TeamsFields.id} $idType,
-        ${TeamsFields.name} $textType,
-        ${TeamsFields.member1} $intTypeNN,
-        ${TeamsFields.member2} $intTypeNN,
-        ${TeamsFields.member3} $intType,
-        ${TeamsFields.member4} $intType,
-        ${TeamsFields.member5} $intType
-      );
-  ''');
+  //   await db.execute('''
+  //     CREATE TABLE IF NOT EXISTS $tableTeams (
+  //       ${TeamsFields.id} $idType,
+  //       ${TeamsFields.name} $textType,
+  //       ${TeamsFields.member1} $intTypeNN,
+  //       ${TeamsFields.member2} $intTypeNN,
+  //       ${TeamsFields.member3} $intType,
+  //       ${TeamsFields.member4} $intType,
+  //       ${TeamsFields.member5} $intType
+  //     );
+  // ''');
     }
   }
 

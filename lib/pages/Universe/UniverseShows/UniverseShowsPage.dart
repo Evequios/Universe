@@ -35,7 +35,9 @@ class _UniverseShowsPage extends State<UniverseShowsPage> with AutomaticKeepAliv
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
     drawer: const Navbar(),
     appBar: AppBar(
       title: const Text('Shows'),
@@ -62,6 +64,7 @@ class _UniverseShowsPage extends State<UniverseShowsPage> with AutomaticKeepAliv
       },
     ),
   );
+  }
 
   Widget buildUniverseShows() => ListView.builder(
     padding: const EdgeInsets.all(8),

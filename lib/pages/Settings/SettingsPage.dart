@@ -31,29 +31,29 @@ class _SettingsPage extends State<SettingsPage> {
       child : ListView(
         padding: const EdgeInsets.all(8),
         children: [
-          GestureDetector( 
-            onTap: () async {
-              await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLStipulationsPage(),));
-            },
-            child :SizedBox(
-              height: 100,
-              child : Card(
-                shape:RoundedRectangleBorder(
-                side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
-                borderRadius: BorderRadius.circular(4.0)),
-                margin: const EdgeInsets.all(12),
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                  child: Row(
-                    children: const [
-                      Text('IRL Stipulations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-                    ],
-                  )
-                )
-              )
-            )
-          ),
+          // GestureDetector( 
+          //   onTap: () async {
+          //     await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLStipulationsPage(),));
+          //   },
+          //   child :SizedBox(
+          //     height: 100,
+          //     child : Card(
+          //       shape:RoundedRectangleBorder(
+          //       side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+          //       borderRadius: BorderRadius.circular(4.0)),
+          //       margin: const EdgeInsets.all(12),
+          //       elevation: 2,
+          //       child: Padding(
+          //         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+          //         child: Row(
+          //           children: const [
+          //             Text('IRL Stipulations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+          //           ],
+          //         )
+          //       )
+          //     )
+          //   )
+          // ),
 
 
           GestureDetector( 
