@@ -11,6 +11,7 @@ import 'package:wwe_universe/pages/Settings/SettingsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseSuperstars/UniverseSuperstarsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseTeams/UniverseTeamsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseTitles/UniverseTitlesPage.dart';
+import 'package:wwe_universe/pages/Universe/UniverseDraft/UniverseDraftPage.dart';
 
 
 class Navbar extends StatelessWidget{
@@ -93,6 +94,12 @@ class Navbar extends StatelessWidget{
                 title : const Text('Teams'),
                 onTap:() {
                   Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseTeamsPage(),));
+                }
+              ),
+              ListTile(
+                title : const Text('Draft'),
+                onTap:() {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseDraftPage(),));
                 }
               ),
             ],

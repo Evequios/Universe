@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseMatches.dart';
@@ -869,4 +871,16 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       whereArgs: [id],
     );
   }
+
+  //Draft
+
+  Future updateDraft(HashMap map) async {
+    final db = await instance.database;
+      
+    map.forEach((i, value) {
+      print("id superstar : " + i.toString());
+      print('id brand : ' + value.toString());
+      db.rawUpdate('UPDATE $tableSuperstars SET ${SuperstarsFields.brand} = ? WHERE ${SuperstarsFields.id} = ?', [value, i]);
+    });
+  }    
 }
