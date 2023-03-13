@@ -142,9 +142,45 @@ class _UniverseMatchesDetailPage extends State<UniverseMatchesDetailPage> {
   Widget deleteButton() => IconButton(
     icon: const Icon(Icons.delete),
     onPressed: () async {
-      await UniverseDatabase.instance.deleteMatch(widget.matchId);
-
-      if(context.mounted) Navigator.of(context).pop();
+      showAlertDialog(context);
     },
   );
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: const Text("Cancel"),
+      onPressed:  () { 
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: const Text("Continue"),
+      onPressed:  () async {
+        await UniverseDatabase.instance.deleteMatch(widget.matchId);
+        if(context.mounted){
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        }
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirmation"),
+      content: Text("Are you sure you want to delete this match ?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }

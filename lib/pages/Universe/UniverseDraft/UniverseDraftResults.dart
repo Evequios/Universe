@@ -123,39 +123,38 @@ class _UniverseDraftResultsState extends State<UniverseDraftResults> {
     );
   }
 
-showAlertDialog(BuildContext context) {
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: const Text("Cancel"),
+      onPressed:  () {
+        if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseSuperstarsPage(),));
+      },
+    );
+    Widget continueButton = TextButton(
+      child: const Text("Continue"),
+      onPressed:  () async {
+        await UniverseDatabase.instance.updateDraft(draftResults);
+        if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseSuperstarsPage(),));
+      },
+    );
 
-  // set up the buttons
-  Widget cancelButton = TextButton(
-    child: const Text("Cancel"),
-    onPressed:  () {
-      if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseSuperstarsPage(),));
-    },
-  );
-  Widget continueButton = TextButton(
-    child: const Text("Continue"),
-    onPressed:  () async {
-      await UniverseDatabase.instance.updateDraft(draftResults);
-      if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseSuperstarsPage(),));
-    },
-  );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirmation"),
+      content: Text("Are you sure you want to confirm this draft ?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
 
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text("Confirmation"),
-    content: Text("Are you sure you want to confirm this draft ?"),
-    actions: [
-      cancelButton,
-      continueButton,
-    ],
-  );
-
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }

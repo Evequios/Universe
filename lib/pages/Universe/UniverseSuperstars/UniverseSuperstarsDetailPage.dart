@@ -292,11 +292,48 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
       });
 
   Widget deleteButton() => IconButton(
-        icon: const Icon(Icons.delete),
-        onPressed: () async {
-          await UniverseDatabase.instance.deleteSuperstar(widget.superstarId);
-
-          if(context.mounted) Navigator.of(context).pop();
-        },
+    icon: const Icon(Icons.delete),
+    onPressed: () async {
+      showAlertDialog(context);
+    },
   );
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: const Text("Cancel"),
+      onPressed:  () { 
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: const Text("Continue"),
+      onPressed:  () async {
+        await UniverseDatabase.instance.deleteSuperstar(widget.superstarId);
+        if(context.mounted){
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        }
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirmation"),
+      content: Text("Are you sure you want to delete this superstar ? Every matches in which this superstar competed will get deleted too and won't count for other superstars stats"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+  
 }
