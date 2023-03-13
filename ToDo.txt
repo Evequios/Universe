@@ -5,6 +5,7 @@
 - Ajouter rival ou ally dans les deux superstars
 - Améliorer mise en page
 - Refactor et commentaires
+- Ajouter pop-ups de confirmation
 
 
 
