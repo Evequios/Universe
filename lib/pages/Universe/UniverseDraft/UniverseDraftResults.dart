@@ -5,6 +5,7 @@ import 'package:wwe_universe/NavBar.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/database.dart';
+import 'package:wwe_universe/pages/Universe/UniverseDraft/UniverseDraftPage.dart';
 import 'dart:math';
 
 import 'package:wwe_universe/pages/Universe/UniverseSuperstars/UniverseSuperstarsPage.dart';
@@ -45,7 +46,6 @@ class _UniverseDraftResultsState extends State<UniverseDraftResults> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    drawer: const Navbar(),
     appBar: AppBar(
       actions: [buildCancel(), buildReroll(),buildButton()],
       centerTitle: true,
@@ -79,6 +79,7 @@ class _UniverseDraftResultsState extends State<UniverseDraftResults> {
               child : Row (
                 children: [ 
                 Expanded(
+                  flex: 10,
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
@@ -86,7 +87,7 @@ class _UniverseDraftResultsState extends State<UniverseDraftResults> {
                   )
                 ),
                 const Spacer(),
-                const Text('=>'),
+                const Icon(Icons.arrow_right_outlined),
                 const Spacer(), 
                 Container(child : ((){ if(brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt') {
                   return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));
@@ -109,7 +110,7 @@ class _UniverseDraftResultsState extends State<UniverseDraftResults> {
           foregroundColor: Colors.white, 
         ),
         onPressed: () {
-          if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseSuperstarsPage(),));
+          if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseDraftPage(),));
         },
         child: const Text('Cancel'),
       ),

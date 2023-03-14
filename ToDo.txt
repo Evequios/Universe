@@ -1,6 +1,5 @@
 ---- A faire
 - Vérifier l'affichage pour toutes les pages d'ajout/edit
-- Historisation?
 - Regarder comment marchent les match handicap
 - Ajouter rival ou ally dans les deux superstars
 - Améliorer mise en page

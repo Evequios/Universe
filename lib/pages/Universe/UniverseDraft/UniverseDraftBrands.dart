@@ -38,10 +38,9 @@ class _UniverseDraftBrandsState extends State<UniverseDraftBrands> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    drawer: const Navbar(),
     appBar: AppBar(
       title: const Text(
-        'Brands',
+        'Select brands',
       ), 
       actions: [buildButton()],
       centerTitle: true,

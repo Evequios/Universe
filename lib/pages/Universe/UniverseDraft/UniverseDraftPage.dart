@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/NavBar.dart';
@@ -14,6 +16,7 @@ class UniverseDraftPage extends StatefulWidget{
 
 class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliveClientMixin<UniverseDraftPage> {
   UniverseBrands defaultBrand = const UniverseBrands(name: 'name');
+  bool randomize = false;
   late List<UniverseSuperstars> superstarsList;
   late List<UniverseBrands> brandsList;
   List<UniverseSuperstars> selectedSuperstars = [];
@@ -53,7 +56,7 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
     return Scaffold(
     drawer: const Navbar(),
     appBar: AppBar(
-      actions: [buildRandom(), buildUnselectAll(),buildSelectAll(),buildButton()],
+      actions: [buildUnselectAll(),buildSelectAll(),buildButton()],
       centerTitle: true,
     ),
     body: Center(
@@ -65,6 +68,17 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
           )
         : buildUniverseSuperstars(),
     ),
+    floatingActionButton: FloatingActionButton(
+      backgroundColor: Colors.black,
+      child: const FittedBox(child : Text('Randomize')),
+      onPressed: () {
+        setState(() {
+          randomize = true;
+          selectAll = false;
+          selectedSuperstars = [];
+        });
+      },
+    ),
   );
   }
 
@@ -74,17 +88,30 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
     itemCount: superstarsList.length,
     itemBuilder: (context, index){
       final superstar = superstarsList[index];
-      UniverseBrands brand = defaultBrand; 
-      if(selectAll == true) selectedSuperstars.add(superstar);
+      UniverseBrands brand = defaultBrand;
+      int setRandom;
+      if(randomize == true) {
+        Random r = Random();
+        setRandom = 0 + r.nextInt(2);
+        print(setRandom);
+        if(setRandom == 1){
+          selectedSuperstars.add(superstar);
+        }
+      }
+      else{
+        if(selectAll == true) selectedSuperstars.add(superstar);
+      }
       if(superstar.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == superstar.brand);
       return GestureDetector( 
         onTap: () {
           setState(() {
             if(selectedSuperstars.contains(superstar)){
+              randomize = false;
               selectedSuperstars.remove(superstar);
               selectAll = false;
             }
             else{
+              randomize = false;
               selectedSuperstars.add(superstar);
             }
           });
@@ -141,13 +168,14 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
   
   Widget buildUnselectAll() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white, 
         ),
         onPressed: () {
           setState(() {
+              randomize = false;
               selectAll = false;
               selectedSuperstars = [];
           });
@@ -159,7 +187,7 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
 
   Widget buildSelectAll() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white, 
@@ -170,6 +198,7 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
               selectAll = false;
             }
             else{
+              randomize = false;
               selectAll = true;
               selectedSuperstars = [];
             }
@@ -181,11 +210,11 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
   }
 
   Widget buildButton() {
-    final isFormValid = selectedSuperstars.isNotEmpty || selectAll == true;
-
+    final isFormValid = selectedSuperstars.isNotEmpty || selectAll == true || randomize == true;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
+        
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white, 
           backgroundColor: isFormValid ? null : Colors.grey.shade700,
