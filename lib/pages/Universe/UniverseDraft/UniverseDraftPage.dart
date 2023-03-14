@@ -18,7 +18,6 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
   late List<UniverseBrands> brandsList;
   List<UniverseSuperstars> selectedSuperstars = [];
   bool selectAll = false;
-  bool unselectAll = false;
   bool isLoading = false;
   
   @override
@@ -54,8 +53,7 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
     return Scaffold(
     drawer: const Navbar(),
     appBar: AppBar(
-      title: const Text('Draft'),
-      actions: [buildUnselectAll(),buildSelectAll(),buildButton()],
+      actions: [buildRandom(), buildUnselectAll(),buildSelectAll(),buildButton()],
       centerTitle: true,
     ),
     body: Center(
@@ -94,12 +92,12 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
         child :SizedBox(
           height: 100,
           child : Card(
-            color: unselectAll == true ? Colors.white : selectAll == true ? const Color.fromARGB(189, 96, 125, 139) : selectedSuperstars.contains(superstar) == true ? const Color.fromARGB(189, 96, 125, 139) : Colors.white,
+            color: selectAll == true ? const Color.fromARGB(189, 96, 125, 139) : selectedSuperstars.contains(superstar) == true ? const Color.fromARGB(189, 96, 125, 139) : Colors.white,
             shape:RoundedRectangleBorder(
               side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)
             ),
-            elevation: unselectAll == true ? 2 : selectAll == true ? 0 : selectedSuperstars.contains(superstar) == true ? 0 : 2,
+            elevation: selectAll == true ? 0 : selectedSuperstars.contains(superstar) == true ? 0 : 2,
             child: Padding(    
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
               child: Row(
@@ -123,23 +121,35 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
     }
   );
 
+  Widget buildRandom() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.white, 
+        ),
+        onPressed: () async {
+          await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => UniverseDraftBrands(selectedSuperstars : selectedSuperstars),
+          ));
+        },
+        child: const Text('Random'),
+      ),
+    );
+  }
+
+  
   Widget buildUnselectAll() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white, 
         ),
         onPressed: () {
           setState(() {
-            if(unselectAll == true){
-              unselectAll = false;
-            }
-            else{
-              unselectAll = true;
               selectAll = false;
               selectedSuperstars = [];
-            }
           });
         },
         child: const Text('Unselect all'),
@@ -149,7 +159,7 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
 
   Widget buildSelectAll() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white, 
@@ -161,7 +171,6 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
             }
             else{
               selectAll = true;
-              unselectAll = false;
               selectedSuperstars = [];
             }
           });
@@ -175,16 +184,18 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
     final isFormValid = selectedSuperstars.isNotEmpty || selectAll == true;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white, 
           backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => UniverseDraftBrands(selectedSuperstars : selectedSuperstars),
-          ));
+          if (isFormValid){
+            await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => UniverseDraftBrands(selectedSuperstars : selectedSuperstars),
+            ));
+          }
         },
         child: const Text('Next'),
       ),

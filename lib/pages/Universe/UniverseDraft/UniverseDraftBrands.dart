@@ -115,9 +115,11 @@ class _UniverseDraftBrandsState extends State<UniverseDraftBrands> {
           backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => UniverseDraftResults(selectedSuperstars : widget.selectedSuperstars, selectedBrands : selectedBrands),
-          ));
+          if(isFormValid){
+            await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => UniverseDraftResults(selectedSuperstars : widget.selectedSuperstars, selectedBrands : selectedBrands),
+            ));
+          }
         },
         child: const Text('Draft'),
       ),

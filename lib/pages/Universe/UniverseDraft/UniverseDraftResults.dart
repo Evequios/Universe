@@ -47,10 +47,7 @@ class _UniverseDraftResultsState extends State<UniverseDraftResults> {
   Widget build(BuildContext context) => Scaffold(
     drawer: const Navbar(),
     appBar: AppBar(
-      title: const Text(
-        'Draft results',
-      ), 
-      actions: [buildButton()],
+      actions: [buildCancel(), buildReroll(),buildButton()],
       centerTitle: true,
     ),
     body: Center(
@@ -104,6 +101,39 @@ class _UniverseDraftResultsState extends State<UniverseDraftResults> {
     },
   );
 
+  Widget buildCancel() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.white, 
+        ),
+        onPressed: () {
+          if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const UniverseSuperstarsPage(),));
+        },
+        child: const Text('Cancel'),
+      ),
+    );
+  }
+
+  Widget buildReroll() {
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.white,
+        ),
+        onPressed: () {
+          setState(() {
+            
+          }); 
+        },
+        child: const Text('Reroll'),
+      ),
+    );
+  }
+
   Widget buildButton() {
     final isFormValid = selectedBrands.isNotEmpty;
 
@@ -115,7 +145,9 @@ class _UniverseDraftResultsState extends State<UniverseDraftResults> {
           backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: () {
-          showAlertDialog(context);
+          if(isFormValid){
+            showAlertDialog(context);
+          }
           
         },
         child: const Text('Confirm'),
