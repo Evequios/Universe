@@ -162,7 +162,11 @@ class _UniverseTitlesPageState extends State<UniverseTitlesPage> with AutomaticK
                     )
                   ),
                   const Spacer(),
-                  Container(child : ((){ if(brand.name == 'Raw' || brand.name == 'SmackDown') return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));}())),
+                  Container(child : ((){ if(title.brand != 0 && (brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt')) {
+                    return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));
+                  } else {
+                    return Text(brand.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+                  }}()))
                 ]
               ),
             )
