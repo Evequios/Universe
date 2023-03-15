@@ -16,11 +16,9 @@ class UniverseDraftPage extends StatefulWidget{
 
 class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliveClientMixin<UniverseDraftPage> {
   UniverseBrands defaultBrand = const UniverseBrands(name: 'name');
-  bool randomize = false;
   late List<UniverseSuperstars> superstarsList;
   late List<UniverseBrands> brandsList;
   List<UniverseSuperstars> selectedSuperstars = [];
-  bool selectAll = false;
   bool isLoading = false;
   
   @override
@@ -71,11 +69,16 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
     floatingActionButton: FloatingActionButton(
       backgroundColor: Colors.black,
       child: const FittedBox(child : Text('Randomize')),
-      onPressed: () {
+      onPressed: () async {
         setState(() {
-          randomize = true;
-          selectAll = false;
           selectedSuperstars = [];
+          Random r = Random();
+          for (UniverseSuperstars s in superstarsList){
+            int rand = 0 + r.nextInt(2);
+            if(rand == 1){
+              selectedSuperstars.add(s);
+            }
+          }
         });
       },
     ),
@@ -89,29 +92,14 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
     itemBuilder: (context, index){
       final superstar = superstarsList[index];
       UniverseBrands brand = defaultBrand;
-      int setRandom;
-      if(randomize == true) {
-        Random r = Random();
-        setRandom = 0 + r.nextInt(2);
-        print(setRandom);
-        if(setRandom == 1){
-          selectedSuperstars.add(superstar);
-        }
-      }
-      else{
-        if(selectAll == true) selectedSuperstars.add(superstar);
-      }
       if(superstar.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == superstar.brand);
       return GestureDetector( 
-        onTap: () {
+        onTap: () async {
           setState(() {
             if(selectedSuperstars.contains(superstar)){
-              randomize = false;
               selectedSuperstars.remove(superstar);
-              selectAll = false;
             }
             else{
-              randomize = false;
               selectedSuperstars.add(superstar);
             }
           });
@@ -119,12 +107,12 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
         child :SizedBox(
           height: 100,
           child : Card(
-            color: selectAll == true ? const Color.fromARGB(189, 96, 125, 139) : selectedSuperstars.contains(superstar) == true ? const Color.fromARGB(189, 96, 125, 139) : Colors.white,
+            color: selectedSuperstars.contains(superstar) == true ? const Color.fromARGB(189, 96, 125, 139) : Colors.white,
             shape:RoundedRectangleBorder(
               side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
               borderRadius: BorderRadius.circular(4.0)
             ),
-            elevation: selectAll == true ? 0 : selectedSuperstars.contains(superstar) == true ? 0 : 2,
+            elevation: selectedSuperstars.contains(superstar) == true ? 0 : 2,
             child: Padding(    
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
               child: Row(
@@ -148,23 +136,6 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
     }
   );
 
-  Widget buildRandom() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 1),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white, 
-        ),
-        onPressed: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => UniverseDraftBrands(selectedSuperstars : selectedSuperstars),
-          ));
-        },
-        child: const Text('Random'),
-      ),
-    );
-  }
-
   
   Widget buildUnselectAll() {
     return Padding(
@@ -173,10 +144,8 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white, 
         ),
-        onPressed: () {
+        onPressed: () async {
           setState(() {
-              randomize = false;
-              selectAll = false;
               selectedSuperstars = [];
           });
         },
@@ -192,16 +161,10 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white, 
         ),
-        onPressed: () {
+        onPressed: () async {
           setState(() {
-            if(selectAll == true){
-              selectAll = false;
-            }
-            else{
-              randomize = false;
-              selectAll = true;
-              selectedSuperstars = [];
-            }
+            selectedSuperstars = [];
+            selectedSuperstars.addAll(superstarsList);
           });
         },
         child: const Text('Select all'),
@@ -210,7 +173,7 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
   }
 
   Widget buildButton() {
-    final isFormValid = selectedSuperstars.isNotEmpty || selectAll == true || randomize == true;
+    final isFormValid = selectedSuperstars.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(

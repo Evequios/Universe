@@ -60,14 +60,16 @@ class UniverseTeamsFormWidget extends StatelessWidget {
   );
 
   Widget buildName() => TextFormField(
+    textCapitalization: TextCapitalization.sentences,
     initialValue: name,
     style: const TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 24,
+      fontSize: 18,
     ),
-    decoration: const InputDecoration(
-      border: InputBorder.none,
-      hintText: 'Name',
+    decoration: InputDecoration(
+      labelText: "Name",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18, ),
+      border: const OutlineInputBorder(),
     ),
     validator: (name) =>
         name != null && name.isEmpty ? "The name can't be empty" : null,
@@ -79,11 +81,11 @@ class UniverseTeamsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Member 1 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Member 1',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Member 1"),
       value: m1 != 0 ? m1 : defaultSup.id,
       onChanged: onChangedM1,
       items: listSuperstars!.map((m1){
@@ -98,11 +100,11 @@ class UniverseTeamsFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Member 2 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: 'Member 2',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        hint : const Text("Member 2"),
         value: m2 != 0 ? m2 : defaultSup.id,
         onChanged: onChangedM2,
         items: listSuperstars!.map((m2){
@@ -118,11 +120,11 @@ class UniverseTeamsFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Member 3 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: 'Member 3',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        hint : const Text("Member 3"),
         value: m3 != 0 ? m3 : defaultSup.id,
         onChanged: onChangedM3,
         items: m1 != 0 && m2 != 0 ? listSuperstars!.map((m3){
@@ -138,11 +140,11 @@ class UniverseTeamsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Member 4 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Member 4',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Member 4"),
       value: m4 != 0 ? m4 : defaultSup.id,
       onChanged: onChangedM4,
       items: m3 == 0 ? null : listSuperstars!.map((m4){
@@ -157,11 +159,11 @@ class UniverseTeamsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Member 5 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Type',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Member 5"),
       value: m5 != 0 ? m5 : defaultSup.id,
       onChanged: onChangedM5,
       items: m4 == 0 ? null : listSuperstars!.map((m5){

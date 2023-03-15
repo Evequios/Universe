@@ -25,17 +25,21 @@ class UniverseBrandsFormWidget extends StatelessWidget {
       );
 
   Widget buildName() => TextFormField(
-        initialValue: name,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Name',
-        ),
-        validator: (name) =>
-            name != null && name.isEmpty ? 'The show must have a name' : null,
-        onChanged: onChangedName,
-      );
+    textCapitalization: TextCapitalization.sentences,
+    initialValue: name,
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18,
+    ),
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: Colors.white,
+      labelText: "Name",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18, ),
+      border: const OutlineInputBorder(),
+    ),
+    validator: (name) =>
+      name == null || name.isEmpty ? "The show's name can't be empty" : null,
+    onChanged: onChangedName,
+  );
 }

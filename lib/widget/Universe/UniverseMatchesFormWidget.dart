@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/database.dart';
@@ -9,7 +10,6 @@ UniverseStipulations stip = const UniverseStipulations(type: 'type', stipulation
 
 void getDetails(id) async {
   stip = await UniverseDatabase.instance.readStipulation(id);
-  // print(stip.type);
 }
 
 bool disable(int nb){
@@ -197,11 +197,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Stipulation: ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        labelText: 'Stipulation',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
-        hint : const Text("Stipulation"),
         value: stipulation != 0 ? stipulation : defaultStip.id,
         onChanged: onChangedStipulation,
         items: listStipulations!.map((stipulation){
@@ -220,11 +220,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Superstar 1 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        labelText: 'Superstar 1',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
-        hint : const Text("Superstar 1"),
         value: s1 != 0 ? s1 : defaultSup.id,
         onChanged: onChangedS1,
         items: disable(1) ? null : listSuperstars!.map((s1){
@@ -241,11 +241,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Superstar 2 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        labelText: 'Superstar 2',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
-        hint : const Text("Superstar 2"),
         value: s2 != 0 ? s2 : defaultSup.id,
         onChanged: onChangedS2,
         items: disable(2) ? null : listSuperstars!.map((s2){
@@ -263,11 +263,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Superstar 3 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        labelText: 'Superstar 3',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
-        hint : const Text("Superstar 3"),
         value: s3 != 0 ? s3 : defaultSup.id,
         onChanged: onChangedS3,
         items: disable(3) ? null : listSuperstars!.map((s3){
@@ -282,11 +282,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Superstar 4 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        labelText: 'Superstar 4',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
-        hint : const Text("Superstar 4"),
         value: s4 != 0 ? s4 : defaultSup.id,
         onChanged: onChangedS4,
         items: disable(4) ? null : listSuperstars!.map((s4){
@@ -301,11 +301,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Superstar 5 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
-      ),
-        hint : const Text("Superstar 5"),
+        decoration: InputDecoration(
+        labelText: 'Superstar 5',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
+        ),
         value: s5 != 0 ? s5 : defaultSup.id,
         onChanged: onChangedS5,
         items: disable(5) ? null : listSuperstars!.map((s5){
@@ -320,11 +320,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Superstar 6 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        labelText: 'Superstar 6',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
-        hint : const Text("Superstar 6"),
         value: s6 != 0 ? s6 : defaultSup.id,
         onChanged: onChangedS6,
         items: disable(6) ? null : listSuperstars!.map((s6){
@@ -339,11 +339,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Superstar 7 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        labelText: 'Superstar 7',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
-        hint : const Text("Superstar 7"),
         value: s7 != 0 ? s7 : defaultSup.id,
         onChanged: onChangedS7,
         items: disable(7) ? null : listSuperstars!.map((s7){
@@ -358,11 +358,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Superstar 8 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        labelText: 'Superstar 8',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
-        hint : const Text("Superstar 8"),
         value: s8 != 0 ? s8 : defaultSup.id,
         onChanged: onChangedS8,
         items: disable(8) ? null : listSuperstars!.map((s8){
@@ -377,11 +377,11 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Winner : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        labelText: 'Winner',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
-        hint : const Text("Winner"),
         value: winner != 0 ? winner : defaultSup.id,
         onChanged: onChangedWinner,
         items: listSuperstars!.map((winner){
@@ -394,19 +394,22 @@ class UniverseMatchesFormWidget extends StatelessWidget {
     );
 
    Widget buildOrder() => TextFormField(
-      initialValue: order.toString(),
+    keyboardType: TextInputType.number,
+    inputFormatters: [
+      FilteringTextInputFormatter.digitsOnly
+    ],
+      initialValue: order == 0 ? '' : order.toString(),
       style: const TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 18
       ),
-      decoration: const InputDecoration(
-        labelText: 'Order : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
-        border: InputBorder.none,
-        hintText: 'Match n°',
+      decoration: InputDecoration(
+        labelText: 'Order',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
       ),
       validator: (order) =>
-          order!.isEmpty ? "The order can't be empty" : null,
+        order == null || order.isEmpty ? "The order can't be empty" : null,
       onChanged: onChangedOrder,
     );
 }

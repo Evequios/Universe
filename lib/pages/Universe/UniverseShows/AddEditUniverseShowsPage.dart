@@ -34,6 +34,8 @@ class _AddEditUniverseShowsPage extends State<AddEditUniverseShowsPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
+      title: const Text("Show's infos"),
+      centerTitle: true,
       actions: [buildButton()],
     ),
     body: Form(

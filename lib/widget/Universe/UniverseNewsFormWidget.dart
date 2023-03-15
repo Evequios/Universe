@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const List<String> listCategories = <String>['Annonce', 'Blessure', 'Retour', 'Autre'];
+const List<String> listCategories = <String>['Announcement', 'Injury', 'Return', 'Other'];
 
 class UniverseNewsFormWidget extends StatelessWidget {
   final String? title;
@@ -39,47 +39,55 @@ class UniverseNewsFormWidget extends StatelessWidget {
       );
 
   Widget buildTitre() => TextFormField(
-        // maxLines: 1,
-        initialValue: title,
-        style: const TextStyle(
-          // color: Colors.white70,
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Titre',
-          // hintStyle: TextStyle(color: Colors.white70),
-        ),
-        validator: (titre) =>
-            titre != null && titre.isEmpty ? 'Le titre ne peut pas être vide' : null,
-        onChanged: onChangedTitle,
-      );
+    textCapitalization: TextCapitalization.sentences,
+    initialValue: title,
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18,
+    ),
+    decoration: InputDecoration(
+      labelText: "Title",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18, ),
+      border: const OutlineInputBorder(),
+    ),
+    validator: (title) =>
+        title == null || title.isEmpty ? "The news' title can't be empty" : null,
+    onChanged: onChangedTitle,
+  );
 
   Widget buildTexte() => TextFormField(
-        maxLines: 5,
-        initialValue: text,
-        style: const TextStyle(color: Colors.black, fontSize: 18),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Texte',
-          hintStyle: TextStyle(color: Colors.black),
-        ),
-        validator: (texte) => texte != null && texte.isEmpty
-            ? 'Le texte ne peut pas être vide'
-            : null,
-        onChanged: onChangedText,
-      );
+    maxLines: null,
+    initialValue: text,
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18
+    ),
+    decoration: InputDecoration(
+      labelText: "Text",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18, ),
+      border: const OutlineInputBorder(),
+    ),
+    validator: (text) => text != null && text.isEmpty
+        ? "The text can't be empty"
+        : null,
+    onChanged: onChangedText,
+  );
 
-
-
-    Widget buildCategorie() => Container(alignment: Alignment.bottomLeft,child: DropdownButton(
-      value: type != '' && type != null ? type : listCategories[0],
-      onChanged : onChangedType, 
-      items: listCategories.map((categorie){
-        return DropdownMenuItem<String>(
-          value: categorie != '' ? categorie : listCategories[0],
-          child: Text(categorie),);
+    Widget buildCategorie() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: 'Type',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
+      ),
+        value: type != '' && type != null ? type : listCategories[0],
+        onChanged: onChangedType,
+        items: listCategories.map((type){
+        return DropdownMenuItem(
+          value: type != '' ? type : listCategories[0],
+          child: Text(type));
       }).toList(),
-    ),);
+      ));
 }

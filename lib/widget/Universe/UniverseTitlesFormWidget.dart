@@ -51,10 +51,11 @@ class UniverseTitlesFormWidget extends StatelessWidget {
           buildName(),
           const SizedBox(height: 8),
           buildBrand(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           buildTag(),
           const SizedBox(height: 8),
           buildHolder1(),
+          const SizedBox(height: 8,),
           buildHolder2(),
         ],
       ),
@@ -62,14 +63,16 @@ class UniverseTitlesFormWidget extends StatelessWidget {
   );
 
   Widget buildName() => TextFormField(
+    textCapitalization: TextCapitalization.sentences,
     initialValue: name,
     style: const TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 24,
+      fontSize: 18,
     ),
-    decoration: const InputDecoration(
-      border: InputBorder.none,
-      hintText: 'Name',
+    decoration: InputDecoration(
+      labelText: "Name",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18, ),
+      border: const OutlineInputBorder(),
     ),
     validator: (name) =>
         name != null && name.isEmpty ? "The name can't be empty" : null,
@@ -81,11 +84,11 @@ class UniverseTitlesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Brand : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: 'Brand',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        hint : const Text("Brand"),
         value: brand != 0 ? brand : defaultBrand.id,
         onChanged: onChangedBrand,
         items: listBrands!.map((brand){
@@ -100,11 +103,11 @@ class UniverseTitlesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Title type : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: 'Title type',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        hint : const Text("Title type"),
         value: tag,
         onChanged: onChangedTag,
         items: listTag.map((tag){
@@ -120,11 +123,11 @@ class UniverseTitlesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Holder 1 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: 'Holder 1',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        hint : const Text("Holder 1"),
         value: holder1 != 0 ? holder1 : defaultSup.id,
         onChanged: onChangedHolder1,
         items: listSuperstars!.map((holder1){
@@ -141,11 +144,11 @@ class UniverseTitlesFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Holder 2 : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+        decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: 'Holder 2',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        hint : const Text("Holder 2"),
         value: holder2 != 0 ? holder2 : defaultSup.id,
         onChanged: onChangedHolder2,
         items : disable(tag!) ? null : listSuperstars!.map((holder2){

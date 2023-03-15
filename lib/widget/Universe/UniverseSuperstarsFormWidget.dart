@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
+import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
 
 const List<String> listOrientations = <String>['Face', 'Tweener', 'Heel'];
 UniverseBrands defaultBrand = const UniverseBrands(name: 'nom');
@@ -84,7 +85,8 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
                 buildBrand(),
                 const SizedBox(height: 8,),
                 buildOrientation(),
-                const SizedBox(height: 8,),
+                const SizedBox(height: 24,),
+                const Text('Allies', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
                 buildAlly1(),
                 const SizedBox(height: 8,),
                 buildAlly2(),
@@ -94,7 +96,8 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
                 buildAlly4(),
                 const SizedBox(height: 8,),
                 buildAlly5(),
-                const SizedBox(height: 8,),
+                const SizedBox(height: 24,),
+                const Text('Rivals', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
                 buildRival1(),
                 const SizedBox(height: 8,),
                 buildRival2(),
@@ -114,12 +117,16 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
 
 
   Widget buildName() => TextFormField(
+    textCapitalization: TextCapitalization.sentences,
     initialValue: name,
-    style: const TextStyle(color: Colors.black, fontSize: 18),
-    decoration: const InputDecoration(
-      border: InputBorder.none,
-      hintText: 'Name',
-      hintStyle: TextStyle(color: Colors.black),
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 18,
+    ),
+    decoration: InputDecoration(
+      labelText : "Name",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18, ),
+      border: const OutlineInputBorder(),
     ),
     validator: (name) => name != null && name.isEmpty ? "The name can't be empty": null,
     onChanged: onChangedName,
@@ -129,11 +136,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
     ButtonTheme( 
       alignedDropdown: true, 
       child: DropdownButtonFormField(
-        decoration: const InputDecoration(
-        labelText: 'Brand : ',
-        labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: 'Brand',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        hint : const Text("Brand"),
         value: brand != 0 ? brand : defaultBrand.id,
         onChanged: onChangedBrand,
         items: listBrands!.map((brand){
@@ -144,27 +151,34 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
     ),
   );
 
-  Widget buildOrientation() => Container(alignment: Alignment.bottomLeft,child: DropdownButton(
-    hint: const Text("Orientation"),
-    value: orientation == "" ? null : orientation,
-    onChanged : onChangedOrientation, 
-    items: listOrientations.map((orientation){
-      return DropdownMenuItem<String>(
-        value: orientation == "" ? null : orientation,
-        child: Text(orientation));
-    }).toList(),
-    ),
-  );
+  Widget buildOrientation() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: 'Orientation',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
+      ),
+        value: orientation != '' && orientation != null ? orientation : listOrientations[0],
+        onChanged: onChangedOrientation,
+        items: listOrientations.map((orientation){
+        return DropdownMenuItem(
+          value: orientation != '' ? orientation : listOrientations[0],
+          child: Text(orientation));
+      }).toList(),
+      ));
+
 
   Widget buildAlly1() => 
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Ally 1 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Ally 1',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Ally 1"),
       value: ally1 != 0 ? ally1 : defaultSup.id,
       onChanged: onChangedAlly1,
       items: listSuperstars!.map((ally1){
@@ -179,11 +193,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Ally 2 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+    decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Ally 2',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Ally 2"),
       value: ally2 != 0 ? ally2 : defaultSup.id,
       onChanged: onChangedAlly2,
       items: listSuperstars!.map((ally2){
@@ -198,11 +212,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Ally 3 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Ally 3',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Ally 3"),
       value: ally3 != 0 ? ally3 : defaultSup.id,
       onChanged: onChangedAlly3,
       items: listSuperstars!.map((ally3){
@@ -217,11 +231,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Ally 4 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Ally 4',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Ally 4"),
       value: ally4 != 0 ? ally4 : defaultSup.id,
       onChanged: onChangedAlly4,
       items: listSuperstars!.map((ally4){
@@ -236,11 +250,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Ally 5 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Ally 5',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Ally 5"),
       value: ally5 != 0 ? ally5 : defaultSup.id,
       onChanged: onChangedAlly5,
       items: listSuperstars!.map((ally5){
@@ -255,11 +269,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Rival 1 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Rival 1',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Rival 1"),
       value: rival1 != 0 ? rival1 : defaultSup.id,
       onChanged: onChangedRival1,
       items: listSuperstars!.map((rival1){
@@ -275,11 +289,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Rival 2 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Rival 2',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Rival 2"),
       value: rival2 != 0 ? rival2 : defaultSup.id,
       onChanged: onChangedRival2,
       items: listSuperstars!.map((rival2){
@@ -295,11 +309,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Rival 3 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Rival 3',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Rival 3"),
       value: rival3 != 0 ? rival3 : defaultSup.id,
       onChanged: onChangedRival3,
       items: listSuperstars!.map((rival3){
@@ -315,11 +329,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Rival 4 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Rival 4',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Rival 4"),
       value: rival4 != 0 ? rival4 : defaultSup.id,
       onChanged: onChangedRival4,
       items: listSuperstars!.map((rival4){
@@ -335,11 +349,11 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   ButtonTheme( 
     alignedDropdown: true, 
     child: DropdownButtonFormField(
-      decoration: const InputDecoration(
-      labelText: 'Rival 5 : ',
-      labelStyle: TextStyle(decoration: TextDecoration.underline, color: Colors.black),
+      decoration: InputDecoration(
+      border: const OutlineInputBorder(),
+        labelText: 'Rival 5',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      hint : const Text("Rival 5"),
       value: rival5 != 0 ? rival5 : defaultSup.id,
       onChanged: onChangedRival5,
       items: listSuperstars!.map((rival5){

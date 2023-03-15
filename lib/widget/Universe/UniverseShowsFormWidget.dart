@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class UniverseShowsFormWidget extends StatelessWidget {
   final String? name;
@@ -11,7 +12,7 @@ class UniverseShowsFormWidget extends StatelessWidget {
   final ValueChanged<String> onChangedSummary;
 
 
-  const UniverseShowsFormWidget({
+  UniverseShowsFormWidget({
     Key? key,
     this.name = '',
     this.year,
@@ -43,61 +44,76 @@ class UniverseShowsFormWidget extends StatelessWidget {
   );
 
   Widget buildNom() => TextFormField(
+    textCapitalization: TextCapitalization.sentences,
     initialValue: name,
     style: const TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 24,
+      fontSize: 18,
     ),
-    decoration: const InputDecoration(
-      border: InputBorder.none,
-      hintText: 'Nom du show',
+    decoration: InputDecoration(
+      labelText: "Name",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18, ),
+      border: const OutlineInputBorder(),
     ),
     validator: (nom) =>
-      nom != null && nom.isEmpty ? 'Le nom du show ne peut pas être vide' : null,
+      nom == null || nom.isEmpty ? "The show's name can't be empty" : null,
     onChanged: onChangedName,
   );
 
 
   Widget buildAnnee() => TextFormField(
-    initialValue: year.toString(),
+    keyboardType: TextInputType.number,
+    inputFormatters: [
+      FilteringTextInputFormatter.digitsOnly
+    ],
+    initialValue: year == 0 ? '' : year.toString(),
     style: const TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 24,
+      fontSize: 18,
     ),
-    decoration: const InputDecoration(
-      border: InputBorder.none,
-      hintText: 'Annee du show',
+    decoration: InputDecoration(
+      labelText: "Year",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
+      border: const OutlineInputBorder(),
     ),
-    validator: (date) =>
-      date != null && date.isEmpty ? 'La date du show ne peut pas être vide' : null,
+    validator: (year) =>
+      year == null || year.isEmpty ? "The show's year can't be empty" : null,
     onChanged: onChangedYear,
   );
 
   Widget buildSemaine() => TextFormField(
-    initialValue: year.toString(),
+    keyboardType: TextInputType.number,
+    inputFormatters: [
+      FilteringTextInputFormatter.digitsOnly
+    ],
+    initialValue: week == 0 ? '' : week.toString(),
     style: const TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 24,
+      fontSize: 18,
     ),
-    decoration: const InputDecoration(
-      border: InputBorder.none,
-      hintText: 'Semaine du show',
+    decoration: InputDecoration(
+      labelText: "Week",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+      border: const OutlineInputBorder(),
     ),
-    validator: (date) =>
-      date != null && date.isEmpty ? 'La date du show ne peut pas être vide' : null,
+    validator: (week) =>
+      week == null || week.isEmpty ? "The show's week can't be empty" : null,
     onChanged: onChangedWeek,
   );
   
   Widget buildResume() => TextFormField(
+    textCapitalization: TextCapitalization.sentences,
     maxLines : null,
     initialValue: summary,
     style : const TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 24,
+      color : Colors.black,
+      fontSize: 18,
     ),
-    decoration : const InputDecoration(
-      border: InputBorder.none,
-      hintText: 'Résumé du show',
+    decoration : InputDecoration(
+      labelText: "Summary",
+      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+      border: const OutlineInputBorder(),
     ),
     onChanged: onChangedSummary,
   );
