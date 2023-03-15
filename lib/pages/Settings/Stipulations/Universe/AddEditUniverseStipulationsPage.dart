@@ -37,8 +37,8 @@ class _AddEditUniverseStipulationsPage extends State<AddEditUniverseStipulations
       child: UniverseStipulationsFormWidget(
         type: type,
         stipulation: stipulation,
-        onChangedType: (type) => setState(() => this.type = type),
-        onChangedStipulation: (stipulation) => setState(() => this.stipulation = stipulation),
+        onChangedType: (type) => setState(() => this.type = type!),
+        onChangedStipulation: (stipulation) => setState(() => this.stipulation = stipulation!),
       ),
     ),
   );

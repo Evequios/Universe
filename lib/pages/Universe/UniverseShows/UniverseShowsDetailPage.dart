@@ -109,20 +109,21 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
       final match = matchesList[index];
       final stipulation = stipulationsList.firstWhere((stipulation) => stipulation.id == match.stipulation);
       final s1 = superstarsList.firstWhere((superstar) => superstar.id == match.s1);
-      final s2 = superstarsList.firstWhere((superstar) => superstar.id == match.s2);
+      UniverseSuperstars s2 = const UniverseSuperstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
       UniverseSuperstars s3 = const UniverseSuperstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
       UniverseSuperstars s4 = const UniverseSuperstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
       UniverseSuperstars s5 = const UniverseSuperstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
       UniverseSuperstars s6 = const UniverseSuperstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
-      // UniverseSuperstars s7 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
-      // UniverseSuperstars s8 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s7 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      UniverseSuperstars s8 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+      if (match.s2 != 0) s2 = superstarsList.firstWhere((superstar) => superstar.id == match.s2);
       if (match.s3 != 0) s3 = superstarsList.firstWhere((superstar) => superstar.id == match.s3);
       if (match.s4 != 0) s4 = superstarsList.firstWhere((superstar) => superstar.id == match.s4);
       if (match.s5 != 0) s5 = superstarsList.firstWhere((superstar) => superstar.id == match.s5);
       if (match.s6 != 0) s6 = superstarsList.firstWhere((superstar) => superstar.id == match.s6);
-      // if (match.s7 != 0) s7 = superstarsList.firstWhere((superstar) => superstar.id == match.s7);
-      // if (match.s8 != 0) s8 = superstarsList.firstWhere((superstar) => superstar.id == match.s8);
-      // final gagnant = superstarsList.firstWhere((superstar) => superstar.id == match.gagnant);
+      if (match.s7 != 0) s7 = superstarsList.firstWhere((superstar) => superstar.id == match.s7);
+      if (match.s8 != 0) s8 = superstarsList.firstWhere((superstar) => superstar.id == match.s8);
+      final winner = superstarsList.firstWhere((superstar) => superstar.id == match.winner);
 
       return SizedBox(
       height: 80,
@@ -140,23 +141,39 @@ class _UniverseShowsDetailPage extends State<UniverseShowsDetailPage> {
           },
           
           title:((){
-            if(stipulation.type == ("1v1")){
-              return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-            }
-            if(stipulation.type == ("2v2")){
-              return Text('${s1.name} & ${s2.name} vs ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-            }
-            if(stipulation.type == ("3v3")){
-              return Text('${s1.name}, ${s2.name}, ${s3.name} vs ${s4.name}, ${s5.name}, ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-            }
-            if(stipulation.type == ("4v4")){
-              return Text('Team ${s1.name} vs Team ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-            }
-            if(stipulation.type == ("Triple Threat")){
-              return Text('${s1.name} vs ${s2.name} vs ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-            }
-            if(stipulation.type == ("Fatal 4-Way")){
-              return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+            switch(stipulation.type){
+              case '1v1' : 
+                return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case '2v2' :
+                return Text('${s1.name} & ${s2.name} vs ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case '3v3' : 
+                return Text('${s1.name}, ${s2.name}, ${s3.name} vs ${s4.name}, ${s5.name}, ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case '4v4' :
+                return Text('Team ${s1.name} vs Team ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case 'Triple Threat' : 
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case 'Fatal 4-Way' :
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case '5-Way' : 
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name} vs ${s5.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case '6-Way' :  
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name} vs ${s5.name} vs ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case '3-Way Tag' :
+                return Text('${s1.name} & ${s2.name} & ${s3.name} vs ${s4.name} & ${s5.name} & ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case '8-Way' :
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name} vs ${s5.name} vs ${s6.name} vs ${s7.name} vs ${s8.name}' , textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case '4-Way Tag' :
+                return Text('${s1.name} & ${s2.name} & ${s3.name} vs ${s4.name} & ${s5.name} & ${s6.name} vs ${s7.name} & ${s8.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case 'Handicap 1v2' :  
+                return Text('${s1.name} vs ${s2.name} & ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case 'Handicap 1v3' : 
+                return Text('${s1.name} vs ${s2.name} & ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case '10 Man' : 
+              case '20 Man' :
+              case '30 Man' :
+                return Text(winner.name, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              default : 
+                return null;
             }
           }()),
           subtitle: Text('${stipulation.type} ${stipulation.stipulation}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),

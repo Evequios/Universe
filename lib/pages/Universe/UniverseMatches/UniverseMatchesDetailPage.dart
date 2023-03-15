@@ -34,7 +34,7 @@ class _UniverseMatchesDetailPage extends State<UniverseMatchesDetailPage> {
   late UniverseSuperstars s8;
   late UniverseSuperstars s9;
   late UniverseSuperstars s10;
-  late UniverseSuperstars gagnant;
+  late UniverseSuperstars winner;
   late List<UniverseStipulations> stipulationsList;
   late List<UniverseSuperstars> superstarsList;
 
@@ -54,17 +54,18 @@ class _UniverseMatchesDetailPage extends State<UniverseMatchesDetailPage> {
     match = await UniverseDatabase.instance.readMatch(widget.matchId);
     stipulation = await UniverseDatabase.instance.readStipulation(match.stipulation);
     s1 = await UniverseDatabase.instance.readSuperstar(match.s1);
-    s2 = await UniverseDatabase.instance.readSuperstar(match.s2);
+    // s2 = await UniverseDatabase.instance.readSuperstar(match.s2);
     stipulationsList = await UniverseDatabase.instance.readAllStipulations();
     superstarsList = await UniverseDatabase.instance.readAllSuperstars();
 
-    stipulation.type != '1v1' ? s3 = await UniverseDatabase.instance.readSuperstar(match.s3) : null;
-    stipulation.type != '1v1' && stipulation.type != 'Triple Threat' ? s4 = await UniverseDatabase.instance.readSuperstar(match.s4) : null;
-    stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '2v2' ? s5 = await UniverseDatabase.instance.readSuperstar(match.s5) : null;
-    stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '2v2' ? s6 = await UniverseDatabase.instance.readSuperstar(match.s6) : null;
-    stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '2v2' && stipulation.type != '3v3' && stipulation.type != '2v2v2' ? s7 = await UniverseDatabase.instance.readSuperstar(match.s7) : null;
-    stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '2v2' && stipulation.type != '3v3' && stipulation.type != '2v2v2' ?s8 = await UniverseDatabase.instance.readSuperstar(match.s8) : null;
-    gagnant = await UniverseDatabase.instance.readSuperstar(match.winner);
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' ? s2 = await UniverseDatabase.instance.readSuperstar(match.s2) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' ? s3 = await UniverseDatabase.instance.readSuperstar(match.s3) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != 'Handicap 1v2' ? s4 = await UniverseDatabase.instance.readSuperstar(match.s4) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' ? s5 = await UniverseDatabase.instance.readSuperstar(match.s5) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' ? s6 = await UniverseDatabase.instance.readSuperstar(match.s6) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s7 = await UniverseDatabase.instance.readSuperstar(match.s7) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s8 = await UniverseDatabase.instance.readSuperstar(match.s8) : null;
+    winner = await UniverseDatabase.instance.readSuperstar(match.winner);
 
     setState(() => isLoading = false);
   }
@@ -93,27 +94,43 @@ class _UniverseMatchesDetailPage extends State<UniverseMatchesDetailPage> {
               ),
               const SizedBox(height: 8),
               Container(child:(() {
-                if(stipulation.type == ("1v1")){
-                  return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
-                }
-                if(stipulation.type == ("2v2")){
-                  return Text('${s1.name} & ${s2.name} vs ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
-                }
-                if(stipulation.type == ("3v3")){
-                  return Text('${s1.name}, ${s2.name}, ${s3.name} vs ${s4.name}, ${s5.name}, ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
-                }
-                if(stipulation.type == ("4v4")){
-                  return Text('${s1.name}, ${s2.name}, ${s3.name}, ${s4.name} vs ${s5.name}, ${s6.name}, ${s7.name}, ${s8.name}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
-                }
-                if(stipulation.type == ("Triple Threat")){
-                  return Text('${s1.name} vs ${s2.name} vs ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
-                }
-                if(stipulation.type == ("Fatal 4-Way")){
-                  return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18));
-                }
+                switch(stipulation.type){
+              case '1v1' : 
+                return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case '2v2' :
+                return Text('${s1.name} & ${s2.name} vs ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case '3v3' : 
+                return Text('${s1.name}, ${s2.name}, ${s3.name} vs ${s4.name}, ${s5.name}, ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case '4v4' :
+                return Text('Team ${s1.name} vs Team ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case 'Triple Threat' : 
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case 'Fatal 4-Way' :
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case '5-Way' : 
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name} vs ${s5.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case '6-Way' :  
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name} vs ${s5.name} vs ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case '3-Way Tag' :
+                return Text('${s1.name} & ${s2.name} & ${s3.name} vs ${s4.name} & ${s5.name} & ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case '8-Way' :
+                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name} vs ${s5.name} vs ${s6.name} vs ${s7.name} vs ${s8.name}' , textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case '4-Way Tag' :
+                return Text('${s1.name} & ${s2.name} & ${s3.name} vs ${s4.name} & ${s5.name} & ${s6.name} vs ${s7.name} & ${s8.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
+              case 'Handicap 1v2' :  
+                return Text('${s1.name} vs ${s2.name} & ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              case 'Handicap 1v3' : 
+                return Text('${s1.name} vs ${s2.name} & ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              // case '10 Man' : 
+              // case '20 Man' :
+              // case '30 Man' :
+              //   return Text(winner.name, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+              default :
+                return null;
+            }
               }())),
               const SizedBox(height: 30,),
-              Text('Winner : ${gagnant.name}',
+              Text('Winner : ${winner.name}',
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 22,

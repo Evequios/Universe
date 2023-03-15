@@ -161,7 +161,7 @@ class UniverseTeamsFormWidget extends StatelessWidget {
     child: DropdownButtonFormField(
       decoration: InputDecoration(
       border: const OutlineInputBorder(),
-        labelText: 'Type',
+        labelText: 'Member 5',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
       value: m5 != 0 ? m5 : defaultSup.id,

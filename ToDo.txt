@@ -1,20 +1,12 @@
 ---- A faire
-- Vérifier l'affichage pour toutes les pages d'ajout/edit
-- Regarder comment marchent les match handicap
 - Ajouter rival ou ally dans les deux superstars
 - Améliorer mise en page
     - Matches
         - Régler problèmes affichage des dropdown en fonction de la stip
     - superstars
         - Modifier affichage détails
-    - Titles
-        - Régler problème logo NXT
-        - Afficher nom de la brand si pas de logo
-    - Stipulations
-        - Transformer en dropdown
+    
 - Refactor et commentaires
-- Ajouter pop-ups de confirmation
-- Vérifier entrées
 
 
 

@@ -17,19 +17,19 @@ bool disable(int nb){
     case 1 : 
       return false;
     case 2 :
-      return false;
+      return stip.type == '10 Man' || stip.type == '20 Man' || stip.type == '30 Man' ? true : false;
     case 3 :
-      return stip.type == '1v1' ? true : false;
+      return stip.type == '10 Man' || stip.type == '20 Man' || stip.type == '30 Man' || stip.type == '1v1' ? true : false;
     case 4 :
-      return stip.type == '1v1' || stip.type == 'Triple Threat' ? true : false;
+      return stip.type == '10 Man' || stip.type == '20 Man' || stip.type == '30 Man' || stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == 'Handicap 1v2' ? true : false;
     case 5 :
-      return stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' ? true : false;
+      return stip.type == '10 Man' || stip.type == '20 Man' || stip.type == '30 Man' || stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == 'Handicap 1v2' || stip.type == 'Handicap 1v3' ? true : false;
     case 6 :
-      return stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' ? true : false;
+      return stip.type == '10 Man' || stip.type == '20 Man' || stip.type == '30 Man' || stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == 'Handicap 1v2' || stip.type == 'Handicap 1v3' || stip.type == 'Handicap 2v3' ? true : false;
     case 7 :
-      return stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == '3v3' || stip.type == '2v2v2' || stip.type == '6-Way' ? true : false;
+      return stip.type == '10 Man' || stip.type == '20 Man' || stip.type == '30 Man' || stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == 'Handicap 1v2' || stip.type == 'Handicap 1v3' || stip.type == 'Handicap 2v3' || stip.type == '3v3' || stip.type == '3-Way Tag' || stip.type == '6-Way' ? true : false;
     case 8 :
-      return stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == '3v3' || stip.type == '2v2v2' || stip.type == '6-Way' ? true : false;
+      return stip.type == '10 Man' || stip.type == '20 Man' || stip.type == '30 Man'|| stip.type == '1v1' || stip.type == 'Triple Threat' || stip.type == '2v2' || stip.type == 'Fatal 4-Way' || stip.type == '5-Way' || stip.type == 'Handicap 1v2' || stip.type == 'Handicap 1v3' || stip.type == 'Handicap 2v3' || stip.type == '3v3' || stip.type == '3-Way Tag' || stip.type == '6-Way' ? true : false;
     default :
       return true;
   }
@@ -95,6 +95,14 @@ class UniverseMatchesFormWidget extends StatelessWidget {
   
   bool validateWinner() {
     switch (stip.type){
+    case '10 Man' : 
+    case '20 Man' :
+    case '30 Man' :
+      if(winner != s1) {
+        return false;
+      } else {
+        return true;
+      }
     case '1v1' : 
       if(winner != s1 && winner != s2) {
         return false;
@@ -102,41 +110,29 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         return true;
       }
     case 'Triple Threat':
+    case 'Handicap 1v2' :
       if(winner != s1 && winner != s2 && winner != s3) {
         return false;
       } else {
         return true;
       }
     case '2v2' :
-      if(winner != s1 && winner != s2 && winner != s3 && winner != s4) {
-        return false;
-      } else {
-        return true;
-      }
     case 'Fatal 4-Way' :
+    case 'Handicap 1v3' :
       if(winner != s1 && winner != s2 && winner != s3 && winner != s4) {
         return false;
       } else {
         return true;
       }
     case '5-Way' :
+    case 'Handicap 2v3' :
       if(winner != s1 && winner != s2 && winner != s3 && winner != s4 && winner != s5) {
         return false;
       } else {
         return true;
       }
     case '3v3' :
-      if(winner != s1 && winner != s2 && winner != s3 && winner != s4 && winner != s5 && winner != s6) {
-        return false;
-      } else {
-        return true;
-      }
-    case '2v2v2' :
-      if(winner != s1 && winner != s2 && winner != s3 && winner != s4 && winner != s5 && winner != s6) {
-        return false;
-      } else {
-        return true;
-      }
+    case '3-Way Tag' :
     case '6-Way' :
       if(winner != s1 && winner != s2 && winner != s3 && winner != s4 && winner != s5 && winner != s6) {
         return false;
@@ -144,6 +140,8 @@ class UniverseMatchesFormWidget extends StatelessWidget {
         return true;
       }
     case '8-Way' :
+    case '4v4' : 
+    case '4-Way Tag' : 
       if(winner != s1 && winner != s2 && winner != s3 && winner != s4 && winner != s5 && winner != s6 && winner != s7 && winner != s8) {
         return false;
       } else {
@@ -168,7 +166,7 @@ class UniverseMatchesFormWidget extends StatelessWidget {
               const SizedBox(height: 8,),
               buildS1(),
               const SizedBox(height: 8,),
-              buildS2(),
+              if(!disable(2)) buildS2(),
               const SizedBox(height: 8,),
               if(!disable(3)) buildS3(),
               const SizedBox(height: 8,),

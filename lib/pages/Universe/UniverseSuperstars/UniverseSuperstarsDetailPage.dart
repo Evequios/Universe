@@ -20,10 +20,11 @@ class UniverseSuperstarsDetailPage extends StatefulWidget {
 
 class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> {
   int wins = 0;
-  int looses = 0;
+  int losses = 0;
   List<int> team1 = [];
   List<int> team2 = [];
   List<int> team3 = [];
+  List<int> team4 = [];
   late UniverseSuperstars superstar;
   late UniverseBrands brand;
   late List<UniverseMatches> listMatches;
@@ -87,8 +88,8 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
     int w = 0;
     int l = 0;
     late UniverseStipulations stip;
-    List<String> soloType = ['1v1', 'Triple Threat', 'Fatal 4-Way', '5-Way', '6-Way', '8-Way'];
-    List<String> tagType = ['2v2', '3v3', '4v4', '2v2v2'];
+    List<String> soloType = ['1v1', 'Triple Threat', 'Fatal 4-Way', '5-Way', '6-Way', '8-Way', '10 Man', '20 Man', '30 Man'];
+    List<String> tagType = ['2v2', '3v3', '4v4', '3-Way Tag', '4-Way Tag', 'Handicap 1v2', 'Handicap 1v3', 'Handicap 2v3'];
     for(UniverseMatches m in listMatches){
       stip = await UniverseDatabase.instance.readStipulation(m.stipulation);
       switch(stip.type){
@@ -116,7 +117,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
           team2.add((await UniverseDatabase.instance.readSuperstar(m.s7)).id!);
           team2.add((await UniverseDatabase.instance.readSuperstar(m.s8)).id!);
           break;
-        case '2v2v2':
+        case '3-Way Tag':
           team1.add((await UniverseDatabase.instance.readSuperstar(m.s1)).id!);
           team1.add((await UniverseDatabase.instance.readSuperstar(m.s2)).id!);
           team2.add((await UniverseDatabase.instance.readSuperstar(m.s3)).id!);
@@ -124,6 +125,34 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
           team3.add((await UniverseDatabase.instance.readSuperstar(m.s5)).id!);
           team3.add((await UniverseDatabase.instance.readSuperstar(m.s6)).id!);
           break;  
+        case '4-Way Tag':
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s1)).id!);
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s2)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s3)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s4)).id!);
+          team3.add((await UniverseDatabase.instance.readSuperstar(m.s5)).id!);
+          team3.add((await UniverseDatabase.instance.readSuperstar(m.s6)).id!);
+          team4.add((await UniverseDatabase.instance.readSuperstar(m.s7)).id!);
+          team4.add((await UniverseDatabase.instance.readSuperstar(m.s8)).id!);
+          break;
+        case 'Handicap 1v2' :
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s1)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s2)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s3)).id!);
+          break;
+        case'Handicap 1v3' : 
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s1)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s2)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s3)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s4)).id!);
+          break;
+        case'Handicap 2v3' : 
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s1)).id!);
+          team1.add((await UniverseDatabase.instance.readSuperstar(m.s2)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s3)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s4)).id!);
+          team2.add((await UniverseDatabase.instance.readSuperstar(m.s5)).id!);
+          break; 
         default:
           break;
       }
@@ -150,6 +179,9 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
         else if(team3.contains(m.winner)){
           winnerList = 3;
         }
+        else if(team4.contains(m.winner)){
+          winnerList = 4;
+        }
 
         if(team1.contains(superstar.id)){
           superstarList = 1;
@@ -159,6 +191,9 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
         }
         else if(team3.contains(superstar.id)){
           superstarList = 3;
+        }
+        else if(team4.contains(superstar.id)){
+          superstarList = 4;
         }
 
         if(winnerList == superstarList){
@@ -170,7 +205,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
       }
     }
     wins = w;
-    looses = l;
+    losses = l;
     return 1;
   }
 
@@ -269,7 +304,7 @@ class _UniverseSuperstarsDetailPage extends State<UniverseSuperstarsDetailPage> 
 
                 const SizedBox(height: 8),
                 Text(
-                  'Looses : $looses',
+                  'Losses : $losses',
                   style: const TextStyle(color: Colors.black, fontSize: 18),
                 ),
 

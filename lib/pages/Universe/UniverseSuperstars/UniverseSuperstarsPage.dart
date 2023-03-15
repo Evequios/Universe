@@ -159,7 +159,7 @@ class _UniverseSuperstarsPage extends State<UniverseSuperstarsPage> with Automat
                   Container(child : ((){ if(superstar.brand != 0 && (brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt')) {
                     return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png')); 
                   } else {
-                    return Text(brand.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+                    return Text(brand.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
                   }}()))
                 ],
               )
