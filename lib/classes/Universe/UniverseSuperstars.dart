@@ -2,7 +2,7 @@ const String tableSuperstars = 'superstars';
 
 class SuperstarsFields{
   static final List<String> values = [
-    id, name, brand, orientation, ally1, ally2, ally3, ally4, ally5, rival1, rival2, rival3, rival4, rival5
+    id, name, brand, orientation, ally1, ally2, ally3, ally4, ally5, rival1, rival2, rival3, rival4, rival5, division
   ];
 
   static const String id = '_id';
@@ -19,6 +19,7 @@ class SuperstarsFields{
   static const String rival3 = 'rival3';
   static const String rival4 = 'rival4';
   static const String rival5 = 'rival5';
+  static const String division = 'division';
 }
 
 class UniverseSuperstars{
@@ -26,7 +27,7 @@ class UniverseSuperstars{
   final String name;
   final int brand;
   final String orientation;
-  final int ally1, ally2, ally3, ally4, ally5, rival1, rival2, rival3, rival4, rival5;
+  final int ally1, ally2, ally3, ally4, ally5, rival1, rival2, rival3, rival4, rival5, division;
 
   const UniverseSuperstars({
     this.id,
@@ -42,7 +43,8 @@ class UniverseSuperstars{
     required this.rival2,
     required this.rival3,
     required this.rival4,
-    required this.rival5
+    required this.rival5,
+    required this.division
   });
 
   UniverseSuperstars copy({
@@ -59,7 +61,8 @@ class UniverseSuperstars{
     int? rival2,
     int? rival3,
     int? rival4,
-    int? rival5
+    int? rival5,
+    int? division
   }) =>
       UniverseSuperstars(
         id: id ?? this.id,
@@ -75,7 +78,8 @@ class UniverseSuperstars{
         rival2: rival2 ?? this.rival2,
         rival3: rival3 ?? this.rival3,
         rival4: rival4 ?? this.rival4,
-        rival5: rival5 ?? this.rival5
+        rival5: rival5 ?? this.rival5,
+        division: division ?? this.division,
       );
 
   static UniverseSuperstars fromJson(Map<String, dynamic> json) => UniverseSuperstars(
@@ -92,7 +96,8 @@ class UniverseSuperstars{
         rival2: json[SuperstarsFields.rival2] as int,
         rival3: json[SuperstarsFields.rival3] as int,
         rival4: json[SuperstarsFields.rival4] as int,
-        rival5: json[SuperstarsFields.rival5] as int
+        rival5: json[SuperstarsFields.rival5] as int,
+        division: json[SuperstarsFields.division] as int
       );
 
   Map<String, Object?> toJson() => {
@@ -109,6 +114,7 @@ class UniverseSuperstars{
         SuperstarsFields.rival2: rival2,
         SuperstarsFields.rival3: rival3,
         SuperstarsFields.rival4: rival4,
-        SuperstarsFields.rival5: rival5
+        SuperstarsFields.rival5: rival5,
+        SuperstarsFields.division: division
       };
 }

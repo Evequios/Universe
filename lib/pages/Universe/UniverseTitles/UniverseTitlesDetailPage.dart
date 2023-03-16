@@ -3,7 +3,9 @@ import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
 import 'package:wwe_universe/database.dart';
+import 'package:wwe_universe/pages/Universe/UniverseSuperstars/UniverseSuperstarsDetailPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseTitles/AddEditUniverseTitlesPage.dart';
+import 'package:wwe_universe/pages/Universe/UniverseTitles/UniverseTitlesSetDivisions.dart';
 // import 'package:sqflite_database_example/page/edit_note_page.dart';
 
 class UniverseTitlesDetailPage extends StatefulWidget {
@@ -22,8 +24,8 @@ class UniverseTitlesDetailPage extends StatefulWidget {
 class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
   UniverseTitles title = const UniverseTitles(name: '', tag: 0, brand: 0, holder1: 0, holder2: 0);
   UniverseBrands brand = const UniverseBrands(name: '');
-  UniverseSuperstars h1 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0); 
-  UniverseSuperstars h2 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+  UniverseSuperstars h1 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0); 
+  UniverseSuperstars h2 = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
   late List<UniverseBrands> brandsList;
   late List<UniverseSuperstars> superstarsList;
   bool isLoading = false;
@@ -42,7 +44,7 @@ class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
     if(title.brand != 0) brand = await UniverseDatabase.instance.readBrand(title.brand);
     if(title.holder1 != 0) h1 = await UniverseDatabase.instance.readSuperstar(title.holder1);
     if(title.holder2 != 0) h2 = await UniverseDatabase.instance.readSuperstar(title.holder2);
-    superstarsList = await UniverseDatabase.instance.readAllSuperstars();
+    superstarsList = await UniverseDatabase.instance.readAllSuperstarsDivision(title.id!);
     brandsList = await UniverseDatabase.instance.readAllBrands();
 
     setState(() => isLoading = false);  
@@ -86,9 +88,73 @@ class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
                   style: const TextStyle(color: Colors.black, fontSize: 18),
                 )
                 : const SizedBox(height: 0),
+                const SizedBox(height : 24),
+                Material(
+                  color: Colors.blueGrey,
+                  elevation: 5,
+                  borderRadius: BorderRadius.circular(15),
+                  child: MaterialButton(
+                    
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => UniverseTitlesSetDivisions(titleId: title.id!,)),
+                      ).then((value) => refreshTitle());
+                    }, 
+                    child: const Text("Set divisions", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),),
+                  )
+                ),
+                Center(child: buildUniverseSuperstars(),)
               ],
             ),
           ),
+  );
+
+  Widget buildUniverseSuperstars() => ListView.builder(
+    shrinkWrap: true,
+    padding : const EdgeInsets.all(8),
+    itemCount: superstarsList.length,
+    itemBuilder: (context, index){
+      final superstar = superstarsList[index];
+      if(superstar.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == superstar.brand);
+      return GestureDetector( 
+        onTap: () async {
+          await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => UniverseSuperstarsDetailPage(superstarId: superstar.id!),
+          )).then((value) => refreshTitle());
+        },
+        child :SizedBox(
+          height: 100,
+          child : Card(
+            shape:RoundedRectangleBorder(
+              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
+              borderRadius: BorderRadius.circular(4.0)
+            ),
+            elevation: 2,
+            child: Padding(    
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+              child: Row(
+                children: [ 
+                  Expanded(
+                    flex:10,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(superstar.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
+                    )
+                  ),
+                  const Spacer(),
+                  Container(child : ((){ if(superstar.brand != 0 && (brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt')) {
+                    return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png')); 
+                  } else {
+                    return Text(brand.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+                  }}()))
+                ],
+              )
+            )
+          )
+        )
+      );
+    }
   );
 
   Widget editButton() => IconButton(
@@ -131,8 +197,8 @@ class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Confirmation"),
-      content: Text("Are you sure you want to delete this title ?"),
+      title: const Text("Confirmation"),
+      content: const Text("Are you sure you want to delete this title ?"),
       actions: [
         cancelButton,
         continueButton,

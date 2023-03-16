@@ -5,7 +5,7 @@ import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
 
 const List<String> listOrientations = <String>['Face', 'Tweener', 'Heel'];
 UniverseBrands defaultBrand = const UniverseBrands(name: 'nom');
-UniverseSuperstars defaultSup = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, ally1: 0, ally2: 0, ally3 : 0, ally4:0, ally5 :0);
+UniverseSuperstars defaultSup = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, ally1: 0, ally2: 0, ally3 : 0, ally4:0, ally5 : 0, division: 0);
 
 class UniverseSuperstarsFormWidget extends StatelessWidget {
   final List<UniverseSuperstars>? listSuperstars;
@@ -23,6 +23,7 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   final int? rival3;
   final int? rival4;
   final int? rival5;
+  final int? division;
   
   final ValueChanged<String?> onChangedName;
   final ValueChanged<int?> onChangedBrand;
@@ -37,6 +38,7 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
   final ValueChanged<int?> onChangedRival3;
   final ValueChanged<int?> onChangedRival4;
   final ValueChanged<int?> onChangedRival5;
+  final ValueChanged<int?> onChangedDivision;
 
   const UniverseSuperstarsFormWidget({
     Key? key,
@@ -55,6 +57,7 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
     this.rival3,
     this.rival4,
     this.rival5,
+    this.division,
     required this.onChangedName,
     required this.onChangedBrand,
     required this.onChangedOrientation,
@@ -68,6 +71,7 @@ class UniverseSuperstarsFormWidget extends StatelessWidget {
     required this.onChangedRival3,
     required this.onChangedRival4,
     required this.onChangedRival5,
+    required this.onChangedDivision
   }) : super(key: key);
 
   @override

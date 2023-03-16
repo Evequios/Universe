@@ -28,6 +28,7 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
   late String orientation;
   late int ally1, ally2, ally3, ally4, ally5;
   late int rival1, rival2, rival3, rival4, rival5;
+  late int division;
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
     rival3 = widget.superstar?.rival3 ?? 0;
     rival4 = widget.superstar?.rival4 ?? 0;
     rival5 = widget.superstar?.rival5 ?? 0;
+    division = widget.superstar?.division ?? 0;
     listBrands = widget.listBrands!;
     if(widget.listSuperstars != null) listSuperstars = widget.listSuperstars!;
 
@@ -74,6 +76,7 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
         rival3 : rival3,
         rival4 : rival4,
         rival5 : rival5,
+        division : division,
         onChangedName: (name) => setState(() => this.name = name!),
         onChangedBrand: (brand) => setState(() => this.brand = brand!),
         onChangedOrientation: (orientation) => setState(() => this.orientation = orientation.toString()),
@@ -86,7 +89,8 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
         onChangedRival2: (rival2) => setState(() => this.rival2 = rival2!),
         onChangedRival3: (rival3) => setState(() => this.rival3 = rival3!),
         onChangedRival4: (rival4) => setState(() => this.rival4 = rival4!),
-        onChangedRival5: (rival5) => setState(() => this.rival5 = rival5!)
+        onChangedRival5: (rival5) => setState(() => this.rival5 = rival5!),
+        onChangedDivision:(division) => setState(() => this.division = division!)
       ),
     ),
   );
@@ -138,7 +142,8 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
       rival2: rival2,
       rival3: rival3,
       rival4: rival4,
-      rival5: rival5
+      rival5: rival5,
+      division: division,
     );
     await UniverseDatabase.instance.updateSuperstar(superstar);
   }
@@ -157,7 +162,8 @@ class _AddEditUniverseSuperstarsPage extends State<AddEditUniverseSuperstarsPage
       rival2: rival2,
       rival3: rival3,
       rival4: rival4,
-      rival5: rival5
+      rival5: rival5,
+      division: division
     );
     await UniverseDatabase.instance.createSuperstar(superstar);
   }

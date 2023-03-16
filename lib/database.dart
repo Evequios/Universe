@@ -31,7 +31,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 61, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 62, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -73,7 +73,8 @@ class UniverseDatabase {
         ${SuperstarsFields.rival2} $intType DEFAULT 0,
         ${SuperstarsFields.rival3} $intType DEFAULT 0,
         ${SuperstarsFields.rival4} $intType DEFAULT 0,
-        ${SuperstarsFields.rival5} $intType DEFAULT 0
+        ${SuperstarsFields.rival5} $intType DEFAULT 0,
+        ${SuperstarsFields.division} $intType DEFAULT 0
       ); '''
     );
 
@@ -156,20 +157,8 @@ class UniverseDatabase {
     const textType = 'TEXT NOT NULL';
     const booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
-  //     await db.execute('''DROP TABLE IF EXISTS $tableTeams;''');
-      
-
-  //   await db.execute('''
-  //     CREATE TABLE IF NOT EXISTS $tableTeams (
-  //       ${TeamsFields.id} $idType,
-  //       ${TeamsFields.name} $textType,
-  //       ${TeamsFields.member1} $intTypeNN,
-  //       ${TeamsFields.member2} $intTypeNN,
-  //       ${TeamsFields.member3} $intType,
-  //       ${TeamsFields.member4} $intType,
-  //       ${TeamsFields.member5} $intType
-  //     );
-  // ''');
+      await db.execute('''ALTER TABLE $tableSuperstars
+      ADD COLUMN ${SuperstarsFields.division} $intType DEFAULT 0;''');
     }
   }
 
@@ -288,6 +277,20 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       tableSuperstars, 
       where: '${SuperstarsFields.brand} = ? ',
       whereArgs: [brandId],
+      orderBy: orderBy
+    );
+
+    return result.map((json) => UniverseSuperstars.fromJson(json)).toList();
+  }
+
+  Future<List<UniverseSuperstars>> readAllSuperstarsDivision(int titleId) async {
+    final db = await instance.database;
+    const orderBy = '${SuperstarsFields.name} ASC';
+
+    final result = await db.query(
+      tableSuperstars, 
+      where: '${SuperstarsFields.division} = ? ',
+      whereArgs: [titleId],
       orderBy: orderBy
     );
 
@@ -882,5 +885,17 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       print('id brand : ' + value.toString());
       db.rawUpdate('UPDATE $tableSuperstars SET ${SuperstarsFields.brand} = ? WHERE ${SuperstarsFields.id} = ?', [value, i]);
     });
-  }    
+  }   
+
+  // Divisions
+
+  Future setDivision(List<UniverseSuperstars> selectedSuperstars, int titleId) async {
+    final db = await instance.database;
+
+    for(UniverseSuperstars superstar in selectedSuperstars){
+      print(superstar.name);
+      print(superstar.division);
+      db.rawUpdate('UPDATE $tableSuperstars SET ${SuperstarsFields.division} = ? WHERE ${SuperstarsFields.id} = ${superstar.id}', [titleId]);
+    }
+  }
 }

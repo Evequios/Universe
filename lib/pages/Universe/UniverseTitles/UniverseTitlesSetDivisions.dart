@@ -4,21 +4,29 @@ import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
 import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseDraft/UniverseDraftBrands.dart';
 
-class UniverseDraftPage extends StatefulWidget{
-  const UniverseDraftPage({super.key});
+class UniverseTitlesSetDivisions extends StatefulWidget{
+  final int titleId;
+
+  const UniverseTitlesSetDivisions({
+    super.key,
+    required this.titleId
+  });
 
   @override
-  _UniverseDraftPage createState() => _UniverseDraftPage();
+  _UniverseTitlesSetDivisions createState() => _UniverseTitlesSetDivisions();
 }
 
-class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliveClientMixin<UniverseDraftPage> {
+class _UniverseTitlesSetDivisions extends State<UniverseTitlesSetDivisions> with AutomaticKeepAliveClientMixin<UniverseTitlesSetDivisions> {
   UniverseBrands defaultBrand = const UniverseBrands(name: 'name');
   late List<UniverseSuperstars> superstarsList;
   late List<UniverseBrands> brandsList;
+  late UniverseTitles title;
   List<UniverseSuperstars> selectedSuperstars = [];
+  
   bool isLoading = false;
   
   @override
@@ -34,8 +42,10 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
   Future refreshSuperstars() async {
     setState(() => isLoading = true);
 
-    superstarsList = await UniverseDatabase.instance.readAllSuperstars();
+    
     brandsList = await UniverseDatabase.instance.readAllBrands();
+    title = await UniverseDatabase.instance.readTitle(widget.titleId);
+    superstarsList = await UniverseDatabase.instance.readAllSuperstarsFilter(title.brand);
 
     setState(() => isLoading = false);
   }
@@ -54,31 +64,16 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
         ? const CircularProgressIndicator()
         : superstarsList.isEmpty
           ? const Text(
-            'No created superstars'
+            'No superstars in this brand'
           )
         : buildUniverseSuperstars(),
-    ),
-    floatingActionButton: FloatingActionButton(
-      backgroundColor: Colors.black,
-      child: const FittedBox(child : Text('Randomize')),
-      onPressed: () async {
-        setState(() {
-          selectedSuperstars = [];
-          Random r = Random();
-          for (UniverseSuperstars s in superstarsList){
-            int rand = 0 + r.nextInt(2);
-            if(rand == 1){
-              selectedSuperstars.add(s);
-            }
-          }
-        });
-      },
     ),
   );
   }
 
 
-  Widget buildUniverseSuperstars() => ListView.builder(
+  Widget buildUniverseSuperstars() => 
+    ListView.builder(
     padding : const EdgeInsets.all(8),
     itemCount: superstarsList.length,
     itemBuilder: (context, index){
@@ -176,12 +171,11 @@ class _UniverseDraftPage extends State<UniverseDraftPage> with AutomaticKeepAliv
         ),
         onPressed: () async {
           if (isFormValid){
-            await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => UniverseDraftBrands(selectedSuperstars : selectedSuperstars),
-            ));
+            await UniverseDatabase.instance.setDivision(selectedSuperstars, widget.titleId);
+            if(context.mounted) Navigator.of(context).pop();
           }
         },
-        child: const Text('Next'),
+        child: const Text('Confirm'),
       ),
     );
   }

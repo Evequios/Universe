@@ -3,7 +3,7 @@ import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
 
 UniverseBrands defaultBrand = const UniverseBrands(name: 'nom');
-UniverseSuperstars defaultSup = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0);
+UniverseSuperstars defaultSup = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
 List<bool> listTag = [false, true];
 
 bool disable(int tag){
