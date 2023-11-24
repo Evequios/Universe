@@ -2,7 +2,7 @@ const String tableMatches = 'matches';
 
 class MatchesFields {
   static final List<String> values = [
-    id, stipulation, s1, s2, s3, s4, s5, s6, s7, s8, winner, matchOrder, showId
+    id, stipulation, s1, s2, s3, s4, s5, s6, s7, s8, winner, matchOrder, showId, titleId
   ];
 
   static const String id = '_id';
@@ -18,6 +18,7 @@ class MatchesFields {
   static const String winner = 'winner';
   static const String matchOrder = 'matchOrder';
   static const String showId = 'showId';
+  static const String titleId = 'titleId';
 }
 
 class UniverseMatches{
@@ -34,6 +35,7 @@ class UniverseMatches{
   final int winner;
   final int matchOrder;
   final int? showId;
+  final int? titleId;
 
   const UniverseMatches({
     this.id,
@@ -48,7 +50,8 @@ class UniverseMatches{
     required this.s8,
     required this.winner,
     required this.matchOrder,
-    required this.showId
+    required this.showId,
+    required this.titleId,
   });
 
   UniverseMatches copy({
@@ -64,7 +67,8 @@ class UniverseMatches{
     int? s8,
     int? winner,
     int? matchOrder,
-    int? showId
+    int? showId,
+    int? titleId
   }) =>
       UniverseMatches(
         id: id ?? this.id,
@@ -79,7 +83,8 @@ class UniverseMatches{
         s8: s8 ?? this.s8,
         winner: winner ?? this.winner,
         matchOrder: matchOrder ?? this.matchOrder,
-        showId: showId ?? this.showId
+        showId: showId ?? this.showId,
+        titleId: titleId ?? this.titleId
       );
 
   static UniverseMatches fromJson(Map<String, dynamic> json) => UniverseMatches(
@@ -96,6 +101,7 @@ class UniverseMatches{
         winner: json[MatchesFields.winner] as int,
         matchOrder: json[MatchesFields.matchOrder] as int,
         showId: json[MatchesFields.showId] as int,
+        titleId: json[MatchesFields.titleId] as int,
       );
 
   Map<String, dynamic> toJson() => {
@@ -111,6 +117,7 @@ class UniverseMatches{
         MatchesFields.s8: s8,
         MatchesFields.winner: winner,
         MatchesFields.matchOrder: matchOrder,
-        MatchesFields.showId: showId
+        MatchesFields.showId: showId,
+        MatchesFields.titleId : titleId
       };
 }

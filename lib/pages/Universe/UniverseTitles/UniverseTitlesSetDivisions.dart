@@ -23,10 +23,11 @@ class UniverseTitlesSetDivisions extends StatefulWidget{
 class _UniverseTitlesSetDivisions extends State<UniverseTitlesSetDivisions> with AutomaticKeepAliveClientMixin<UniverseTitlesSetDivisions> {
   UniverseBrands defaultBrand = const UniverseBrands(name: 'name');
   late List<UniverseSuperstars> superstarsList;
+  late List<UniverseSuperstars> superstarsBrandList;
   late List<UniverseBrands> brandsList;
   late UniverseTitles title;
   List<UniverseSuperstars> selectedSuperstars = [];
-  
+  bool checkedValue = false;
   bool isLoading = false;
   
   @override
@@ -42,11 +43,23 @@ class _UniverseTitlesSetDivisions extends State<UniverseTitlesSetDivisions> with
   Future refreshSuperstars() async {
     setState(() => isLoading = true);
 
-    
     brandsList = await UniverseDatabase.instance.readAllBrands();
     title = await UniverseDatabase.instance.readTitle(widget.titleId);
-    superstarsList = await UniverseDatabase.instance.readAllSuperstarsFilter(title.brand);
+    superstarsList = await UniverseDatabase.instance.readAllSuperstars();
+    superstarsBrandList = await UniverseDatabase.instance.readAllSuperstarsFilter(title.brand);
+    setState(() => isLoading = false);
+  }
 
+  Future switchList() async {
+    setState(() => isLoading = true);
+    if(checkedValue){
+      checkedValue = false;
+      superstarsList = await UniverseDatabase.instance.readAllSuperstars();
+    }
+    else{
+      checkedValue = true; 
+      superstarsList = await UniverseDatabase.instance.readAllSuperstarsFilter(title.brand);
+    }
     setState(() => isLoading = false);
   }
 
@@ -54,7 +67,6 @@ class _UniverseTitlesSetDivisions extends State<UniverseTitlesSetDivisions> with
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-    drawer: const Navbar(),
     appBar: AppBar(
       actions: [buildUnselectAll(),buildSelectAll(),buildButton()],
       centerTitle: true,
@@ -66,25 +78,40 @@ class _UniverseTitlesSetDivisions extends State<UniverseTitlesSetDivisions> with
           ? const Text(
             'No superstars in this brand'
           )
-        : buildUniverseSuperstars(),
-    ),
-  );
+      :  ListView(
+        children: [ 
+          CheckboxListTile(
+            title: const Text("Brand superstars only"),
+            activeColor: Colors.blueGrey,
+            value: checkedValue, 
+            onChanged: (newValue) async {
+              setState(() {
+                checkedValue ? checkedValue = false : checkedValue = true;
+              });
+            }
+          ),
+          buildUniverseSuperstars(),]
+      )
+      )
+    );
   }
 
 
   Widget buildUniverseSuperstars() => 
     ListView.builder(
+    physics: const ScrollPhysics(),
+    shrinkWrap: true,
     padding : const EdgeInsets.all(8),
-    itemCount: superstarsList.length,
+    itemCount: checkedValue ? superstarsBrandList.length : superstarsList.length,
     itemBuilder: (context, index){
-      final superstar = superstarsList[index];
+      final superstar = checkedValue ? superstarsBrandList[index] : superstarsList[index];
       UniverseBrands brand = defaultBrand;
       if(superstar.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == superstar.brand);
       return GestureDetector( 
         onTap: () async {
           setState(() {
             if(selectedSuperstars.contains(superstar)){
-              selectedSuperstars.remove(superstar);
+              selectedSuperstars.remove(superstar);;
             }
             else{
               selectedSuperstars.add(superstar);
@@ -97,7 +124,7 @@ class _UniverseTitlesSetDivisions extends State<UniverseTitlesSetDivisions> with
             color: selectedSuperstars.contains(superstar) == true ? const Color.fromARGB(189, 96, 125, 139) : Colors.white,
             shape:RoundedRectangleBorder(
               side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
-              borderRadius: BorderRadius.circular(4.0)
+              borderRadius: BorderRadius.circular(4.0) 
             ),
             elevation: selectedSuperstars.contains(superstar) == true ? 0 : 2,
             child: Padding(    
@@ -113,7 +140,7 @@ class _UniverseTitlesSetDivisions extends State<UniverseTitlesSetDivisions> with
                     )
                   ),
                   const Spacer(),
-                  Container(child : ((){ if(superstar.brand != 0 && (brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt')) return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));}()))
+                  Container(child : ((){ if(superstar.brand != 0 && (brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt')) return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));}())),
                 ],
               )
             )
@@ -179,4 +206,6 @@ class _UniverseTitlesSetDivisions extends State<UniverseTitlesSetDivisions> with
       ),
     );
   }
+
+  
 }

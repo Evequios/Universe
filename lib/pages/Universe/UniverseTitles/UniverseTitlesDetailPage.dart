@@ -5,6 +5,7 @@ import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
 import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseSuperstars/UniverseSuperstarsDetailPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseTitles/AddEditUniverseTitlesPage.dart';
+import 'package:wwe_universe/pages/Universe/UniverseTitles/UniverseTitlesReigns.dart';
 import 'package:wwe_universe/pages/Universe/UniverseTitles/UniverseTitlesSetDivisions.dart';
 // import 'package:sqflite_database_example/page/edit_note_page.dart';
 
@@ -29,6 +30,7 @@ class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
   late List<UniverseBrands> brandsList;
   late List<UniverseSuperstars> superstarsList;
   bool isLoading = false;
+  
 
   @override
   void initState() {
@@ -97,19 +99,35 @@ class _UniverseTitlesDetailPage extends State<UniverseTitlesDetailPage> {
                     
                     onPressed: () async {
                       await Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => UniverseTitlesReigns(titleId: title.id!,)),
+                      ).then((value) => refreshTitle());
+                    }, 
+                    child: const Text("Title history", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),),
+                  )
+                ),
+                SizedBox(height: 8),
+                Material(
+                  color: Colors.blueGrey,
+                  elevation: 5,
+                  borderRadius: BorderRadius.circular(15),
+                  child: MaterialButton(
+                    
+                    onPressed: () async {
+                      await Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => UniverseTitlesSetDivisions(titleId: title.id!,)),
                       ).then((value) => refreshTitle());
                     }, 
                     child: const Text("Set divisions", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),),
                   )
                 ),
-                Center(child: buildUniverseSuperstars(),)
+                Container(child: buildUniverseSuperstars(),)
               ],
             ),
           ),
   );
 
   Widget buildUniverseSuperstars() => ListView.builder(
+    physics: const NeverScrollableScrollPhysics(),
     shrinkWrap: true,
     padding : const EdgeInsets.all(8),
     itemCount: superstarsList.length,

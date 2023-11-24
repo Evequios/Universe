@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wwe_universe/classes/Universe/UniverseMatches.dart';
+import 'package:wwe_universe/classes/Universe/UniverseReigns.dart';
 import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
+import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
 import 'package:wwe_universe/database.dart';
 // import 'package:wwe_universe/widget/Universe/UniverseMatchesFormWidget.dart';
 
@@ -28,6 +30,9 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
   final _formKey = GlobalKey<FormState>();
   late List<UniverseStipulations> listStipulations = [];
   late List<UniverseSuperstars> listSuperstars = [];
+  late List<int> participantsID = [];
+  late List<UniverseSuperstars> listParticipants = [];
+  late List<UniverseTitles> listTitles = [];
   late int stipulation;
   late int s1;
   late int s2;
@@ -40,6 +45,7 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
   late int winner;
   late int order;
   late int showId;
+  late int titleId;
   late ValueChanged<int?> onChangedStipulation;
   late ValueChanged<int?> onChangedS1;
   late ValueChanged<int?> onChangedS2;
@@ -51,21 +57,30 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
   late ValueChanged<int?> onChangedS8;
   late ValueChanged<int?> onChangedWinner;
   late ValueChanged<String?> onChangedOrder;
+  late ValueChanged<int?> onChangedTitleId;
+  UniverseTitles defaultTitle = const UniverseTitles(name: 'name', tag: 0, brand: 0, holder1: 0, holder2: 0);
   UniverseStipulations defaultStip = const UniverseStipulations(type: 'type', stipulation: 'stipulation');
   UniverseSuperstars defaultSup = const UniverseSuperstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
   UniverseStipulations stip = const UniverseStipulations(type: 'type', stipulation: 'stipulation');
+  List<String> soloType = ['1v1', 'Triple Threat', 'Fatal 4-Way', '5-Way', '6-Way', '8-Way', '10 Man', '20 Man', '30 Man'];
+  List<String> tagType = ['2v2', '3v3', '4v4', '3-Way Tag', '4-Way Tag', 'Handicap 1v2', 'Handicap 1v3', 'Handicap 2v3'];
+  List<int> team1 = [];
+  List<int> team2 = [];
+  List<int> team3 = [];
+  List<int> team4 = [];
   bool disable2 = false;
-  bool disable3 = false;
-  bool disable4 = false;
-  bool disable5 = false;
-  bool disable6 = false;
-  bool disable7 = false;
-  bool disable8 = false;
+  bool disable3 = true;
+  bool disable4 = true;
+  bool disable5 = true;
+  bool disable6 = true;
+  bool disable7 = true;
+  bool disable8 = true;
   bool isLoading = false;
+  bool checkedValue = false;
+  late UniverseTitles title;
 
   @override
   void initState() {
-    print("p");
     super.initState();
 
     stipulation = widget.match?.stipulation ?? 0;
@@ -80,10 +95,18 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
     winner = widget.match?.winner ?? 0;
     order = widget.match?.matchOrder ?? 0;
     showId = widget.match?.showId ?? 0;
+    titleId = widget.match?.titleId ?? 0;
     listStipulations = widget.listStipulations!;
-    listSuperstars = widget.listSuperstars!;
+    listSuperstars = widget.listSuperstars!; 
     onChangedStipulation = (stipulation) => setState(() => this.stipulation = stipulation!);
-    onChangedS1 = (s1) => setState(() => this.s1 = s1!);
+    onChangedS1 = (s1) => setState(() {
+      for(int s in participantsID){
+        if(s1 == s){
+          participantsID.remove(s);
+        }
+      }; 
+      this.s1 = s1!;
+      participantsID.add(s1);});
     onChangedS2 = (s2) => setState(() => this.s2 = s2!);
     onChangedS3 = (s3) => setState(() => this.s3 = s3!);
     onChangedS4 = (s4) => setState(() => this.s4 = s4!);
@@ -93,14 +116,16 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
     onChangedS8 = (s8) => setState(() => this.s8 = s8!);
     onChangedWinner = (winner) => setState(() => this.winner = winner!);
     onChangedOrder = (order) => setState(() => this.order = int.parse(order!));
+    onChangedTitleId = (titleId) => setState(() => this.titleId = titleId!);
 
     // if(stipulation != 0) getDetails(stipulation);
     // winner = 0;
-    // refreshFields();
+    refreshFields();
   }
 
   Future refreshFields() async {
     setState(() => isLoading = true);
+    listTitles = await UniverseDatabase.instance.readAllTitles();
     if(stipulation != 0) await getDetails(stipulation);
     winner = 0;
     disable2 = await disable(2);
@@ -151,6 +176,10 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
               buildWinner(),
               const SizedBox(height: 8,),
               buildOrder(),
+              const SizedBox(height: 8),
+              buildTitleCheckBox(),
+              const SizedBox(height: 8,),
+              if(checkedValue) buildTitle(),
             ],
           ),
         ),
@@ -193,6 +222,7 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
   }
 
   Future updateUniverseMatches() async {
+
     final match = widget.match!.copy(
       stipulation: stipulation,
       s1 : s1,
@@ -206,9 +236,23 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
       winner : winner,
       matchOrder : order,
       showId : widget.show!.id,
+      titleId: titleId
     );
 
     await UniverseDatabase.instance.updateMatches(match);
+
+    if(checkedValue){
+      title = await UniverseDatabase.instance.readTitle(match.titleId!);
+      List<int> winners = await getWinnersList();
+      // UniverseDatabase.instance.setChampion(title, winners);
+
+      final idPreviousReign = await UniverseDatabase.instance.getPreviousReign(title.id!);
+      final previousReign = await UniverseDatabase.instance.readReign(idPreviousReign!);
+
+      if(previousReign.weekEnd == widget.show!.week && previousReign.yearEnd == widget.show!.year && winners.contains(previousReign.holder1)){
+        await UniverseDatabase.instance.activatePreviousReign(titleId);
+      }
+    }
   }
 
   Future addUniverseMatches() async {
@@ -227,9 +271,35 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
       winner : winner,
       matchOrder : order,
       showId : widget.show!.id,
+      titleId: titleId
     );
 
     await UniverseDatabase.instance.createMatch(match);
+    if(checkedValue){
+      title = await UniverseDatabase.instance.readTitle(match.titleId!);
+      List<int> winners = await getWinnersList();
+      UniverseDatabase.instance.setChampion(title, winners);
+
+      final reign = const UniverseReigns(holder1: 0, holder2: 0, titleId: 0, yearDebut: 0, weekDebut: 0, yearEnd: 0, weekEnd: 0).copy(
+        holder1: winners[0],
+        holder2: winners.length > 1 ? winners[0] : 0,
+        titleId: match.titleId,
+        yearDebut: widget.show!.year,
+        yearEnd: widget.show!.year
+      );
+
+      await UniverseDatabase.instance.createReign(reign);
+
+      int? currentReign = await UniverseDatabase.instance.getCurrentReign(match.titleId!);
+      if(currentReign != 0){
+        final reign = await UniverseDatabase.instance.readReign(currentReign!);
+        reign.copy(
+          yearEnd: widget.show!.year,
+          weekEnd: widget.show!.week
+        );
+        await UniverseDatabase.instance.updateReigns(reign);
+      }
+    }
   }
 
   Widget buildStipulation() => 
@@ -457,6 +527,127 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
       onChanged: onChangedOrder,
     );
 
+
+    Widget buildTitleCheckBox() => CheckboxListTile(
+      title: const Text("Championship match ?"),
+      activeColor: Colors.blueGrey,
+      value: checkedValue, 
+      onChanged: (newValue) async {
+        setState(() {
+          checkedValue ? checkedValue = false : checkedValue = true;
+        });
+      }
+    );
+
+    Widget buildTitle() => 
+    ButtonTheme( 
+      alignedDropdown: true, 
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+        labelText: 'Title',
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
+      ),
+        value: titleId != 0 ? titleId : defaultTitle.id ,
+        onChanged: onChangedTitleId,
+        items: listTitles.map((title){
+        return DropdownMenuItem(
+          value: title.id,
+          child: Text(title.name));
+      }).toList(),
+      validator: (title) => validateWinner() ? null : "The winner must be in the match",
+      ),
+    );    
+
+
+    Future<List<int>> getWinnersList() async {
+      List<int> winners = [];
+      if(soloType.contains(stip.type)){
+        return winners = [winner];
+      }
+      else{
+        switch(stip.type){
+          case '2v2':
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s1)).id!);
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s2)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s3)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s4)).id!);
+            break;
+          case '3v3':
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s1)).id!);
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s2)).id!);
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s3)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s4)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s5)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s6)).id!);
+            break;
+          case '4v4':
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s1)).id!);
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s2)).id!);
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s3)).id!);
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s4)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s5)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s6)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s7)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s8)).id!);
+            break;
+          case '3-Way Tag':
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s1)).id!);
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s2)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s3)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s4)).id!);
+            team3.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s5)).id!);
+            team3.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s6)).id!);
+            break;  
+          case '4-Way Tag':
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s1)).id!);
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s2)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s3)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s4)).id!);
+            team3.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s5)).id!);
+            team3.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s6)).id!);
+            team4.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s7)).id!);
+            team4.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s8)).id!);
+            break;
+          case 'Handicap 1v2' :
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s1)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s2)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s3)).id!);
+            break;
+          case'Handicap 1v3' : 
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s1)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s2)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s3)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s4)).id!);
+            break;
+          case'Handicap 2v3' : 
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s1)).id!);
+            team1.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s2)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s3)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s4)).id!);
+            team2.add((await UniverseDatabase.instance.readSuperstar(widget.match!.s5)).id!);
+            break; 
+          default:
+            break;
+        }
+
+        
+        if(team1.contains(widget.match!.winner)){
+          winners = team1;
+        }
+        else if(team2.contains(widget.match!.winner)){
+          winners = team2;
+        }
+        else if(team3.contains(widget.match!.winner)){
+          winners = team3;
+        }
+        else if(team4.contains(widget.match!.winner)){
+          winners = team4;
+        }
+      }
+      return winners;
+    }
+
     bool validateWinner() {
     switch (stip.type){
     case '10 Man' : 
@@ -556,5 +747,16 @@ class _AddEditUniverseMatchesPage extends State<AddEditUniverseMatchesPage> {
         return false;
     }
     return disable;
+  }
+
+  Future getListParticipants() async{
+    for(int i in participantsID){
+      for(UniverseSuperstars s in listSuperstars){
+        if(s.id == i){
+          listParticipants.add(s);
+          break;
+        }
+      }
+    }
   }
 }

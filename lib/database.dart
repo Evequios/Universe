@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseMatches.dart';
 import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
+import 'package:wwe_universe/classes/Universe/UniverseReigns.dart';
 import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStorylines.dart';
@@ -31,7 +32,7 @@ class UniverseDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 62, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 67, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -122,7 +123,8 @@ class UniverseDatabase {
         ${MatchesFields.s8} $intType,
         ${MatchesFields.winner} $intTypeNN,
         ${MatchesFields.matchOrder} $intTypeNN DEFAULT 0,
-        ${MatchesFields.showId} $intTypeNN
+        ${MatchesFields.showId} $intTypeNN,
+        ${MatchesFields.titleId} $intTypeNN DEFAULT 0
       ); '''
     );
 
@@ -148,6 +150,19 @@ class UniverseDatabase {
         ${TeamsFields.member5} $intType
       );
   ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableReigns (
+        ${ReignsFields.id} $idType,
+        ${ReignsFields.holder1} $intTypeNN,
+        ${ReignsFields.holder2} $intType,
+        ${ReignsFields.titleId} $intTypeNN,
+        ${ReignsFields.yearDebut} $intTypeNN,
+        ${ReignsFields.weekDebut} $intTypeNN,
+        ${ReignsFields.yearEnd} $intType,
+        ${ReignsFields.weekEnd} $intType
+      );
+    ''');
   }
 
   Future _updateDB(Database db, int oldVersion, int newVersion) async {
@@ -157,8 +172,7 @@ class UniverseDatabase {
     const textType = 'TEXT NOT NULL';
     const booleanTypeNN = 'BOOLEAN NOT NULL';
     if (newVersion > oldVersion) {
-      await db.execute('''ALTER TABLE $tableSuperstars
-      ADD COLUMN ${SuperstarsFields.division} $intType DEFAULT 0;''');
+      await db.execute('''ALTER TABLE $tableMatches ADD COLUMN ${MatchesFields.titleId} $intTypeNN DEFAULT 0;''');
     }
   }
 
@@ -793,6 +807,17 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
   }
 
+  Future setChampion(UniverseTitles title, List<int> winners) async {
+    final db = await instance.database;
+
+    if(title.tag == 0) {
+      db.rawUpdate('UPDATE $tableTitles SET ${TitlesFields.holder1} = ? WHERE ${TitlesFields.id} = ?', [winners[0], title.id]);
+    } else {
+      db.rawUpdate('UPDATE $tableTitles SET ${TitlesFields.holder1} = ?, ${TitlesFields.holder2} = ? WHERE ${TitlesFields.id} = ?', [winners[0], winners[1], title.id]);
+    }
+
+  }
+
   Future<int> deleteTitle(int id) async {
     final db = await instance.database;
 
@@ -897,5 +922,120 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       print(superstar.division);
       db.rawUpdate('UPDATE $tableSuperstars SET ${SuperstarsFields.division} = ? WHERE ${SuperstarsFields.id} = ${superstar.id}', [titleId]);
     }
+  }
+
+  // Reigns 
+  Future<UniverseReigns> createReign(UniverseReigns reign) async {
+    final db = await instance.database;
+
+    final id = await db.insert(tableReigns, reign.toJson());
+    return reign.copy(id: id);
+  }
+
+  Future<UniverseReigns> readReign(int id) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      tableReigns,
+      columns: ReignsFields.values,
+      where: '${ReignsFields.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return UniverseReigns.fromJson(maps.first);
+    } else {
+      throw Exception('ID $id not found');
+    }
+  }
+
+  Future<List<UniverseReigns>> readAllReigns() async {
+    final db = await instance.database;
+    const orderBy = '${ReignsFields.yearDebut} DESC, ${ReignsFields.weekDebut} DESC';
+
+    final result = await db.query(
+      tableReigns,
+      orderBy: orderBy
+    );
+
+    return result.map((json) => UniverseReigns.fromJson(json)).toList();
+  }
+
+  Future<List<UniverseReigns>> readAllReignsTitle(int titleId) async {
+    final db = await instance.database;
+    const orderBy = '${ReignsFields.yearDebut} DESC, ${ReignsFields.weekDebut} DESC';
+
+    final result = await db.query(
+      tableReigns, 
+      where: '${ReignsFields.titleId} = ? ',
+      whereArgs: [titleId],
+      orderBy: orderBy
+    );
+
+    return result.map((json) => UniverseReigns.fromJson(json)).toList();
+  }
+
+  Future<int> updateReigns(UniverseReigns reign) async {
+    final db = await instance.database;
+
+    return db.update(
+      tableReigns,
+      reign.toJson(),
+      where: '${ReignsFields.id} = ?',
+      whereArgs: [reign.id],
+    );
+  }
+
+  Future<int> deleteReign(int id) async {
+    final db = await instance.database;
+
+    return await db.delete(
+      tableReigns,
+      where: '${ReignsFields.id} = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int?> getCurrentReign(int titleId) async {
+    final db = await instance.database;
+    final maps = await db.query(
+      tableReigns,
+      columns: ReignsFields.values,
+      where: '${ReignsFields.id} = ? AND ${ReignsFields.yearEnd} = ?',
+      whereArgs: [titleId, 0],
+    );
+
+    if (maps.isNotEmpty) {
+      return UniverseReigns.fromJson(maps.first).id;
+    } else {
+      return 0;
+    }
+  }
+
+  Future<int?> getPreviousReign(int titleId) async {
+    final db = await instance.database;
+    final maps = await db.query(
+      tableReigns,
+      where: '${ReignsFields.titleId} = ? AND ${ReignsFields.weekEnd} != ?',
+      whereArgs: [titleId, 0],
+      orderBy: "ORDER BY ${ReignsFields.id} DESC",
+      limit: 1
+    );
+
+    if (maps.isNotEmpty) {
+      return UniverseReigns.fromJson(maps.first).id;
+    } else {
+      return 0;
+    }
+  }
+
+  Future<int?> activatePreviousReign(int titleId) async {
+    final db = await instance.database;
+    final idPreviousReign = await getPreviousReign(titleId);
+    UniverseReigns previousReign = await readReign(idPreviousReign!);
+    final updatedPreviousReign = UniverseReigns(holder1: previousReign.holder1, holder2: previousReign.holder2, titleId: titleId, yearDebut: previousReign.yearDebut, weekDebut: previousReign.weekDebut, yearEnd: 0, weekEnd: 0);
+    await updateReigns(updatedPreviousReign);
+    final idCurrentReign = await getCurrentReign(titleId);
+    await deleteReign(idCurrentReign!);
   }
 }

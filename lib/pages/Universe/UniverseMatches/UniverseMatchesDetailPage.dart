@@ -3,6 +3,7 @@ import 'package:wwe_universe/classes/Universe/UniverseMatches.dart';
 import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
 import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
+import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
 import 'package:wwe_universe/database.dart';
 import 'package:wwe_universe/pages/Universe/UniverseMatches/AddEditUniverseMatchesPage.dart';
 
@@ -24,6 +25,7 @@ class _UniverseMatchesDetailPage extends State<UniverseMatchesDetailPage> {
   late UniverseMatches match;
   late UniverseShows show;
   late UniverseStipulations stipulation;
+  late UniverseTitles title;
   late UniverseSuperstars s1;
   late UniverseSuperstars s2;
   late UniverseSuperstars s3;
@@ -53,6 +55,7 @@ class _UniverseMatchesDetailPage extends State<UniverseMatchesDetailPage> {
     show = await UniverseDatabase.instance.readShow(widget.showId);
     match = await UniverseDatabase.instance.readMatch(widget.matchId);
     stipulation = await UniverseDatabase.instance.readStipulation(match.stipulation);
+    if(match.titleId != 0) title = await UniverseDatabase.instance.readTitle(match.titleId!);
     s1 = await UniverseDatabase.instance.readSuperstar(match.s1);
     // s2 = await UniverseDatabase.instance.readSuperstar(match.s2);
     stipulationsList = await UniverseDatabase.instance.readAllStipulations();
@@ -136,6 +139,15 @@ class _UniverseMatchesDetailPage extends State<UniverseMatchesDetailPage> {
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height:8),
+              Text('${title.name} Championship',
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontStyle: FontStyle.italic
+                  ),
                 textAlign: TextAlign.center,
               )
             ],

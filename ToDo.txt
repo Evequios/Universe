@@ -1,10 +1,13 @@
 ---- A faire
-- Ajouter rival ou ally dans les deux superstars
+- Ajouter rival ou ally dans les deux superstars?
 - Améliorer mise en page
     - superstars
         - Modifier affichage détails
-    
+- Ajout match pour le titre
+- Ajout règnes
 - Refactor et commentaires
+- Gérer gagnants changement de titre
+
 
 
 
