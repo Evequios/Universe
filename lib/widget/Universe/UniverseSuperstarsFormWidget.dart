@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
 import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
-import 'package:wwe_universe/widget/IRL/IRLNewsFormWidget.dart';
 
 const List<String> listOrientations = <String>['Face', 'Tweener', 'Heel'];
 UniverseBrands defaultBrand = const UniverseBrands(name: 'nom');

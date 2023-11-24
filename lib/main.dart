@@ -1,11 +1,10 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsPage.dart';
+import 'package:wwe_universe/pages/Universe/UniverseNews/UniverseNewsPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -89,6 +88,6 @@ class SplashScreen extends StatelessWidget{
       splashIconSize: double.infinity,
       splashTransition: SplashTransition.fadeTransition,
       backgroundColor: Colors.black,
-      nextScreen: const IRLNewsPage());
+      nextScreen: const UniverseNewsPage());
   }
 }

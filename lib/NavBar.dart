@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/IRL/IRLNews/IRLNewsPage.dart';
-import 'package:wwe_universe/pages/IRL/IRLShows/IRLShowsPage.dart';
-import 'package:wwe_universe/pages/IRL/IRLStorylines/IRLStorylinesPage.dart';
-import 'package:wwe_universe/pages/IRL/IRLSuperstars/IRLSuperstarsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseBrands/UniverseBrandsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseNews/UniverseNewsPage.dart';
 import 'package:wwe_universe/pages/Universe/UniverseShows/UniverseShowsPage.dart';
@@ -22,35 +18,6 @@ class Navbar extends StatelessWidget{
     return Drawer(
       child: ListView(
         children : [
-          ExpansionTile(
-            title: const Text('IRL'),
-            children: [
-              ListTile(
-                title : const Text('News'),
-                onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLNewsPage(),));
-                }
-              ),
-              ListTile(
-                title : const Text('Résultats'),
-                onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLShowsPage(),));
-                }
-              ),
-              ListTile(
-                title : const Text('Storylines'),
-                onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLStorylinesPage(),));
-                }
-              ),
-              ListTile(
-                title : const Text('Superstars'),
-                onTap:() {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const IRLSuperstarsPage(),));
-                }
-              ),
-            ],
-            ),
           ExpansionTile(
             title: const Text('Universe'),
             children: [

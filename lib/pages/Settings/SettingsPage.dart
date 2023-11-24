@@ -1,6 +1,5 @@
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/Settings/Stipulations/IRL/IRLStipulationsPage.dart';
 import 'package:wwe_universe/pages/Settings/Stipulations/Universe/UniverseStipulationsPage.dart';
 // import 'package:wwe_universe/pages/Settings/Titles/Universe/UniverseTitlesPage.dart';
 
