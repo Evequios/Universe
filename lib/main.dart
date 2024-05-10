@@ -1,7 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/Universe/UniverseNews/UniverseNewsPage.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:wwe_universe/pages/News/NewsPage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +39,7 @@ class MyHomePage extends StatelessWidget {
               image: AssetImage('assets/home.jpg')
               )
             ),
-            const Text('Bienvenue',
+            const Text('Welcome',
             style: TextStyle(
               fontSize: 80,
               letterSpacing: 1.2,
@@ -88,6 +87,6 @@ class SplashScreen extends StatelessWidget{
       splashIconSize: double.infinity,
       splashTransition: SplashTransition.fadeTransition,
       backgroundColor: Colors.black,
-      nextScreen: const UniverseNewsPage());
+      nextScreen: const NewsPage());
   }
 }

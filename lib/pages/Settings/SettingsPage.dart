@@ -1,6 +1,6 @@
 import 'package:wwe_universe/NavBar.dart';
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/Settings/Stipulations/Universe/UniverseStipulationsPage.dart';
+import 'package:wwe_universe/pages/Settings/Stipulations/StipulationsPage.dart';
 // import 'package:wwe_universe/pages/Settings/Titles/Universe/UniverseTitlesPage.dart';
 
 class SettingsPage extends StatefulWidget{
@@ -58,7 +58,7 @@ class _SettingsPage extends State<SettingsPage> {
           GestureDetector( 
             onTap: () {
               // await Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => UniverseStipulationsPage(),));
-               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const UniverseStipulationsPage()),
+               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const StipulationsPage()),
             );
             },
             child :SizedBox(
@@ -69,11 +69,11 @@ class _SettingsPage extends State<SettingsPage> {
                 borderRadius: BorderRadius.circular(4.0)),
                 margin: const EdgeInsets.all(12),
                 elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
                   child: Row(
-                    children: const [
-                      Text('Universe Stipulations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                    children: [
+                      Text('Stipulations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
                     ],
                   )
                 )

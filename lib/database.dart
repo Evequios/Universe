@@ -1,25 +1,24 @@
 import 'dart:collection';
 
 import 'package:sqflite/sqflite.dart';
-import 'package:wwe_universe/classes/Universe/UniverseBrands.dart';
-import 'package:wwe_universe/classes/Universe/UniverseMatches.dart';
-import 'package:wwe_universe/classes/Universe/UniverseNews.dart';
-import 'package:wwe_universe/classes/Universe/UniverseReigns.dart';
-import 'package:wwe_universe/classes/Universe/UniverseShows.dart';
-import 'package:wwe_universe/classes/Universe/UniverseStipulations.dart';
-import 'package:wwe_universe/classes/Universe/UniverseStorylines.dart';
-import 'package:wwe_universe/classes/Universe/UniverseSuperstars.dart';
-import 'package:wwe_universe/classes/Universe/UniverseTeams.dart';
-import 'package:wwe_universe/classes/Universe/UniverseTitles.dart';
 import 'package:path/path.dart';
+import 'package:wwe_universe/classes/Brands.dart';
+import 'package:wwe_universe/classes/Matches.dart';
+import 'package:wwe_universe/classes/News.dart';
+import 'package:wwe_universe/classes/Reigns.dart';
+import 'package:wwe_universe/classes/Shows.dart';
+import 'package:wwe_universe/classes/Stipulations.dart';
+import 'package:wwe_universe/classes/Storylines.dart';
+import 'package:wwe_universe/classes/Superstars.dart';
+import 'package:wwe_universe/classes/Teams.dart';
+import 'package:wwe_universe/classes/Titles.dart';
 
 
-class UniverseDatabase {
-  static final UniverseDatabase instance = UniverseDatabase._init();
-
+class DatabaseService {
+  static final DatabaseService instance = DatabaseService._init();
   static Database? _database;
 
-  UniverseDatabase._init();
+  DatabaseService._init();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -177,14 +176,14 @@ class UniverseDatabase {
   }
 
 // News
-  Future<UniverseNews> createNews(UniverseNews news) async {
+  Future<News> createNews(News news) async {
     final db = await instance.database;
 
     final id = await db.insert(tableNews, news.toJson());
     return news.copy(id: id);
   }
 
-  Future<UniverseNews> readNews(int id) async {
+  Future<News> readNews(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -195,23 +194,23 @@ class UniverseDatabase {
     );
 
     if (maps.isNotEmpty) {
-      return UniverseNews.fromJson(maps.first);
+      return News.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseNews>> readAllNews() async {
+  Future<List<News>> readAllNews() async {
     final db = await instance.database;
     const orderBy = '${NewsFields.createdTime} DESC';
     final result = await db.query(
       tableNews,
       orderBy: orderBy);
 
-    return result.map((json) => UniverseNews.fromJson(json)).toList();
+    return result.map((json) => News.fromJson(json)).toList();
   }
 
-  Future<List<UniverseNews>> readAllNewsSearch(String n) async {
+  Future<List<News>> readAllNewsSearch(String n) async {
     final db = await instance.database;
     const orderBy = '${NewsFields.createdTime} DESC';
 
@@ -222,10 +221,10 @@ class UniverseDatabase {
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseNews.fromJson(json)).toList();
+    return result.map((json) => News.fromJson(json)).toList();
   }
 
-  Future<int> updateNews(UniverseNews news) async {
+  Future<int> updateNews(News news) async {
     final db = await instance.database;
 
     return db.update(
@@ -247,14 +246,14 @@ class UniverseDatabase {
   }
 
 //Superstars
-Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars) async {
+Future<Superstars> createSuperstar(Superstars universeSuperstars) async {
     final db = await instance.database;
 
     final id = await db.insert(tableSuperstars, universeSuperstars.toJson());
     return universeSuperstars.copy(id: id);
   }
 
-  Future<UniverseSuperstars> readSuperstar(int id) async {
+  Future<Superstars> readSuperstar(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -265,13 +264,13 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseSuperstars.fromJson(maps.first);
+      return Superstars.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseSuperstars>> readAllSuperstars() async {
+  Future<List<Superstars>> readAllSuperstars() async {
     final db = await instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -280,10 +279,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseSuperstars.fromJson(json)).toList();
+    return result.map((json) => Superstars.fromJson(json)).toList();
   }
 
-  Future<List<UniverseSuperstars>> readAllSuperstarsFilter(int brandId) async {
+  Future<List<Superstars>> readAllSuperstarsFilter(int brandId) async {
     final db = await instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -294,10 +293,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseSuperstars.fromJson(json)).toList();
+    return result.map((json) => Superstars.fromJson(json)).toList();
   }
 
-  Future<List<UniverseSuperstars>> readAllSuperstarsDivision(int titleId) async {
+  Future<List<Superstars>> readAllSuperstarsDivision(int titleId) async {
     final db = await instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -308,10 +307,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseSuperstars.fromJson(json)).toList();
+    return result.map((json) => Superstars.fromJson(json)).toList();
   }
 
-  Future<List<UniverseSuperstars>> readAllSuperstarsSearch(String n) async {
+  Future<List<Superstars>> readAllSuperstarsSearch(String n) async {
     final db = await instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -322,10 +321,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseSuperstars.fromJson(json)).toList();
+    return result.map((json) => Superstars.fromJson(json)).toList();
   }
 
-  Future<int> updateSuperstar(UniverseSuperstars universeSuperstars) async {
+  Future<int> updateSuperstar(Superstars universeSuperstars) async {
     final db = await instance.database;
 
     return db.update(
@@ -392,14 +391,14 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
 
 // Storylines
-  Future<UniverseStorylines> createStoryline(UniverseStorylines universeStorylines) async {
+  Future<Storylines> createStoryline(Storylines universeStorylines) async {
     final db = await instance.database;
 
     final id = await db.insert(tableStorylines, universeStorylines.toJson());
     return universeStorylines.copy(id: id);
   }
 
-  Future<UniverseStorylines> readStoryline(int id) async {
+  Future<Storylines> readStoryline(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -410,13 +409,13 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseStorylines.fromJson(maps.first);
+      return Storylines.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseStorylines>> readAllStorylines() async {
+  Future<List<Storylines>> readAllStorylines() async {
     final db = await instance.database;
     const orderBy = '${StorylinesFields.id} DESC';
 
@@ -425,10 +424,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseStorylines.fromJson(json)).toList();
+    return result.map((json) => Storylines.fromJson(json)).toList();
   }
 
-  Future<List<UniverseStorylines>> readAllStorylinesSearch(String n) async {
+  Future<List<Storylines>> readAllStorylinesSearch(String n) async {
     final db = await instance.database;
     const orderBy = '${StorylinesFields.id} DESC';
 
@@ -439,10 +438,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseStorylines.fromJson(json)).toList();
+    return result.map((json) => Storylines.fromJson(json)).toList();
   }
 
-  Future<int> updateStoryline(UniverseStorylines storyline) async {
+  Future<int> updateStoryline(Storylines storyline) async {
     final db = await instance.database;
 
     return db.update(
@@ -465,14 +464,14 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
 
   // Shows
-  Future<UniverseShows> createShow(UniverseShows universeShows) async {
+  Future<Shows> createShow(Shows universeShows) async {
     final db = await instance.database;
 
     final id = await db.insert(tableShows, universeShows.toJson());
     return universeShows.copy(id: id);
   }
 
-  Future<UniverseShows> readShow(int id) async {
+  Future<Shows> readShow(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -483,13 +482,13 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseShows.fromJson(maps.first);
+      return Shows.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseShows>> readAllShows() async {
+  Future<List<Shows>> readAllShows() async {
     final db = await instance.database;
     const orderBy = '${ShowFields.year} DESC, ${ShowFields.week} DESC';
 
@@ -497,10 +496,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       tableShows,
       orderBy: orderBy);
 
-    return result.map((json) => UniverseShows.fromJson(json)).toList();
+    return result.map((json) => Shows.fromJson(json)).toList();
   }
 
-  Future<int> updateShow(UniverseShows universeShows) async {
+  Future<int> updateShow(Shows universeShows) async {
     final db = await instance.database;
 
     return db.update(
@@ -531,14 +530,14 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
 
   // Matches
-  Future<UniverseMatches> createMatch(UniverseMatches universeMatches) async {
+  Future<Matches> createMatch(Matches universeMatches) async {
     final db = await instance.database;
 
     final id = await db.insert(tableMatches, universeMatches.toJson());
     return universeMatches.copy(id: id);
   }
 
-  Future<UniverseMatches> readMatch(int id) async {
+  Future<Matches> readMatch(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -549,13 +548,13 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseMatches.fromJson(maps.first);
+      return Matches.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseMatches>> readAllMatches(int showId) async {
+  Future<List<Matches>> readAllMatches(int showId) async {
     final db = await instance.database;
 
     final result = await db.query(tableMatches,
@@ -563,19 +562,19 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     whereArgs: [showId],
     orderBy: MatchesFields.matchOrder);
 
-    return result.map((json) => UniverseMatches.fromJson(json)).toList();
+    return result.map((json) => Matches.fromJson(json)).toList();
   }
 
-  Future<List<UniverseMatches>> readAllMatchesSuperstar(int id) async {
+  Future<List<Matches>> readAllMatchesSuperstar(int id) async {
     final db = await instance.database;
 
     final result = await db.query(tableMatches,
     where: 's1 = $id OR s2 = $id OR s3 = $id OR s4 = $id OR s5 = $id OR s6 = $id OR s7 = $id OR s8 = $id');
 
-    return result.map((json) => UniverseMatches.fromJson(json)).toList();
+    return result.map((json) => Matches.fromJson(json)).toList();
   }
 
-  Future<int> updateMatches(UniverseMatches universeMatches) async {
+  Future<int> updateMatches(Matches universeMatches) async {
     final db = await instance.database;
 
     return db.update(
@@ -598,7 +597,7 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
 
   // Stipulations
-  Future<UniverseStipulations> createStipulation(UniverseStipulations stipulation) async {
+  Future<Stipulations> createStipulation(Stipulations stipulation) async {
     final db = await instance.database;
 
     final id = await db.insert(tableStipulations, stipulation.toJson());
@@ -606,7 +605,7 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
   }
 
 
-  Future<UniverseStipulations> readStipulation(int id) async {
+  Future<Stipulations> readStipulation(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -617,13 +616,13 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseStipulations.fromJson(maps.first);
+      return Stipulations.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseStipulations>> readAllStipulations() async {
+  Future<List<Stipulations>> readAllStipulations() async {
     final db = await instance.database;
     const orderBy = '${StipulationsFields.type} ASC, ${StipulationsFields.stipulation} ASC';
     final result = await db.query(
@@ -631,10 +630,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseStipulations.fromJson(json)).toList();
+    return result.map((json) => Stipulations.fromJson(json)).toList();
   }
 
-  Future<List<UniverseStipulations>> readAllStipulationsSearch(String n) async {
+  Future<List<Stipulations>> readAllStipulationsSearch(String n) async {
     final db = await instance.database;
     const orderBy = '${StipulationsFields.type} ASC, ${StipulationsFields.stipulation} ASC';
 
@@ -645,11 +644,11 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseStipulations.fromJson(json)).toList();
+    return result.map((json) => Stipulations.fromJson(json)).toList();
   }
 
 
-  Future<int> updateStipulation(UniverseStipulations stipulation) async {
+  Future<int> updateStipulation(Stipulations stipulation) async {
     final db = await instance.database;
 
     return db.update(
@@ -678,14 +677,14 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
 
   // Brands
-  Future<UniverseBrands> createBrand(UniverseBrands brand) async {
+  Future<Brands> createBrand(Brands brand) async {
     final db = await instance.database;
 
     final id = await db.insert(tableBrands, brand.toJson());
     return brand.copy(id: id);
   }
 
-  Future<UniverseBrands> readBrand(int id) async {
+  Future<Brands> readBrand(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -696,13 +695,13 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseBrands.fromJson(maps.first);
+      return Brands.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseBrands>> readAllBrands() async {
+  Future<List<Brands>> readAllBrands() async {
     final db = await instance.database;
     const orderBy = '${BrandsFields.name} ASC';
     final result = await db.query(
@@ -710,10 +709,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseBrands.fromJson(json)).toList();
+    return result.map((json) => Brands.fromJson(json)).toList();
   }
 
-  Future<int> updateBrand(UniverseBrands brand) async {
+  Future<int> updateBrand(Brands brand) async {
     final db = await instance.database;
 
     return db.update(
@@ -747,14 +746,14 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
 
   // Titles
-  Future<UniverseTitles> createTitle(UniverseTitles title) async {
+  Future<Titles> createTitle(Titles title) async {
     final db = await instance.database;
 
     final id = await db.insert(tableTitles, title.toJson());
     return title.copy(id: id);
   }
 
-  Future<UniverseTitles> readTitle(int id) async {
+  Future<Titles> readTitle(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -765,13 +764,13 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseTitles.fromJson(maps.first);
+      return Titles.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseTitles>> readAllTitles() async {
+  Future<List<Titles>> readAllTitles() async {
     final db = await instance.database;
     const orderBy = '${TitlesFields.name} ASC';
     final result = await db.query(
@@ -779,10 +778,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy,
     );
 
-    return result.map((json) => UniverseTitles.fromJson(json)).toList();
+    return result.map((json) => Titles.fromJson(json)).toList();
   }
 
-  Future<List<UniverseTitles>> readAllTitlesSearch(String n) async {
+  Future<List<Titles>> readAllTitlesSearch(String n) async {
     final db = await instance.database;
     const orderBy = '${TitlesFields.name} ASC';
 
@@ -793,10 +792,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseTitles.fromJson(json)).toList();
+    return result.map((json) => Titles.fromJson(json)).toList();
   }
 
-  Future<int> updateTitle(UniverseTitles title) async {
+  Future<int> updateTitle(Titles title) async {
     final db = await instance.database;
 
     return db.update(
@@ -807,7 +806,7 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
   }
 
-  Future setChampion(UniverseTitles title, List<int> winners) async {
+  Future setChampion(Titles title, List<int> winners) async {
     final db = await instance.database;
 
     if(title.tag == 0) {
@@ -829,14 +828,14 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
   }
 
 // Teams
-  Future<UniverseTeams> createTeam(UniverseTeams team) async {
+  Future<Teams> createTeam(Teams team) async {
     final db = await instance.database;
 
     final id = await db.insert(tableTeams, team.toJson());
     return team.copy(id: id);
   }
 
-  Future<UniverseTeams> readTeam(int id) async {
+  Future<Teams> readTeam(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -847,13 +846,13 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseTeams.fromJson(maps.first);
+      return Teams.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseTeams>> readAllTeams() async {
+  Future<List<Teams>> readAllTeams() async {
     final db = await instance.database;
     const orderBy = '${TeamsFields.name} ASC';
 
@@ -862,10 +861,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseTeams.fromJson(json)).toList();
+    return result.map((json) => Teams.fromJson(json)).toList();
   }
 
-  Future<List<UniverseTeams>> readAllTeamsSearch(String n) async {
+  Future<List<Teams>> readAllTeamsSearch(String n) async {
     final db = await instance.database;
     const orderBy = '${TeamsFields.name} ASC';
 
@@ -876,10 +875,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseTeams.fromJson(json)).toList();
+    return result.map((json) => Teams.fromJson(json)).toList();
   }
 
-  Future<int> updateTeam(UniverseTeams team) async {
+  Future<int> updateTeam(Teams team) async {
     final db = await instance.database;
 
     return db.update(
@@ -914,10 +913,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
 
   // Divisions
 
-  Future setDivision(List<UniverseSuperstars> selectedSuperstars, int titleId) async {
+  Future setDivision(List<Superstars> selectedSuperstars, int titleId) async {
     final db = await instance.database;
 
-    for(UniverseSuperstars superstar in selectedSuperstars){
+    for(Superstars superstar in selectedSuperstars){
       print(superstar.name);
       print(superstar.division);
       db.rawUpdate('UPDATE $tableSuperstars SET ${SuperstarsFields.division} = ? WHERE ${SuperstarsFields.id} = ${superstar.id}', [titleId]);
@@ -925,14 +924,14 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
   }
 
   // Reigns 
-  Future<UniverseReigns> createReign(UniverseReigns reign) async {
+  Future<Reigns> createReign(Reigns reign) async {
     final db = await instance.database;
 
     final id = await db.insert(tableReigns, reign.toJson());
     return reign.copy(id: id);
   }
 
-  Future<UniverseReigns> readReign(int id) async {
+  Future<Reigns> readReign(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -943,13 +942,13 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseReigns.fromJson(maps.first);
+      return Reigns.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<UniverseReigns>> readAllReigns() async {
+  Future<List<Reigns>> readAllReigns() async {
     final db = await instance.database;
     const orderBy = '${ReignsFields.yearDebut} DESC, ${ReignsFields.weekDebut} DESC';
 
@@ -958,10 +957,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseReigns.fromJson(json)).toList();
+    return result.map((json) => Reigns.fromJson(json)).toList();
   }
 
-  Future<List<UniverseReigns>> readAllReignsTitle(int titleId) async {
+  Future<List<Reigns>> readAllReignsTitle(int titleId) async {
     final db = await instance.database;
     const orderBy = '${ReignsFields.yearDebut} DESC, ${ReignsFields.weekDebut} DESC';
 
@@ -972,10 +971,10 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
       orderBy: orderBy
     );
 
-    return result.map((json) => UniverseReigns.fromJson(json)).toList();
+    return result.map((json) => Reigns.fromJson(json)).toList();
   }
 
-  Future<int> updateReigns(UniverseReigns reign) async {
+  Future<int> updateReigns(Reigns reign) async {
     final db = await instance.database;
 
     return db.update(
@@ -1006,7 +1005,7 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseReigns.fromJson(maps.first).id;
+      return Reigns.fromJson(maps.first).id;
     } else {
       return 0;
     }
@@ -1023,7 +1022,7 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
     );
 
     if (maps.isNotEmpty) {
-      return UniverseReigns.fromJson(maps.first).id;
+      return Reigns.fromJson(maps.first).id;
     } else {
       return 0;
     }
@@ -1032,8 +1031,8 @@ Future<UniverseSuperstars> createSuperstar(UniverseSuperstars universeSuperstars
   Future<int?> activatePreviousReign(int titleId) async {
     final db = await instance.database;
     final idPreviousReign = await getPreviousReign(titleId);
-    UniverseReigns previousReign = await readReign(idPreviousReign!);
-    final updatedPreviousReign = UniverseReigns(holder1: previousReign.holder1, holder2: previousReign.holder2, titleId: titleId, yearDebut: previousReign.yearDebut, weekDebut: previousReign.weekDebut, yearEnd: 0, weekEnd: 0);
+    Reigns previousReign = await readReign(idPreviousReign!);
+    final updatedPreviousReign = Reigns(holder1: previousReign.holder1, holder2: previousReign.holder2, titleId: titleId, yearDebut: previousReign.yearDebut, weekDebut: previousReign.weekDebut, yearEnd: 0, weekEnd: 0);
     await updateReigns(updatedPreviousReign);
     final idCurrentReign = await getCurrentReign(titleId);
     await deleteReign(idCurrentReign!);
