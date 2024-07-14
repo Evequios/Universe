@@ -43,6 +43,7 @@ dependencies:
   intl: ^0.17.0
   firebase_core: ^2.2.0
   cloud_firestore: ^4.0.5
+  dropdown_search: ^5.0.6
 
 dev_dependencies:
   flutter_test:

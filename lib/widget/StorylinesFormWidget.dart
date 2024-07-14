@@ -72,11 +72,11 @@ class StorylinesFormWidget extends StatelessWidget {
   );
 
   Widget buildText() => TextFormField(
+    minLines: 5,
     maxLines: null,
     initialValue: text,
     style: const TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 18
+      fontSize: 16
     ),
     decoration: InputDecoration(
       labelText: "Text",

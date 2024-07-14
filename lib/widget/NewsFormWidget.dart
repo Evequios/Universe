@@ -30,9 +30,9 @@ class NewsFormWidget extends StatelessWidget {
             children: [
               buildTitre(),
               const SizedBox(height: 8),
-              buildTexte(),
+              buildCategorie(),
               const SizedBox(height: 16),
-              buildCategorie()
+              buildTexte(),
             ],
           ),
         ),
@@ -55,24 +55,6 @@ class NewsFormWidget extends StatelessWidget {
     onChanged: onChangedTitle,
   );
 
-  Widget buildTexte() => TextFormField(
-    maxLines: null,
-    initialValue: text,
-    style: const TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 18
-    ),
-    decoration: InputDecoration(
-      labelText: "Text",
-      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18, ),
-      border: const OutlineInputBorder(),
-    ),
-    validator: (text) => text != null && text.isEmpty
-        ? "The text can't be empty"
-        : null,
-    onChanged: onChangedText,
-  );
-
     Widget buildCategorie() => 
     ButtonTheme( 
       alignedDropdown: true, 
@@ -90,4 +72,22 @@ class NewsFormWidget extends StatelessWidget {
           child: Text(type));
       }).toList(),
       ));
+
+    Widget buildTexte() => TextFormField(
+      minLines: 5,
+      maxLines: null,
+      initialValue: text,
+      style: const TextStyle(fontSize: 16),
+      decoration: InputDecoration(
+        labelText: "Text",
+        labelStyle: TextStyle(
+          color: Colors.black87.withOpacity(0.5),
+          fontSize: 18,
+        ),
+        border: const OutlineInputBorder(),
+      ),
+      validator: (text) =>
+          text != null && text.isEmpty ? "The text can't be empty" : null,
+      onChanged: onChangedText,
+    );
 }
