@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/NavBar.dart';
+import 'package:wwe_universe/navbar.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/pages/Brands/add_edit_brands_page.dart';

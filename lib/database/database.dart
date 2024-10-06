@@ -9,7 +9,7 @@ import 'package:wwe_universe/classes/Stipulations.dart';
 import 'package:wwe_universe/classes/Storylines.dart';
 import 'package:wwe_universe/classes/Superstars.dart';
 import 'package:wwe_universe/classes/Teams.dart';
-import 'package:wwe_universe/classes/Titles.dart';
+import 'package:wwe_universe/classes/titles.dart';
 
 
 class DatabaseService {

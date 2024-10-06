@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:wwe_universe/NavBar.dart';
+import 'package:wwe_universe/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';

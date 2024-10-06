@@ -6,7 +6,7 @@ import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
 import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
-import 'package:wwe_universe/pages/Titles/AddEditTitlesPage.dart';
+import 'package:wwe_universe/pages/Titles/add_edit_titles_page.dart';
 
 class TitlesDetailPage extends StatefulWidget {
   final int titleId;

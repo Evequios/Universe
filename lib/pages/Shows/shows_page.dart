@@ -1,4 +1,4 @@
-import 'package:wwe_universe/NavBar.dart';
+import 'package:wwe_universe/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/shows.dart';
 import 'package:wwe_universe/database/shows_database_helper.dart';

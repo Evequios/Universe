@@ -1,4 +1,4 @@
-import 'package:wwe_universe/NavBar.dart';
+import 'package:wwe_universe/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
@@ -6,7 +6,7 @@ import 'package:wwe_universe/classes/titles.dart';
 import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
-import 'package:wwe_universe/pages/Titles/AddEditTitlesPage.dart';
+import 'package:wwe_universe/pages/Titles/add_edit_titles_page.dart';
 import 'package:wwe_universe/pages/Titles/titles_detail_page.dart';
 
 
