@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/pages/Brands/BrandsPage.dart';
-import 'package:wwe_universe/pages/Draft/DraftPage.dart';
-import 'package:wwe_universe/pages/News/NewsPage.dart';
-import 'package:wwe_universe/pages/Settings/SettingsPage.dart';
-import 'package:wwe_universe/pages/Shows/ShowsPage.dart';
-import 'package:wwe_universe/pages/Storylines/StorylinesPage.dart';
-import 'package:wwe_universe/pages/Superstars/SuperstarsPage.dart';
-import 'package:wwe_universe/pages/Teams/TeamsPage.dart';
-import 'package:wwe_universe/pages/Titles/TitlesPage.dart';
+import 'package:wwe_universe/pages/Brands/brands_page.dart';
+import 'package:wwe_universe/pages/Draft/draft_page.dart';
+import 'package:wwe_universe/pages/News/news_page.dart';
+import 'package:wwe_universe/pages/Settings/settings_page.dart';
+import 'package:wwe_universe/pages/Shows/shows_page.dart';
+import 'package:wwe_universe/pages/Storylines/storylines_page.dart';
+import 'package:wwe_universe/pages/Superstars/superstars_page.dart';
+import 'package:wwe_universe/pages/Teams/teams_page.dart';
+import 'package:wwe_universe/pages/Titles/titles_page.dart';
 
 
 class Navbar extends StatelessWidget{

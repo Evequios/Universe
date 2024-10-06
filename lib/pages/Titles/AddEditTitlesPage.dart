@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/Brands.dart';
-import 'package:wwe_universe/classes/Superstars.dart';
-import 'package:wwe_universe/classes/Titles.dart';
-import 'package:wwe_universe/database.dart';
-import 'package:wwe_universe/widget/TitlesFormWidget.dart';
+import 'package:wwe_universe/classes/brands.dart';
+import 'package:wwe_universe/classes/superstars.dart';
+import 'package:wwe_universe/classes/titles.dart';
+import 'package:wwe_universe/database/titles_database_helper.dart';
+import 'package:wwe_universe/widget/titles_form_widget.dart';
 
 class AddEditTitlesPage extends StatefulWidget {
   final Titles? title;
@@ -108,7 +108,7 @@ class _AddEditTitlesPage extends State<AddEditTitlesPage> {
       holder2: holder2,
     );
 
-    await DatabaseService.instance.updateTitle(title);
+    await TitlesDatabaseHelper.updateTitle(title);
   }
 
   Future addUniverseTitles() async {
@@ -120,6 +120,6 @@ class _AddEditTitlesPage extends State<AddEditTitlesPage> {
       holder2: holder2,
     );
 
-    await DatabaseService.instance.createTitle(title);
+    await TitlesDatabaseHelper.createTitle(title);
   }
 }
