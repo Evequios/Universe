@@ -18,18 +18,17 @@ class AddEditMatchesPage extends StatefulWidget {
   final List<Stipulations>? listStipulations;
   final List<Superstars>? listSuperstars;
 
-  const AddEditMatchesPage(
-      {Key? key,
+  const AddEditMatchesPage({
+      super.key,
       this.match,
       this.show,
       this.listStipulations,
-      this.listSuperstars})
-      : super(key: key);
+      this.listSuperstars});
   @override
-  _AddEditMatchesPage createState() => _AddEditMatchesPage();
+  AddEditMatchesPageState createState() => AddEditMatchesPageState();
 }
 
-class _AddEditMatchesPage extends State<AddEditMatchesPage> {
+class AddEditMatchesPageState extends State<AddEditMatchesPage> {
   final _formKey = GlobalKey<FormState>();
   late List<Stipulations> listStipulations = [];
   late List<Superstars> listSuperstars = [];
@@ -276,7 +275,7 @@ class _AddEditMatchesPage extends State<AddEditMatchesPage> {
         await addUniverseMatches();
       }
 
-      if (context.mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context).pop();
     }
   }
 

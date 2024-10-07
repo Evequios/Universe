@@ -12,16 +12,16 @@ class TitlesDetailPage extends StatefulWidget {
   final int titleId;
 
   const TitlesDetailPage({
-    Key? key,
+    super.key,
     required this.titleId,
     
-  }) : super(key: key);
+  });
 
   @override
-  _TitlesDetailPage createState() => _TitlesDetailPage();
+  TitlesDetailPageState createState() => TitlesDetailPageState();
 }
 
-class _TitlesDetailPage extends State<TitlesDetailPage> {
+class TitlesDetailPageState extends State<TitlesDetailPage> {
   Titles title = const Titles(name: '', tag: 0, brand: 0, holder1: 0, holder2: 0);
   Brands brand = const Brands(name: '');
   Superstars h1 = const Superstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0); 

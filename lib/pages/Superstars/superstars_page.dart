@@ -11,10 +11,10 @@ class SuperstarsPage extends StatefulWidget{
   const SuperstarsPage({super.key});
 
   @override
-  _SuperstarsPage createState() => _SuperstarsPage();
+  SuperstarsPageState createState() => SuperstarsPageState();
 }
 
-class _SuperstarsPage extends State<SuperstarsPage> with AutomaticKeepAliveClientMixin<SuperstarsPage> {
+class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveClientMixin<SuperstarsPage> {
   Brands defaultBrand = const Brands(name: 'name');
   late List<Superstars> superstarsList;
   late List<Brands> brandsList;

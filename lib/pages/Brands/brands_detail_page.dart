@@ -10,15 +10,15 @@ class BrandsDetailPage extends StatefulWidget {
   final int brandId;
 
   const BrandsDetailPage({
-    Key? key,
+    super.key,
     required this.brandId,
-  }) : super(key: key);
+  });
 
   @override
-  _BrandsDetailPage createState() => _BrandsDetailPage();
+  BrandsDetailPageState createState() => BrandsDetailPageState();
 }
 
-class _BrandsDetailPage extends State<BrandsDetailPage> {
+class BrandsDetailPageState extends State<BrandsDetailPage> {
   late Brands brand;
   late List<Superstars> superstarsList;
   bool isLoading = false;

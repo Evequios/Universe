@@ -13,10 +13,10 @@ class TeamsPage extends StatefulWidget{
   const TeamsPage({super.key});
 
   @override
-  _TeamsPageState createState() => _TeamsPageState();
+  TeamsPageState createState() => TeamsPageState();
 }
 
-class _TeamsPageState extends State<TeamsPage> with AutomaticKeepAliveClientMixin {
+class TeamsPageState extends State<TeamsPage> with AutomaticKeepAliveClientMixin {
   Superstars defaultSuperstar = const Superstars(name: 'name', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
   late List<Superstars> superstarsList;
   late List<Teams> teamsList;

@@ -12,10 +12,10 @@ class DraftPage extends StatefulWidget{
   const DraftPage({super.key});
 
   @override
-  _DraftPage createState() => _DraftPage();
+  DraftPageState createState() => DraftPageState();
 }
 
-class _DraftPage extends State<DraftPage> with AutomaticKeepAliveClientMixin<DraftPage> {
+class DraftPageState extends State<DraftPage> with AutomaticKeepAliveClientMixin<DraftPage> {
   Brands defaultBrand = const Brands(name: 'name');
   late List<Superstars> superstarsList;
   late List<Brands> brandsList;

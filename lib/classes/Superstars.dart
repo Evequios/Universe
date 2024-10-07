@@ -5,21 +5,13 @@ class SuperstarsFields{
     id, name, brand, orientation, ally1, ally2, ally3, ally4, ally5, rival1, rival2, rival3, rival4, rival5, division
   ];
 
-  static const String id = '_id';
-  static const String name = 'name';
-  static const String brand = 'brand';
-  static const String orientation = 'orientation';
-  static const String ally1 = 'ally1';
-  static const String ally2 = 'ally2';
-  static const String ally3 = 'ally3';
-  static const String ally4 = 'ally4';
-  static const String ally5 = 'ally5';
-  static const String rival1 = 'rival1';
-  static const String rival2 = 'rival2';
-  static const String rival3 = 'rival3';
-  static const String rival4 = 'rival4';
-  static const String rival5 = 'rival5';
-  static const String division = 'division';
+  static const String id = '_id', 
+    name = 'name', 
+    brand = 'brand', 
+    orientation = 'orientation', 
+    ally1 = 'ally1', ally2 = 'ally2', ally3 = 'ally3', ally4 = 'ally4', ally5 = 'ally5', 
+    rival1 = 'rival1', rival2 = 'rival2', rival3 = 'rival3', rival4 = 'rival4', rival5 = 'rival5', 
+    division = 'division';
 }
 
 class Superstars{
@@ -52,16 +44,8 @@ class Superstars{
     String? name,
     int? brand,
     String? orientation,
-    int? ally1,
-    int? ally2,
-    int? ally3,
-    int? ally4,
-    int? ally5,
-    int? rival1,
-    int? rival2,
-    int? rival3,
-    int? rival4,
-    int? rival5,
+    int? ally1, ally2, ally3, ally4, ally5,
+    int? rival1, rival2, rival3, rival4, rival5,
     int? division
   }) =>
       Superstars(
@@ -83,7 +67,7 @@ class Superstars{
       );
 
   static Superstars fromJson(Map<String, dynamic> json) => Superstars(
-        id: json[SuperstarsFields.id] as int ?,
+        id: json[SuperstarsFields.id] as int?,
         name: json[SuperstarsFields.name] as String,
         brand: json[SuperstarsFields.brand] as int,
         orientation: json[SuperstarsFields.orientation] as String,

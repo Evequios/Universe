@@ -16,7 +16,7 @@ class StorylinesFormWidget extends StatelessWidget {
   final ValueChanged<String?> onChangedEnd;
 
   StorylinesFormWidget({
-    Key? key,
+    super.key,
     this.title = '',
     this.text = '',
     this.yearStart,
@@ -29,7 +29,7 @@ class StorylinesFormWidget extends StatelessWidget {
     required this.onChangedYearEnd,
     required this.onChangedStart,
     required this.onChangedEnd,
-  }) : super(key: key);
+  });
 
   final regexInt = RegExp(r"^[0-9]*$");
   @override

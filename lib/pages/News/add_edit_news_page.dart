@@ -7,14 +7,14 @@ class AddEditNewsPage extends StatefulWidget {
   final News? news;
 
   const AddEditNewsPage({
-    Key? key,
+    super.key,
     this.news,
-  }) : super(key: key);
+  });
   @override
-  _AddEditNewsPage createState() => _AddEditNewsPage();
+  AddEditNewsPageState createState() => AddEditNewsPageState();
 }
 
-class _AddEditNewsPage extends State<AddEditNewsPage> {
+class AddEditNewsPageState extends State<AddEditNewsPage> {
   final _formKey = GlobalKey<FormState>();
   late String title;
   late String text;
@@ -75,7 +75,7 @@ class _AddEditNewsPage extends State<AddEditNewsPage> {
         await addUniverseNews();
       }
 
-      if(context.mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context).pop();
     }
   }
 

@@ -16,16 +16,16 @@ class MatchesDetailPage extends StatefulWidget {
   final int showId;
 
   const MatchesDetailPage({
-    Key? key,
+    super.key,
     required this.matchId,
     required this.showId,
-  }) : super(key: key);
+  });
 
   @override
-  _MatchesDetailPage createState() => _MatchesDetailPage();
+  MatchesDetailPageState createState() => MatchesDetailPageState();
 }
 
-class _MatchesDetailPage extends State<MatchesDetailPage> {
+class MatchesDetailPageState extends State<MatchesDetailPage> {
   late Matches match;
   late Shows show;
   late Stipulations stipulation;

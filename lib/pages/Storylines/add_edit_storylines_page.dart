@@ -7,14 +7,14 @@ class AddEditStorylinesPage extends StatefulWidget {
   final Storylines? storyline;
 
   const AddEditStorylinesPage({
-    Key? key,
+    super.key,
     this.storyline,
-  }) : super(key: key);
+  });
   @override
-  _AddEditStorylinesPage createState() => _AddEditStorylinesPage();
+  AddEditStorylinesPageState createState() => AddEditStorylinesPageState();
 }
 
-class _AddEditStorylinesPage extends State<AddEditStorylinesPage> {
+class AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
   final _formKey = GlobalKey<FormState>();
   late String title;
   late String text;
@@ -86,7 +86,9 @@ class _AddEditStorylinesPage extends State<AddEditStorylinesPage> {
         await addUniverseStorylines();
       }
     
-      if(context.mounted) Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
 
     }
   }

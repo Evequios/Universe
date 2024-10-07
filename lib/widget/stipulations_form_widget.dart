@@ -11,12 +11,12 @@ class StipulationsFormWidget extends StatelessWidget {
 
 
   const StipulationsFormWidget({
-    Key? key,
+    super.key,
     this.type = '',
     this.stipulation,
     required this.onChangedType,
     required this.onChangedStipulation,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(

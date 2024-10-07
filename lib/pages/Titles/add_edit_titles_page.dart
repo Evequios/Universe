@@ -11,16 +11,16 @@ class AddEditTitlesPage extends StatefulWidget {
   final List<Superstars>? listSuperstars;
 
   const AddEditTitlesPage({
-    Key? key,
+    super.key,
     this.title,
     this.listBrands,
     this.listSuperstars
-  }) : super(key: key);
+  });
   @override
-  _AddEditTitlesPage createState() => _AddEditTitlesPage();
+  AddEditTitlesPageState createState() => AddEditTitlesPageState();
 }
 
-class _AddEditTitlesPage extends State<AddEditTitlesPage> {
+class AddEditTitlesPageState extends State<AddEditTitlesPage> {
   final _formKey = GlobalKey<FormState>();
   late List<Superstars> listSuperstars = [];
   late List<Brands> listBrands = [];
@@ -95,7 +95,7 @@ class _AddEditTitlesPage extends State<AddEditTitlesPage> {
         await addUniverseTitles();
       }
 
-      if(context.mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context).pop();
     }
   }
 

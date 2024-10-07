@@ -9,10 +9,10 @@ class StipulationsPage extends StatefulWidget{
   const StipulationsPage({super.key});
 
   @override
-  _StipulationsPageState createState() => _StipulationsPageState();
+  StipulationsPageState createState() => StipulationsPageState();
 }
 
-class _StipulationsPageState extends State<StipulationsPage> with AutomaticKeepAliveClientMixin{
+class StipulationsPageState extends State<StipulationsPage> with AutomaticKeepAliveClientMixin{
   late List<Stipulations> stipulationsList;
   bool isLoading = false;
   Icon customIcon = const Icon(Icons.search);

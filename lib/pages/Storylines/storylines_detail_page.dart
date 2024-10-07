@@ -7,15 +7,15 @@ class StorylinesDetailPage extends StatefulWidget {
   final int storylineId;
 
   const StorylinesDetailPage({
-    Key? key,
+    super.key,
     required this.storylineId,
-  }) : super(key: key);
+  });
 
   @override
-  _StorylinesDetailPage createState() => _StorylinesDetailPage();
+  StorylinesDetailPageState createState() => StorylinesDetailPageState();
 }
 
-class _StorylinesDetailPage extends State<StorylinesDetailPage> {
+class StorylinesDetailPageState extends State<StorylinesDetailPage> {
   late Storylines storyline;
   bool isLoading = false;
 

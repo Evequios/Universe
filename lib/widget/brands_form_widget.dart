@@ -6,10 +6,10 @@ class BrandsFormWidget extends StatelessWidget {
 
 
   const BrandsFormWidget({
-    Key? key,
+    super.key,
     this.name = '',
     required this.onChangedName
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(

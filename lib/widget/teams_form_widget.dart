@@ -19,7 +19,7 @@ class TeamsFormWidget extends StatelessWidget {
   final ValueChanged<int?> onChangedM5;
 
   const TeamsFormWidget({
-    Key? key,
+    super.key,
     required this.listSuperstars,
     this.name = '',
     this.m1,
@@ -33,7 +33,7 @@ class TeamsFormWidget extends StatelessWidget {
     required this.onChangedM3,
     required this.onChangedM4,
     required this.onChangedM5
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(

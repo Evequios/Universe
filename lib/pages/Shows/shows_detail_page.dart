@@ -15,15 +15,15 @@ class ShowsDetailPage extends StatefulWidget {
   final int showId;
 
   const ShowsDetailPage({
-    Key? key,
+    super.key,
     required this.showId,
-  }) : super(key: key);
+  });
 
   @override
-  _ShowsDetailPage createState() => _ShowsDetailPage();
+  ShowsDetailPageState createState() => ShowsDetailPageState();
 }
 
-class _ShowsDetailPage extends State<ShowsDetailPage> {
+class ShowsDetailPageState extends State<ShowsDetailPage> {
   late Shows show;
   late List<Matches> matchesList;
   late List<Stipulations> stipulationsList;

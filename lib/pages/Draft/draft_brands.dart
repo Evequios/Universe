@@ -9,10 +9,10 @@ class DraftBrands extends StatefulWidget{
   const DraftBrands({super.key, required this.selectedSuperstars });
 
   @override
-  _DraftBrandsState createState() => _DraftBrandsState();
+  DraftBrandsState createState() => DraftBrandsState();
 }
 
-class _DraftBrandsState extends State<DraftBrands> {
+class DraftBrandsState extends State<DraftBrands> {
   late List<Brands> brandsList;
   // late List<UniverseSuperstars> selectedSuperstars;
   List<Brands> selectedBrands = [];

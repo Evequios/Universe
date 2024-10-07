@@ -12,66 +12,34 @@ class SuperstarsFormWidget extends StatelessWidget {
   final String? name;
   final int? brand;
   final String? orientation;
-  final int? ally1;
-  final int? ally2;
-  final int? ally3;
-  final int? ally4;
-  final int? ally5;
-  final int? rival1;
-  final int? rival2;
-  final int? rival3;
-  final int? rival4;
-  final int? rival5;
+  final int? ally1, ally2, ally3, ally4, ally5;
+  final int? rival1, rival2, rival3, rival4, rival5;
   final int? division;
   
   final ValueChanged<String?> onChangedName;
   final ValueChanged<int?> onChangedBrand;
   final ValueChanged<String?> onChangedOrientation;
-  final ValueChanged<int?> onChangedAlly1;
-  final ValueChanged<int?> onChangedAlly2;
-  final ValueChanged<int?> onChangedAlly3;
-  final ValueChanged<int?> onChangedAlly4;
-  final ValueChanged<int?> onChangedAlly5;
-  final ValueChanged<int?> onChangedRival1;
-  final ValueChanged<int?> onChangedRival2;
-  final ValueChanged<int?> onChangedRival3;
-  final ValueChanged<int?> onChangedRival4;
-  final ValueChanged<int?> onChangedRival5;
+  final ValueChanged<int?> onChangedAlly1, onChangedAlly2, onChangedAlly3, onChangedAlly4, onChangedAlly5;
+  final ValueChanged<int?> onChangedRival1, onChangedRival2, onChangedRival3, onChangedRival4, onChangedRival5;
   final ValueChanged<int?> onChangedDivision;
 
   const SuperstarsFormWidget({
-    Key? key,
+    super.key,
     required this.listSuperstars,
     required this.listBrands,
     this.name = '',
     this.brand,
     this.orientation = '',
-    this.ally1,
-    this.ally2,
-    this.ally3,
-    this.ally4,
-    this.ally5,
-    this.rival1,
-    this.rival2,
-    this.rival3,
-    this.rival4,
-    this.rival5,
+    this.ally1, this.ally2, this.ally3, this.ally4, this.ally5, 
+    this.rival1, this.rival2, this.rival3, this.rival4, this.rival5,
     this.division,
     required this.onChangedName,
     required this.onChangedBrand,
     required this.onChangedOrientation,
-    required this.onChangedAlly1,
-    required this.onChangedAlly2,
-    required this.onChangedAlly3,
-    required this.onChangedAlly4,
-    required this.onChangedAlly5,
-    required this.onChangedRival1,
-    required this.onChangedRival2,
-    required this.onChangedRival3,
-    required this.onChangedRival4,
-    required this.onChangedRival5,
+    required this.onChangedAlly1, required this.onChangedAlly2, required this.onChangedAlly3, required this.onChangedAlly4, required this.onChangedAlly5,
+    required this.onChangedRival1, required this.onChangedRival2, required this.onChangedRival3, required this.onChangedRival4, required this.onChangedRival5,
     required this.onChangedDivision
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context){ 

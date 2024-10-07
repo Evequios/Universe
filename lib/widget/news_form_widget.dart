@@ -12,14 +12,14 @@ class NewsFormWidget extends StatelessWidget {
 
 
   const NewsFormWidget({
-    Key? key,
+    super.key,
     this.title = '',
     this.text = '',
     this.type = '',
     required this.onChangedTitle,
     required this.onChangedText,
     required this.onChangedType
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(

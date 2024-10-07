@@ -7,14 +7,14 @@ class AddEditBrandsPage extends StatefulWidget {
   final Brands? brand;
 
   const AddEditBrandsPage({
-    Key? key,
+    super.key,
     this.brand,
-  }) : super(key: key);
+  });
   @override
-  _AddEditBrandsPage createState() => _AddEditBrandsPage();
+  AddEditBrandsPageState createState() => AddEditBrandsPageState();
 }
 
-class _AddEditBrandsPage extends State<AddEditBrandsPage> {
+class AddEditBrandsPageState extends State<AddEditBrandsPage> {
   final _formKey = GlobalKey<FormState>();
   late String name;
 
@@ -67,7 +67,9 @@ class _AddEditBrandsPage extends State<AddEditBrandsPage> {
         await addBrand();
       }
 
-      if(context.mounted) Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 

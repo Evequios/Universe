@@ -19,10 +19,10 @@ class DraftResults extends StatefulWidget{
     required this.selectedBrands});
 
   @override
-  _DraftResultsState createState() => _DraftResultsState();
+  DraftResultsState createState() => DraftResultsState();
 }
 
-class _DraftResultsState extends State<DraftResults> {
+class DraftResultsState extends State<DraftResults> {
   List<Superstars> selectedSuperstars = [];
   List<Brands> selectedBrands = [];
   HashMap<int, int> draftResults = HashMap();

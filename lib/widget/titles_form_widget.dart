@@ -26,7 +26,7 @@ class TitlesFormWidget extends StatelessWidget {
 
 
   const TitlesFormWidget({
-    Key? key,
+    super.key,
     required this.listBrands,
     required this.listSuperstars,
     this.name = '',
@@ -39,7 +39,7 @@ class TitlesFormWidget extends StatelessWidget {
     required this.onChangedTag,
     required this.onChangedHolder1,
     required this.onChangedHolder2,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(

@@ -9,15 +9,15 @@ class AddEditTeamsPage extends StatefulWidget {
   final List<Superstars>? listSuperstars;
 
   const AddEditTeamsPage({
-    Key? key,
+    super.key,
     this.team,
     this.listSuperstars
-  }) : super(key: key);
+  });
   @override
-  _AddEditTeamsPage createState() => _AddEditTeamsPage();
+  AddEditTeamsPageState createState() => AddEditTeamsPageState();
 }
 
-class _AddEditTeamsPage extends State<AddEditTeamsPage> {
+class AddEditTeamsPageState extends State<AddEditTeamsPage> {
   final _formKey = GlobalKey<FormState>();
   late List<Superstars> listSuperstars = [];
   late String name;
@@ -93,7 +93,7 @@ class _AddEditTeamsPage extends State<AddEditTeamsPage> {
         await addUniverseTeams();
       }
 
-      if(context.mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context).pop();
 
     }
   }

@@ -13,7 +13,7 @@ class ShowsFormWidget extends StatelessWidget {
 
 
   const ShowsFormWidget({
-    Key? key,
+    super.key,
     this.name = '',
     this.year,
     this.week,
@@ -22,7 +22,7 @@ class ShowsFormWidget extends StatelessWidget {
     required this.onChangedYear,
     required this.onChangedWeek,
     required this.onChangedSummary,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(

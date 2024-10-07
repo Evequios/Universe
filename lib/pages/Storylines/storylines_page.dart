@@ -9,10 +9,10 @@ class StorylinesPage extends StatefulWidget{
   const StorylinesPage({super.key});
 
   @override
-  _StorylinesPage createState() => _StorylinesPage();
+  StorylinesPageState createState() => StorylinesPageState();
 }
 
-class _StorylinesPage extends State<StorylinesPage> with AutomaticKeepAliveClientMixin {
+class StorylinesPageState extends State<StorylinesPage> with AutomaticKeepAliveClientMixin {
   late List<Storylines> storylinesList;
   bool isLoading = false;
   Icon customIcon = const Icon(Icons.search);

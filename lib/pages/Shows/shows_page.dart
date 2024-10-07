@@ -9,10 +9,10 @@ class ShowsPage extends StatefulWidget{
   const ShowsPage({super.key});
 
   @override
-  _ShowsPage createState() => _ShowsPage();
+  ShowsPageState createState() => ShowsPageState();
 }
 
-class _ShowsPage extends State<ShowsPage> with AutomaticKeepAliveClientMixin {
+class ShowsPageState extends State<ShowsPage> with AutomaticKeepAliveClientMixin {
   late List<Shows> showsList;
   bool isLoading = false;
 

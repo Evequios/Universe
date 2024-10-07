@@ -7,15 +7,15 @@ class StipulationsDetailPage extends StatefulWidget {
   final int stipulationId;
 
   const StipulationsDetailPage({
-    Key? key,
+    super.key,
     required this.stipulationId,
-  }) : super(key: key);
+  });
 
   @override
-  _StipulationsDetailPage createState() => _StipulationsDetailPage();
+  StipulationsDetailPageState createState() => StipulationsDetailPageState();
 }
 
-class _StipulationsDetailPage extends State<StipulationsDetailPage> {
+class StipulationsDetailPageState extends State<StipulationsDetailPage> {
   late Stipulations stipulation;
   bool isLoading = false;
 
@@ -81,7 +81,7 @@ class _StipulationsDetailPage extends State<StipulationsDetailPage> {
         onPressed: () async {
           await StipulationsDatabaseHelper.deleteStipulation(widget.stipulationId);
 
-          if(context.mounted) Navigator.of(context).pop();
+          if (mounted) Navigator.of(context).pop();
         },
       );
 }

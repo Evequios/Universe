@@ -7,14 +7,14 @@ class AddEditStipulationsPage extends StatefulWidget {
   final Stipulations? stipulation;
 
   const AddEditStipulationsPage({
-    Key? key,
+    super.key,
     this.stipulation,
-  }) : super(key: key);
+  });
   @override
-  _AddEditStipulationsPage createState() => _AddEditStipulationsPage();
+  AddEditStipulationsPageState createState() => AddEditStipulationsPageState();
 }
 
-class _AddEditStipulationsPage extends State<AddEditStipulationsPage> {
+class AddEditStipulationsPageState extends State<AddEditStipulationsPage> {
   final _formKey = GlobalKey<FormState>();
   late String type;
   late String stipulation;
@@ -71,7 +71,9 @@ class _AddEditStipulationsPage extends State<AddEditStipulationsPage> {
         await addUniverseStipulations();
       }
 
-      if(context.mounted) Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 

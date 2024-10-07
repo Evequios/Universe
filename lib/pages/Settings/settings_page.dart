@@ -7,10 +7,10 @@ class SettingsPage extends StatefulWidget{
   const SettingsPage({super.key});
 
   @override
-  _SettingsPage createState() => _SettingsPage();
+  SettingsPageState createState() => SettingsPageState();
 }
 
-class _SettingsPage extends State<SettingsPage> {
+class SettingsPageState extends State<SettingsPage> {
   bool isLoading = false;
 
   @override

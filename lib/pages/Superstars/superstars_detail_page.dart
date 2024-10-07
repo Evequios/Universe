@@ -13,15 +13,15 @@ class SuperstarsDetailPage extends StatefulWidget {
   final int superstarId;
 
   const SuperstarsDetailPage({
-    Key? key,
+    super.key,
     required this.superstarId,
-  }) : super(key: key);
+  });
 
   @override
-  _SuperstarsDetailPage createState() => _SuperstarsDetailPage();
+  SuperstarsDetailPageState createState() => SuperstarsDetailPageState();
 }
 
-class _SuperstarsDetailPage extends State<SuperstarsDetailPage> {
+class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
   int wins = 0;
   int losses = 0;
   List<int> team1 = [];

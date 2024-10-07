@@ -10,16 +10,16 @@ class TeamsDetailPage extends StatefulWidget {
 
 
   const TeamsDetailPage({
-    Key? key,
+    super.key,
     required this.teamId,
 
-  }) : super(key: key);
+  });
 
   @override
-  _TeamsDetailPage createState() => _TeamsDetailPage();
+  TeamsDetailPageState createState() => TeamsDetailPageState();
 }
 
-class _TeamsDetailPage extends State<TeamsDetailPage> {
+class TeamsDetailPageState extends State<TeamsDetailPage> {
   late List<Superstars> superstarList;
   Teams team = const Teams(name: 'name', member1: 0, member2: 0, member3: 0, member4: 0, member5: 0);
   Superstars m1 = const Superstars(name: 'name', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);

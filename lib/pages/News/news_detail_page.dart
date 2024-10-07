@@ -7,15 +7,15 @@ class NewsDetailPage extends StatefulWidget {
   final int newsId;
 
   const NewsDetailPage({
-    Key? key,
+    super.key,
     required this.newsId,
-  }) : super(key: key);
+  });
 
   @override
-  _NewsDetailPage createState() => _NewsDetailPage();
+  NewsDetailPageState createState() => NewsDetailPageState();
 }
 
-class _NewsDetailPage extends State<NewsDetailPage> {
+class NewsDetailPageState extends State<NewsDetailPage> {
   late News news;
   bool isLoading = false;
 

@@ -7,14 +7,14 @@ class AddEditShowsPage extends StatefulWidget {
   final Shows? show;
 
   const AddEditShowsPage({
-    Key? key,
+    super.key,
     this.show,
-  }) : super(key: key);
+  });
   @override
-  _AddEditShowsPage createState() => _AddEditShowsPage();
+  AddEditShowsPageState createState() => AddEditShowsPageState();
 }
 
-class _AddEditShowsPage extends State<AddEditShowsPage> {
+class AddEditShowsPageState extends State<AddEditShowsPage> {
   final _formKey = GlobalKey<FormState>();
   late String name;
   late int year;
@@ -81,7 +81,9 @@ class _AddEditShowsPage extends State<AddEditShowsPage> {
         await addUniverseShows();
       }
 
-      if(context.mounted) Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
