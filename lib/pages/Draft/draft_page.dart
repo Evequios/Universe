@@ -60,7 +60,7 @@ class DraftPageState extends State<DraftPage> with AutomaticKeepAliveClientMixin
         : buildUniverseSuperstars(),
     ),
     floatingActionButton: FloatingActionButton(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       child: const FittedBox(child : Text('Randomize')),
       onPressed: () async {
         setState(() {
@@ -100,10 +100,10 @@ class DraftPageState extends State<DraftPage> with AutomaticKeepAliveClientMixin
         child :SizedBox(
           height: 100,
           child : Card(
-            color: selectedSuperstars.contains(superstar) == true ? const Color.fromARGB(189, 96, 125, 139) : Colors.white,
+            color: selectedSuperstars.contains(superstar) == true ? const Color(0xFF30303A) : Colors.white,
             shape:RoundedRectangleBorder(
-              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
-              borderRadius: BorderRadius.circular(4.0)
+              side: const BorderSide(color: Color(0xFF30303A)),
+              borderRadius: BorderRadius.circular(16.0)
             ),
             elevation: selectedSuperstars.contains(superstar) == true ? 0 : 2,
             child: Padding(    

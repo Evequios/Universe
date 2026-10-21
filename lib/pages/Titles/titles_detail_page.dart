@@ -139,8 +139,8 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
           height: 100,
           child : Card(
             shape:RoundedRectangleBorder(
-              side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
-              borderRadius: BorderRadius.circular(4.0)
+              side: const BorderSide(color: Color(0xFF30303A)),
+              borderRadius: BorderRadius.circular(16.0)
             ),
             elevation: 2,
             child: Padding(    
