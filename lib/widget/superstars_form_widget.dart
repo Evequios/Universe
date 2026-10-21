@@ -49,7 +49,6 @@ class SuperstarsFormWidget extends StatelessWidget {
                 const SizedBox(height: 8,),
                 buildOrientation(),
                 const SizedBox(height: 24,),
-                const Text('Allies', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),)
               ],
             ),
           ),
