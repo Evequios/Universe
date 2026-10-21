@@ -21,22 +21,22 @@ class AddEditTeamsPageState extends State<AddEditTeamsPage> {
   final _formKey = GlobalKey<FormState>();
   late List<Superstars> listSuperstars = [];
   late String name;
-  late int m1;
-  late int m2;
-  late int m3;
-  late int m4;
-  late int m5;
+  late Superstars m1;
+  late Superstars m2;
+  late Superstars m3;
+  late Superstars m4;
+  late Superstars m5;
 
   @override
   void initState() {
     super.initState();
 
     name = widget.team?.name ?? '';
-    m1 = widget.team?.member1 ?? 0;
-    m2 = widget.team?.member2 ?? 0;
-    m3 = widget.team?.member3 ?? 0;
-    m4 = widget.team?.member4 ?? 0;
-    m5 = widget.team?.member5 ?? 0;
+    m1 = widget.team!.member1;
+    m2 = widget.team!.member2;
+    m3 = widget.team!.member3;
+    m4 = widget.team!.member4;
+    m5 = widget.team!.member5;
     if(widget.listSuperstars != null) listSuperstars = widget.listSuperstars!;
   }
 

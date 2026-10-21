@@ -1,3 +1,6 @@
+import 'package:wwe_universe/classes/brands.dart';
+import 'package:wwe_universe/classes/superstars.dart';
+
 const String tableTitles = 'titles';
 
 class TitlesFields {
@@ -16,9 +19,9 @@ class Titles{
   final int? id;
   final String name;
   final int tag;
-  final int brand;
-  final int holder1;
-  final int holder2;
+  final Brands? brand;
+  final Superstars? holder1;
+  final Superstars? holder2;
 
   const Titles({
     this.id,
@@ -33,9 +36,9 @@ class Titles{
     int? id,
     String? name,
     int? tag,
-    int? brand,
-    int? holder1,
-    int? holder2,
+    Brands? brand,
+    Superstars? holder1,
+    Superstars? holder2,
   }) =>
     Titles(
       id : id ?? this.id,
@@ -50,9 +53,9 @@ class Titles{
     id: json[TitlesFields.id] as int ?,
     name: json[TitlesFields.name] as String,
     tag: json[TitlesFields.tag] as int,
-    brand: json[TitlesFields.brand] as int,
-    holder1: json[TitlesFields.holder1] as int,
-    holder2: json[TitlesFields.holder2] as int,
+    brand: json[TitlesFields.brand] as Brands,
+    holder1: json[TitlesFields.holder1] as Superstars,
+    holder2: json[TitlesFields.holder2] as Superstars,
   );
 
   Map<String, dynamic> toJson() => {

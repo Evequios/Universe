@@ -1,3 +1,5 @@
+import 'package:wwe_universe/classes/superstars.dart';
+
 const String tableTeams = 'teams';
 
 class TeamsFields {
@@ -17,11 +19,11 @@ class TeamsFields {
 class Teams{
   final int? id;
   final String name;
-  final int member1;
-  final int member2;
-  final int member3;
-  final int member4;
-  final int member5;
+  final Superstars member1;
+  final Superstars member2;
+  final Superstars member3;
+  final Superstars member4;
+  final Superstars member5;
 
   const Teams({
     this.id,
@@ -36,11 +38,11 @@ class Teams{
   Teams copy ({
     int? id,
     String? name,
-    int? member1,
-    int? member2,
-    int? member3,
-    int? member4,
-    int? member5,
+    Superstars? member1,
+    Superstars? member2,
+    Superstars? member3,
+    Superstars? member4,
+    Superstars? member5,
   }) =>
     Teams(
       id : id ?? this.id,
@@ -55,11 +57,11 @@ class Teams{
   static Teams fromJson(Map<String, dynamic> json) => Teams(
     id: json[TeamsFields.id] as int ?,
     name: json[TeamsFields.name] as String,
-    member1: json[TeamsFields.member1] as int,
-    member2: json[TeamsFields.member2] as int,
-    member3: json[TeamsFields.member3] as int,
-    member4: json[TeamsFields.member4] as int,
-    member5: json[TeamsFields.member5] as int,
+    member1: json[TeamsFields.member1] as Superstars,
+    member2: json[TeamsFields.member2] as Superstars,
+    member3: json[TeamsFields.member3] as Superstars,
+    member4: json[TeamsFields.member4] as Superstars,
+    member5: json[TeamsFields.member5] as Superstars,
   );
 
   Map<String, dynamic> toJson() => {

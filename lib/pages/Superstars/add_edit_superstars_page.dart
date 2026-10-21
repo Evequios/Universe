@@ -24,10 +24,10 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
   late List<Brands> listBrands = [];
   late List<Superstars> listSuperstars = [];
   late String name;
-  late int brand;
+  late Brands? brand;
   late String orientation;
-  late int ally1, ally2, ally3, ally4, ally5;
-  late int rival1, rival2, rival3, rival4, rival5;
+  late Superstars? ally1, ally2, ally3, ally4, ally5;
+  late Superstars? rival1, rival2, rival3, rival4, rival5;
   late int division;
 
   @override
@@ -35,18 +35,18 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
     super.initState();
 
     name = widget.superstar?.name ?? '';
-    brand = widget.superstar?.brand ?? 0;
+    brand = widget.superstar?.brand;
     orientation = widget.superstar?.orientation ?? '';
-    ally1 = widget.superstar?.ally1 ?? 0;
-    ally2 = widget.superstar?.ally2 ?? 0;
-    ally3 = widget.superstar?.ally3 ?? 0;
-    ally4 = widget.superstar?.ally4 ?? 0;
-    ally5 = widget.superstar?.ally5 ?? 0;
-    rival1 = widget.superstar?.rival1 ?? 0;
-    rival2 = widget.superstar?.rival2 ?? 0;
-    rival3 = widget.superstar?.rival3 ?? 0;
-    rival4 = widget.superstar?.rival4 ?? 0;
-    rival5 = widget.superstar?.rival5 ?? 0;
+    ally1 = widget.superstar?.ally1;
+    ally2 = widget.superstar?.ally2;
+    ally3 = widget.superstar?.ally3;
+    ally4 = widget.superstar?.ally4;
+    ally5 = widget.superstar?.ally5;
+    rival1 = widget.superstar?.rival1;
+    rival2 = widget.superstar?.rival2;
+    rival3 = widget.superstar?.rival3;
+    rival4 = widget.superstar?.rival4;
+    rival5 = widget.superstar?.rival5;
     division = widget.superstar?.division ?? 0;
     listBrands = widget.listBrands!;
     if(widget.listSuperstars != null) listSuperstars = widget.listSuperstars!;

@@ -110,23 +110,22 @@ class ShowsDetailPageState extends State<ShowsDetailPage> {
     itemCount: matchesList.length,
     itemBuilder: (context, index) {
       final match = matchesList[index];
-      final stipulation = stipulationsList.firstWhere((stipulation) => stipulation.id == match.stipulation);
-      final s1 = superstarsList.firstWhere((superstar) => superstar.id == match.s1);
-      Superstars s2 = const Superstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-      Superstars s3 = const Superstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-      Superstars s4 = const Superstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-      Superstars s5 = const Superstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-      Superstars s6 = const Superstars(name: '', brand: 0, orientation: '', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-      Superstars s7 = const Superstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-      Superstars s8 = const Superstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-      if (match.s2 != 0) s2 = superstarsList.firstWhere((superstar) => superstar.id == match.s2);
-      if (match.s3 != 0) s3 = superstarsList.firstWhere((superstar) => superstar.id == match.s3);
-      if (match.s4 != 0) s4 = superstarsList.firstWhere((superstar) => superstar.id == match.s4);
-      if (match.s5 != 0) s5 = superstarsList.firstWhere((superstar) => superstar.id == match.s5);
-      if (match.s6 != 0) s6 = superstarsList.firstWhere((superstar) => superstar.id == match.s6);
-      if (match.s7 != 0) s7 = superstarsList.firstWhere((superstar) => superstar.id == match.s7);
-      if (match.s8 != 0) s8 = superstarsList.firstWhere((superstar) => superstar.id == match.s8);
-      final winner = superstarsList.firstWhere((superstar) => superstar.id == match.winner);
+      final stipulation = stipulationsList.firstWhere((stipulation) => stipulation.id == match.stipulation.id);
+      final s1 = superstarsList.firstWhere((superstar) => superstar.id == match.s1.id);
+      final s2 = superstarsList.firstWhere((superstar) => superstar.id == match.s2.id);
+      Superstars s3 = const Superstars(name: '', brand: null, orientation: '', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+      Superstars s4 = const Superstars(name: '', brand: null, orientation: '', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+      Superstars s5 = const Superstars(name: '', brand: null, orientation: '', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+      Superstars s6 = const Superstars(name: '', brand: null, orientation: '', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+      Superstars s7 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+      Superstars s8 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+      if (match.s3 != null) s3 = superstarsList.firstWhere((superstar) => superstar.id == match.s3!.id!);
+      if (match.s4 != null) s4 = superstarsList.firstWhere((superstar) => superstar.id == match.s4!.id!);
+      if (match.s5 != null) s5 = superstarsList.firstWhere((superstar) => superstar.id == match.s5!.id!);
+      if (match.s6 != null) s6 = superstarsList.firstWhere((superstar) => superstar.id == match.s6!.id!);
+      if (match.s7 != null) s7 = superstarsList.firstWhere((superstar) => superstar.id == match.s7!.id!);
+      if (match.s8 != null) s8 = superstarsList.firstWhere((superstar) => superstar.id == match.s8!.id!);
+      final winner = superstarsList.firstWhere((superstar) => superstar.id == match.winner.id!);
 
       return SizedBox(
       height: 80,

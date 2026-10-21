@@ -4,23 +4,23 @@ import 'package:wwe_universe/classes/superstars.dart';
 
 const List<String> listOrientations = <String>['Face', 'Tweener', 'Heel'];
 Brands defaultBrand = const Brands(name: 'nom');
-Superstars defaultSup = const Superstars(name: 'nom', brand: 0, orientation: 'orientation', rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, ally1: 0, ally2: 0, ally3 : 0, ally4:0, ally5 : 0, division: 0);
+Superstars defaultSup = const Superstars(name: 'nom', orientation: 'orientation');
 
 class SuperstarsFormWidget extends StatelessWidget {
   final List<Superstars>? listSuperstars;
   final List<Brands>? listBrands;
   final String? name;
-  final int? brand;
+  final Brands? brand;
   final String? orientation;
-  final int? ally1, ally2, ally3, ally4, ally5;
-  final int? rival1, rival2, rival3, rival4, rival5;
+  final Superstars? ally1, ally2, ally3, ally4, ally5;
+  final Superstars? rival1, rival2, rival3, rival4, rival5;
   final int? division;
   
   final ValueChanged<String?> onChangedName;
-  final ValueChanged<int?> onChangedBrand;
+  final ValueChanged<Brands?> onChangedBrand;
   final ValueChanged<String?> onChangedOrientation;
-  final ValueChanged<int?> onChangedAlly1, onChangedAlly2, onChangedAlly3, onChangedAlly4, onChangedAlly5;
-  final ValueChanged<int?> onChangedRival1, onChangedRival2, onChangedRival3, onChangedRival4, onChangedRival5;
+  final ValueChanged<Superstars?> onChangedAlly1, onChangedAlly2, onChangedAlly3, onChangedAlly4, onChangedAlly5;
+  final ValueChanged<Superstars?> onChangedRival1, onChangedRival2, onChangedRival3, onChangedRival4, onChangedRival5;
   final ValueChanged<int?> onChangedDivision;
 
   const SuperstarsFormWidget({
@@ -103,24 +103,64 @@ class SuperstarsFormWidget extends StatelessWidget {
     onChanged: onChangedName,
   );
 
-  Widget buildBrand() => 
-    ButtonTheme( 
-      alignedDropdown: true, 
-      child: DropdownButtonFormField(
+  Widget buildBrand() => ButtonTheme(
+    alignedDropdown: true,
+    child: DropdownButtonFormField<Brands>(
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: 'Brand',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: brand != 0 ? brand : defaultBrand.id,
-        onChanged: onChangedBrand,
-        items: listBrands!.map((brand){
+      value: getBrand(),
+      selectedItemBuilder: (BuildContext context) {
+        return listBrands?.map<Widget>((Brands brand) {
+          return Text(brand.name);
+        }).toList() ?? [];
+      },
+      onChanged: onChangedBrand,
+      items: listBrands?.map((brand) {
         return DropdownMenuItem(
-          value: brand.id,
-          child: Text(brand.name));
-      }).toList(),
+          value: brand,
+          child: Text(brand.name),
+        );
+      }).toList() ?? [],
     ),
   );
+
+  Brands? getBrand() {
+    if (brand != null) {
+      return listBrands?.firstWhere(
+        (b) => b.id == brand?.id
+      );
+    } 
+    return brand;
+  }
+  // Widget buildBrand() => ButtonTheme(
+  //   alignedDropdown: true,
+  //   child: DropdownButtonFormField<Brands>(
+  //     decoration: InputDecoration(
+  //       border: const OutlineInputBorder(),
+  //       labelText: 'Brand',
+  //       labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
+  //     ),
+  //     value: listBrands?.firstWhere(
+  //       (b) => b.id == brand?.id,
+  //       orElse: () => defaultBrand, // Assure qu'on a une seule valeur correcte
+  //     ),
+  //     selectedItemBuilder: (BuildContext context) {
+  //       return listBrands?.map<Widget>((Brands brand) {
+  //         return Text(brand.name);
+  //       }).toList() ?? [];
+  //     },
+  //     onChanged: onChangedBrand,
+  //     items: listBrands?.map((brand) {
+  //       return DropdownMenuItem(
+  //         value: brand,
+  //         child: Text(brand.name),
+  //       );
+  //     }).toList() ?? [],
+  //   ),
+  // );
 
   Widget buildOrientation() => 
     ButtonTheme( 
@@ -144,17 +184,17 @@ class SuperstarsFormWidget extends StatelessWidget {
   Widget buildAlly1() => 
   ButtonTheme( 
     alignedDropdown: true, 
-    child: DropdownButtonFormField(
+    child: DropdownButtonFormField<Superstars>(
       decoration: InputDecoration(
       border: const OutlineInputBorder(),
         labelText: 'Ally 1',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: ally1 != 0 ? ally1 : defaultSup.id,
+      value: listSuperstars!.contains(ally1) ? ally1 : null,
       onChanged: onChangedAlly1,
       items: listSuperstars!.map((ally1){
       return DropdownMenuItem(
-        value: ally1.id,
+        value: ally1,
         child: Text(ally1.name));
     }).toList(),
     ),
@@ -163,17 +203,17 @@ class SuperstarsFormWidget extends StatelessWidget {
   Widget buildAlly2() => 
   ButtonTheme( 
     alignedDropdown: true, 
-    child: DropdownButtonFormField(
+    child: DropdownButtonFormField<Superstars>(
     decoration: InputDecoration(
       border: const OutlineInputBorder(),
         labelText: 'Ally 2',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: ally2 != 0 ? ally2 : defaultSup.id,
+      value: listSuperstars!.contains(ally2) ? ally2 : null,
       onChanged: onChangedAlly2,
       items: listSuperstars!.map((ally2){
       return DropdownMenuItem(
-        value: ally2.id,
+        value: ally2,
         child: Text(ally2.name));
     }).toList(),
     ),
@@ -182,17 +222,17 @@ class SuperstarsFormWidget extends StatelessWidget {
   Widget buildAlly3() => 
   ButtonTheme( 
     alignedDropdown: true, 
-    child: DropdownButtonFormField(
+    child: DropdownButtonFormField<Superstars>(
       decoration: InputDecoration(
       border: const OutlineInputBorder(),
         labelText: 'Ally 3',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: ally3 != 0 ? ally3 : defaultSup.id,
+      value: listSuperstars!.contains(ally3) ? ally3 : null,
       onChanged: onChangedAlly3,
       items: listSuperstars!.map((ally3){
       return DropdownMenuItem(
-        value: ally3.id,
+        value: ally3,
         child: Text(ally3.name));
     }).toList(),
     ),
@@ -201,17 +241,17 @@ class SuperstarsFormWidget extends StatelessWidget {
   Widget buildAlly4() => 
   ButtonTheme( 
     alignedDropdown: true, 
-    child: DropdownButtonFormField(
+    child: DropdownButtonFormField<Superstars>(
       decoration: InputDecoration(
       border: const OutlineInputBorder(),
         labelText: 'Ally 4',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: ally4 != 0 ? ally4 : defaultSup.id,
+      value: listSuperstars!.contains(ally4) ? ally4 : null,
       onChanged: onChangedAlly4,
       items: listSuperstars!.map((ally4){
       return DropdownMenuItem(
-        value: ally4.id,
+        value: ally4,
         child: Text(ally4.name));
     }).toList(),
     ),
@@ -220,17 +260,17 @@ class SuperstarsFormWidget extends StatelessWidget {
   Widget buildAlly5() => 
   ButtonTheme( 
     alignedDropdown: true, 
-    child: DropdownButtonFormField(
+    child: DropdownButtonFormField<Superstars>(
       decoration: InputDecoration(
       border: const OutlineInputBorder(),
         labelText: 'Ally 5',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: ally5 != 0 ? ally5 : defaultSup.id,
+      value: listSuperstars!.contains(ally5) ? ally5 : null,
       onChanged: onChangedAlly5,
       items: listSuperstars!.map((ally5){
       return DropdownMenuItem(
-        value: ally5.id,
+        value: ally5,
         child: Text(ally5.name));
     }).toList(),
     ),
@@ -239,18 +279,17 @@ class SuperstarsFormWidget extends StatelessWidget {
   Widget buildRival1() => 
   ButtonTheme( 
     alignedDropdown: true, 
-    child: DropdownButtonFormField(
+    child: DropdownButtonFormField<Superstars>(
       decoration: InputDecoration(
       border: const OutlineInputBorder(),
         labelText: 'Rival 1',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: rival1 != 0 ? rival1 : defaultSup.id,
+      value: listSuperstars!.contains(rival1) ? rival1 : null,
       onChanged: onChangedRival1,
       items: listSuperstars!.map((rival1){
       return DropdownMenuItem(
-        // value: s1.id != 0 ? s1.id : listSuperstars![0].id,
-        value: rival1.id,
+        value: rival1,
         child: Text(rival1.name));
     }).toList(),
     ),
@@ -265,12 +304,11 @@ class SuperstarsFormWidget extends StatelessWidget {
         labelText: 'Rival 2',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: rival2 != 0 ? rival2 : defaultSup.id,
+      value: listSuperstars!.contains(rival2) ? rival2 : null,
       onChanged: onChangedRival2,
       items: listSuperstars!.map((rival2){
       return DropdownMenuItem(
-        // value: s2.id != 0 ? s2.id : listSuperstars![0].id,
-        value: rival2.id,
+        value: rival2,
         child: Text(rival2.name));
     }).toList(),
     ),
@@ -285,12 +323,11 @@ class SuperstarsFormWidget extends StatelessWidget {
         labelText: 'Rival 3',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: rival3 != 0 ? rival3 : defaultSup.id,
+      value: listSuperstars!.contains(rival3) ? rival3 : null,
       onChanged: onChangedRival3,
       items: listSuperstars!.map((rival3){
       return DropdownMenuItem(
-        // value: s3.id != 0 ? s3.id : listSuperstars![0].id,
-        value: rival3.id,
+        value: rival3,
         child: Text(rival3.name));
     }).toList(),
     ),
@@ -305,12 +342,11 @@ class SuperstarsFormWidget extends StatelessWidget {
         labelText: 'Rival 4',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: rival4 != 0 ? rival4 : defaultSup.id,
+      value: listSuperstars!.contains(rival4) ? rival4 : null,
       onChanged: onChangedRival4,
       items: listSuperstars!.map((rival4){
       return DropdownMenuItem(
-        // value: s4.id != 0 ? s4.id : listSuperstars![0].id,
-        value: rival4.id,
+        value: rival4,
         child: Text(rival4.name));
     }).toList(),
     ),
@@ -325,11 +361,11 @@ class SuperstarsFormWidget extends StatelessWidget {
         labelText: 'Rival 5',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
     ),
-      value: rival5 != 0 ? rival5 : defaultSup.id,
+      value: listSuperstars!.contains(rival5) ? rival5 : null,
       onChanged: onChangedRival5,
       items: listSuperstars!.map((rival5){
       return DropdownMenuItem(
-        value: rival5.id,
+        value: rival5,
         child: Text(rival5.name));
     }).toList(),
     ),

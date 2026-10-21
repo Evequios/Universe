@@ -34,7 +34,7 @@ class BrandsDetailPageState extends State<BrandsDetailPage> {
     setState(() => isLoading = true);
 
     brand = await BrandsDatabaseHelper.readBrand(widget.brandId);
-    superstarsList = await SuperstarsDatabaseHelper.readAllSuperstarsFilter(brand.id!);
+    superstarsList = await Future.wait(await SuperstarsDatabaseHelper.readAllSuperstarsFilter(brand.id!));
 
     setState(() => isLoading = false);  
   }

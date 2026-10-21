@@ -12,7 +12,6 @@ class TeamsDetailPage extends StatefulWidget {
   const TeamsDetailPage({
     super.key,
     required this.teamId,
-
   });
 
   @override
@@ -20,13 +19,13 @@ class TeamsDetailPage extends StatefulWidget {
 }
 
 class TeamsDetailPageState extends State<TeamsDetailPage> {
+  late Teams team;
   late List<Superstars> superstarList;
-  Teams team = const Teams(name: 'name', member1: 0, member2: 0, member3: 0, member4: 0, member5: 0);
-  Superstars m1 = const Superstars(name: 'name', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-  Superstars m2 = const Superstars(name: 'name', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-  Superstars m3 = const Superstars(name: 'name', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-  Superstars m4 = const Superstars(name: 'name', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
-  Superstars m5 = const Superstars(name: 'name', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
+  Superstars m1 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+  Superstars m2 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+  Superstars m3 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+  Superstars m4 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+  Superstars m5 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
   bool isLoading = false;
 
   @override
@@ -41,11 +40,11 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
 
     superstarList = await SuperstarsDatabaseHelper.readAllSuperstars();
     team = await TeamsDatabaseHelper.readTeam(widget.teamId);
-    m1 = await SuperstarsDatabaseHelper.readSuperstar(team.member1);
-    m2 = await SuperstarsDatabaseHelper.readSuperstar(team.member2);
-    if(team.member3 != 0) m3 = await SuperstarsDatabaseHelper.readSuperstar(team.member3);
-    if(team.member4 != 0) m4 = await SuperstarsDatabaseHelper.readSuperstar(team.member4);
-    if(team.member5 != 0) m5 = await SuperstarsDatabaseHelper.readSuperstar(team.member5);
+    m1 = await SuperstarsDatabaseHelper.readSuperstar(team.member1.id!);
+    m2 = await SuperstarsDatabaseHelper.readSuperstar(team.member2.id!);
+    m3 = await SuperstarsDatabaseHelper.readSuperstar(team.member3.id!);
+    m4 = await SuperstarsDatabaseHelper.readSuperstar(team.member4.id!);
+    m5 = await SuperstarsDatabaseHelper.readSuperstar(team.member5.id!);
 
     setState(() => isLoading = false);  
   }

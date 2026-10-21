@@ -1,3 +1,5 @@
+import 'package:wwe_universe/classes/superstars.dart';
+
 const String tableReigns = 'reigns';
 
 class ReignsFields {
@@ -17,8 +19,8 @@ class ReignsFields {
 
 class Reigns{
   final int? id;
-  final int holder1;
-  final int holder2;
+  final Superstars holder1;
+  final Superstars holder2;
   final int titleId;
   final int yearDebut;
   final int weekDebut;
@@ -38,8 +40,8 @@ class Reigns{
 
   Reigns copy({
     int? id,
-    int? holder1,
-    int? holder2,
+    Superstars? holder1,
+    Superstars? holder2,
     int? titleId,
     int? yearDebut,
     int? weekDebut,
@@ -59,8 +61,8 @@ class Reigns{
 
   static Reigns fromJson(Map<String, dynamic> json) => Reigns(
         id: json[ReignsFields.id]as int ?,
-        holder1: json[ReignsFields.holder1] as int,
-        holder2: json[ReignsFields.holder2] as int,
+        holder1: json[ReignsFields.holder1] as Superstars,
+        holder2: json[ReignsFields.holder2] as Superstars,
         titleId: json[ReignsFields.titleId] as int,
         yearDebut: json[ReignsFields.yearDebut] as int,
         weekDebut: json[ReignsFields.weekDebut] as int,

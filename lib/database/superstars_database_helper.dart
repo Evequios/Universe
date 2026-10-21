@@ -40,10 +40,10 @@ class SuperstarsDatabaseHelper {
       orderBy: orderBy
     );
 
-    return result.map((json) => Superstars.fromJson(json)).toList();
+    return Future.wait(result.map((json) => Superstars.fromJson(json)).toList());
   }
 
-  static Future<List<Superstars>> readAllSuperstarsFilter(int brandId) async {
+  static Future<List<Future<Superstars>>> readAllSuperstarsFilter(int brandId) async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -57,7 +57,7 @@ class SuperstarsDatabaseHelper {
     return result.map((json) => Superstars.fromJson(json)).toList();
   }
 
-  static Future<List<Superstars>> readAllSuperstarsDivision(int titleId) async {
+  static Future<List<Future<Superstars>>> readAllSuperstarsDivision(int titleId) async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -71,7 +71,7 @@ class SuperstarsDatabaseHelper {
     return result.map((json) => Superstars.fromJson(json)).toList();
   }
 
-  static Future<List<Superstars>> readAllSuperstarsSearch(String n) async {
+  static Future<List<Future<Superstars>>> readAllSuperstarsSearch(String n) async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 

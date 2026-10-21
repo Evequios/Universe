@@ -1,3 +1,8 @@
+import 'package:wwe_universe/classes/shows.dart';
+import 'package:wwe_universe/classes/stipulations.dart';
+import 'package:wwe_universe/classes/superstars.dart';
+import 'package:wwe_universe/classes/titles.dart';
+
 const String tableMatches = 'matches';
 
 class MatchesFields {
@@ -5,15 +10,9 @@ class MatchesFields {
     id, stipulation, s1, s2, s3, s4, s5, s6, s7, s8, winner, matchOrder, showId, titleId
   ];
 
-  static const String id = '_id';
-  static const String stipulation = 'stipulation';
-  static const String s1 = 's1';
-  static const String s2 = 's2';
-  static const String s3 = 's3';
-  static const String s4 = 's4';
-  static const String s5 = 's5';
-  static const String s6 = 's6';
-  static const String s7 = 's7';
+  static const String id = '_id', 
+  stipulation = 'stipulation', 
+  s1 = 's1', s2 = 's2', s3 = 's3', s4 = 's4', s5 = 's5', s6 = 's6', s7 = 's7';
   static const String s8 = 's8';
   static const String winner = 'winner';
   static const String matchOrder = 'matchOrder';
@@ -23,19 +22,19 @@ class MatchesFields {
 
 class Matches{
   final int? id;
-  final int stipulation;
-  final int s1;
-  final int s2;
-  final int s3;
-  final int s4;
-  final int s5;
-  final int s6;
-  final int s7;
-  final int s8;
-  final int winner;
+  final Stipulations stipulation;
+  final Superstars s1;
+  final Superstars s2;
+  final Superstars? s3;
+  final Superstars? s4;
+  final Superstars? s5;
+  final Superstars? s6;
+  final Superstars? s7;
+  final Superstars? s8;
+  final Superstars winner;
   final int matchOrder;
-  final int? showId;
-  final int? titleId;
+  final Shows? show;
+  final Titles? title;
 
   const Matches({
     this.id,
@@ -50,25 +49,25 @@ class Matches{
     required this.s8,
     required this.winner,
     required this.matchOrder,
-    required this.showId,
-    required this.titleId,
+    required this.show,
+    required this.title,
   });
 
   Matches copy({
     int? id,
-    int? stipulation,
-    int? s1,
-    int? s2,
-    int? s3,
-    int? s4,
-    int? s5,
-    int? s6,
-    int? s7,
-    int? s8,
-    int? winner,
+    Stipulations? stipulation,
+    Superstars? s1,
+    Superstars? s2,
+    Superstars? s3,
+    Superstars? s4,
+    Superstars? s5,
+    Superstars? s6,
+    Superstars? s7,
+    Superstars? s8,
+    Superstars? winner,
     int? matchOrder,
-    int? showId,
-    int? titleId
+    Shows? show,
+    Titles? title
   }) =>
       Matches(
         id: id ?? this.id,
@@ -83,25 +82,25 @@ class Matches{
         s8: s8 ?? this.s8,
         winner: winner ?? this.winner,
         matchOrder: matchOrder ?? this.matchOrder,
-        showId: showId ?? this.showId,
-        titleId: titleId ?? this.titleId
+        show: show ?? this.show,
+        title: title ?? this.title
       );
 
   static Matches fromJson(Map<String, dynamic> json) => Matches(
         id: json[MatchesFields.id]as int ?,
-        stipulation: json[MatchesFields.stipulation] as int,
-        s1: json[MatchesFields.s1] as int,
-        s2: json[MatchesFields.s2] as int,
-        s3: json[MatchesFields.s3] as int,
-        s4: json[MatchesFields.s4] as int,
-        s5: json[MatchesFields.s5] as int,
-        s6: json[MatchesFields.s6] as int,
-        s7: json[MatchesFields.s7] as int,
-        s8: json[MatchesFields.s8] as int,
-        winner: json[MatchesFields.winner] as int,
+        stipulation: json[MatchesFields.stipulation] as Stipulations,
+        s1: json[MatchesFields.s1] as Superstars,
+        s2: json[MatchesFields.s2] as Superstars,
+        s3: json[MatchesFields.s3] as Superstars,
+        s4: json[MatchesFields.s4] as Superstars,
+        s5: json[MatchesFields.s5] as Superstars,
+        s6: json[MatchesFields.s6] as Superstars,
+        s7: json[MatchesFields.s7] as Superstars,
+        s8: json[MatchesFields.s8] as Superstars,
+        winner: json[MatchesFields.winner] as Superstars,
         matchOrder: json[MatchesFields.matchOrder] as int,
-        showId: json[MatchesFields.showId] as int,
-        titleId: json[MatchesFields.titleId] as int,
+        show: json[MatchesFields.showId] as Shows,
+        title: json[MatchesFields.titleId] as Titles,
       );
 
   Map<String, dynamic> toJson() => {
@@ -117,7 +116,7 @@ class Matches{
         MatchesFields.s8: s8,
         MatchesFields.winner: winner,
         MatchesFields.matchOrder: matchOrder,
-        MatchesFields.showId: showId,
-        MatchesFields.titleId : titleId
+        MatchesFields.showId: show,
+        MatchesFields.titleId : title
       };
 }

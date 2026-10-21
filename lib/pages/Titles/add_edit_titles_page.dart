@@ -25,20 +25,35 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
   late List<Superstars> listSuperstars = [];
   late List<Brands> listBrands = [];
   late String name;
-  late int brand;
+  late Brands brand;
   late int tag;
-  late int holder1;
-  late int holder2;
-
+  late Superstars holder1;
+  late Superstars holder2;
+  Brands defaultBrand = const Brands(name: 'name');
+  Superstars defaultSup = const Superstars(
+        name: 'nom',
+        brand: null,
+        orientation: 'orientation',
+        ally1: null,
+        ally2: null,
+        ally3: null,
+        ally4: null,
+        ally5: null,
+        rival1: null,
+        rival2: null,
+        rival3: null,
+        rival4: null,
+        rival5: null,
+        division: null);
   @override
   void initState() {
     super.initState();
 
     name = widget.title?.name ?? '';
-    brand = widget.title?.brand ?? 0;
+    brand = widget.title?.brand ?? defaultBrand;
     tag = widget.title?.tag ?? 0;
-    holder1 = widget.title?.holder1 ?? 0;
-    holder2 = widget.title?.holder2 ?? 0;
+    holder1 = widget.title?.holder1 ?? defaultSup;
+    holder2 = widget.title?.holder2 ?? defaultSup;
     listBrands = widget.listBrands!;
     listSuperstars = widget.listSuperstars!;
   }
