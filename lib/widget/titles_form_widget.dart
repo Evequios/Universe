@@ -3,7 +3,7 @@ import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 
 Brands defaultBrand = const Brands(name: 'nom');
-Superstars defaultSup = const Superstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
+Superstars defaultSup = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: 0);
 List<bool> listTag = [false, true];
 
 bool disable(int tag){
@@ -14,15 +14,15 @@ class TitlesFormWidget extends StatelessWidget {
   final List<Superstars>? listSuperstars;
   final List<Brands>? listBrands;
   final String? name;
-  final int? brand;
+  final Brands? brand;
   final int? tag;
-  final int? holder1;
-  final int? holder2;
+  final Superstars? holder1;
+  final Superstars? holder2;
   final ValueChanged<String?> onChangedName;
-  final ValueChanged<int?> onChangedBrand;
+  final ValueChanged<Brands?> onChangedBrand;
   final ValueChanged<int?> onChangedTag;
-  final ValueChanged<int?> onChangedHolder1; 
-  final ValueChanged<int?> onChangedHolder2;
+  final ValueChanged<Superstars?> onChangedHolder1; 
+  final ValueChanged<Superstars?> onChangedHolder2;
 
 
   const TitlesFormWidget({
@@ -83,21 +83,21 @@ class TitlesFormWidget extends StatelessWidget {
   Widget buildBrand() => 
     ButtonTheme( 
       alignedDropdown: true, 
-      child: DropdownButtonFormField(
-        decoration: InputDecoration(
+      child: DropdownButtonFormField<Brands>(
+      decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: 'Brand',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: brand != 0 ? brand : defaultBrand.id,
+        value: brand ?? defaultBrand,
         onChanged: onChangedBrand,
         items: listBrands!.map((brand){
         return DropdownMenuItem(
-          value: brand.id,
+          value: brand,
           child: Text(brand.name));
       }).toList(),
-      ),
-    );
+    ),
+  );
 
     Widget buildTag() => 
     ButtonTheme( 
@@ -122,17 +122,17 @@ class TitlesFormWidget extends StatelessWidget {
     Widget buildHolder1() => 
     ButtonTheme( 
       alignedDropdown: true, 
-      child: DropdownButtonFormField(
+      child: DropdownButtonFormField<Superstars>(
         decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: 'Holder 1',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: holder1 != 0 ? holder1 : defaultSup.id,
+        value: holder1 ?? defaultSup,
         onChanged: onChangedHolder1,
         items: listSuperstars!.map((holder1){
         return DropdownMenuItem(
-          value: holder1.id,
+          value: holder1,
           child: Text(holder1.name));
       }).toList(),
       ),
@@ -143,17 +143,17 @@ class TitlesFormWidget extends StatelessWidget {
     Widget buildHolder2() => 
     ButtonTheme( 
       alignedDropdown: true, 
-      child: DropdownButtonFormField(
+      child: DropdownButtonFormField<Superstars>(
         decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: 'Holder 2',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: holder2 != 0 ? holder2 : defaultSup.id,
+        value: holder2 ?? defaultSup,
         onChanged: onChangedHolder2,
-        items : disable(tag!) ? null : listSuperstars!.map((holder2){
+        items: listSuperstars!.map((holder2){
         return DropdownMenuItem(
-          value: holder2.id,
+          value: holder2,
           child: Text(holder2.name));
       }).toList(),
       ),

@@ -15,7 +15,6 @@ class SuperstarsPage extends StatefulWidget{
 }
 
 class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveClientMixin<SuperstarsPage> {
-  Brands defaultBrand = const Brands(name: 'name');
   late List<Superstars> superstarsList;
   late List<Brands> brandsList;
   bool isLoading = false;
@@ -36,7 +35,7 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
   Future refreshSuperstars() async {
     setState(() => isLoading = true);
 
-    superstarsList = await SuperstarsDatabaseHelper.readAllSuperstars();
+    superstarsList = (await SuperstarsDatabaseHelper.readAllSuperstars()).cast<Superstars>();
     brandsList = await BrandsDatabaseHelper.readAllBrands();
 
     setState(() => isLoading = false);
@@ -45,7 +44,7 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
   void setSuperstarsList(String search) async {
     setState(() => isLoading = true);
 
-    superstarsList = await SuperstarsDatabaseHelper.readAllSuperstarsSearch(search);
+    superstarsList = (await SuperstarsDatabaseHelper.readAllSuperstarsSearch(search)).cast<Superstars>();
   
     setState(() => isLoading = false); 
   }
@@ -128,8 +127,6 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
     itemCount: superstarsList.length,
     itemBuilder: (context, index){
       final superstar = superstarsList[index];
-      Brands brand = defaultBrand; 
-      if(superstar.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == superstar.brand);
       return GestureDetector( 
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
@@ -157,10 +154,10 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
                     )
                   ),
                   const Spacer(),
-                  Container(child : ((){ if(superstar.brand != 0 && (brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt')) {
-                    return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png')); 
+                  Container(child : ((){ if(superstar.brand?.name.toLowerCase() == 'raw' || superstar.brand?.name.toLowerCase() == 'smackdown' || superstar.brand?.name.toLowerCase() == 'nxt') {
+                    return Image(image: AssetImage('assets/${superstar.brand?.name.toLowerCase()}.png')); 
                   } else {
-                    return Text(brand.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+                    return Text(superstar.brand?.name ?? "", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
                   }}()))
                 ],
               )

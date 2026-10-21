@@ -85,7 +85,7 @@ class DraftPageState extends State<DraftPage> with AutomaticKeepAliveClientMixin
     itemBuilder: (context, index){
       final superstar = superstarsList[index];
       Brands brand = defaultBrand;
-      if(superstar.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == superstar.brand);
+      if(superstar.brand != null) brand = brandsList.firstWhere((brand) => brand.id == superstar.brand);
       return GestureDetector( 
         onTap: () async {
           setState(() {

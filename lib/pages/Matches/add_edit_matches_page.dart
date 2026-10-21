@@ -8,7 +8,6 @@ import 'package:wwe_universe/classes/titles.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:wwe_universe/database/matches_database_helper.dart';
 import 'package:wwe_universe/database/stipulations_database_helper.dart';
-import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
 // import 'package:wwe_universe/widget/Universe/UniverseMatchesFormWidget.dart';
 
@@ -18,8 +17,8 @@ class AddEditMatchesPage extends StatefulWidget {
   final List<Stipulations>? listStipulations;
   final List<Superstars>? listSuperstars;
 
-  const AddEditMatchesPage({
-      super.key,
+  const AddEditMatchesPage(
+      {super.key,
       this.match,
       this.show,
       this.listStipulations,
@@ -35,50 +34,41 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
   late List<int> participantsID = [];
   late List<Superstars> listParticipants = [];
   late List<Titles> listTitles = [];
-  late int stipulation;
-  late int s1;
-  late int s2;
-  late int s3;
-  late int s4;
-  late int s5;
-  late int s6;
-  late int s7;
-  late int s8;
-  late int winner;
+  late Stipulations stipulation;
+  late Superstars s1;
+  late Superstars s2;
+  late Superstars s3;
+  late Superstars s4;
+  late Superstars s5;
+  late Superstars s6;
+  late Superstars s7;
+  late Superstars s8;
+  late Superstars winner;
   late int order;
-  late int showId;
-  late int titleId;
-  late ValueChanged<int?> onChangedStipulation;
-  late ValueChanged<int?> onChangedS1;
-  late ValueChanged<int?> onChangedS2;
-  late ValueChanged<int?> onChangedS3;
-  late ValueChanged<int?> onChangedS4;
-  late ValueChanged<int?> onChangedS5;
-  late ValueChanged<int?> onChangedS6;
-  late ValueChanged<int?> onChangedS7;
-  late ValueChanged<int?> onChangedS8;
-  late ValueChanged<int?> onChangedWinner;
+  late Shows showId;
+  late Titles? title;
+  late ValueChanged<Stipulations?> onChangedStipulation;
+  late ValueChanged<Superstars?> onChangedS1;
+  late ValueChanged<Superstars?> onChangedS2;
+  late ValueChanged<Superstars?> onChangedS3;
+  late ValueChanged<Superstars?> onChangedS4;
+  late ValueChanged<Superstars?> onChangedS5;
+  late ValueChanged<Superstars?> onChangedS6;
+  late ValueChanged<Superstars?> onChangedS7;
+  late ValueChanged<Superstars?> onChangedS8;
+  late ValueChanged<Superstars?> onChangedWinner;
   late ValueChanged<String?> onChangedOrder;
-  late ValueChanged<int?> onChangedTitleId;
+  late ValueChanged<Titles?> onChangedTitleId;
+  Shows defaultShow = const Shows(name: 'name', year: 0, week: 0, summary: '');
   Titles defaultTitle =
-      const Titles(name: 'name', tag: 0, brand: 0, holder1: 0, holder2: 0);
+      const Titles(name: 'name', tag: 0, brand: null, holder1: null, holder2: null);
   Stipulations defaultStip =
       const Stipulations(type: 'type', stipulation: 'stipulation');
   Superstars defaultSup = const Superstars(
       name: 'nom',
-      brand: 0,
+      brand: null,
       orientation: 'orientation',
-      ally1: 0,
-      ally2: 0,
-      ally3: 0,
-      ally4: 0,
-      ally5: 0,
-      rival1: 0,
-      rival2: 0,
-      rival3: 0,
-      rival4: 0,
-      rival5: 0,
-      division: 0);
+      division: null);
   Stipulations stip =
       const Stipulations(type: 'type', stipulation: 'stipulation');
   List<String> soloType = [
@@ -115,38 +105,29 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
   bool disable8 = true;
   bool isLoading = false;
   bool checkedValue = false;
-  late Titles title;
 
   @override
   void initState() {
     super.initState();
 
-    stipulation = widget.match?.stipulation ?? 0;
-    s1 = widget.match?.s1 ?? 0;
-    s2 = widget.match?.s2 ?? 0;
-    s3 = widget.match?.s3 ?? 0;
-    s4 = widget.match?.s4 ?? 0;
-    s5 = widget.match?.s5 ?? 0;
-    s6 = widget.match?.s6 ?? 0;
-    s7 = widget.match?.s7 ?? 0;
-    s8 = widget.match?.s8 ?? 0;
-    winner = widget.match?.winner ?? 0;
+    stipulation = widget.match?.stipulation ?? defaultStip;
+    s1 = widget.match?.s1 ?? defaultSup;
+    s2 = widget.match?.s2 ?? defaultSup;
+    s3 = widget.match?.s3 ?? defaultSup;
+    s4 = widget.match?.s4 ?? defaultSup;
+    s5 = widget.match?.s5 ?? defaultSup;
+    s6 = widget.match?.s6 ?? defaultSup;
+    s7 = widget.match?.s7 ?? defaultSup;
+    s8 = widget.match?.s8 ?? defaultSup;
+    winner = widget.match?.winner ?? defaultSup;
     order = widget.match?.matchOrder ?? 0;
-    showId = widget.match?.showId ?? 0;
-    titleId = widget.match?.titleId ?? 0;
+    showId = widget.match?.show ?? defaultShow;
+    title = widget.match?.title ?? defaultTitle;
     listStipulations = widget.listStipulations!;
     listSuperstars = widget.listSuperstars!;
     onChangedStipulation =
         (stipulation) => setState(() => this.stipulation = stipulation!);
-    onChangedS1 = (s1) => setState(() {
-          for (int s in participantsID) {
-            if (s1 == s) {
-              participantsID.remove(s);
-            }
-          }
-          this.s1 = s1!;
-          participantsID.add(s1);
-        });
+    onChangedS1 = (s1) => setState(() => this.s1 = s1!);
     onChangedS2 = (s2) => setState(() => this.s2 = s2!);
     onChangedS3 = (s3) => setState(() => this.s3 = s3!);
     onChangedS4 = (s4) => setState(() => this.s4 = s4!);
@@ -156,7 +137,7 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
     onChangedS8 = (s8) => setState(() => this.s8 = s8!);
     onChangedWinner = (winner) => setState(() => this.winner = winner!);
     onChangedOrder = (order) => setState(() => this.order = int.parse(order!));
-    onChangedTitleId = (titleId) => setState(() => this.titleId = titleId!);
+    onChangedTitleId = (title) => setState(() => this.title = title!);
 
     // if(stipulation != 0) getDetails(stipulation);
     // winner = 0;
@@ -166,8 +147,8 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
   Future refreshFields() async {
     setState(() => isLoading = true);
     listTitles = await TitlesDatabaseHelper.readAllTitles();
-    if (stipulation != 0) await getDetails(stipulation);
-    winner = 0;
+    await getDetails(stipulation);
+    winner = defaultSup;
     disable2 = await disable(2);
     disable3 = await disable(3);
     disable4 = await disable(4);
@@ -202,10 +183,10 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
                           const SizedBox(
                             height: 8,
                           ),
-                          // if (!disable2) buildS2(),
-                          // const SizedBox(
-                          //   height: 8,
-                          // ),
+                          if (!disable2) buildS2(),
+                          const SizedBox(
+                            height: 8,
+                          ),
                           // if (!disable3) buildS3(),
                           // const SizedBox(
                           //   height: 8,
@@ -248,7 +229,7 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
       );
 
   Widget buildButton() {
-    final isFormValid = stipulation != 0;
+    final isFormValid = true;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -292,68 +273,74 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
         s8: s8,
         winner: winner,
         matchOrder: order,
-        showId: widget.show!.id,
-        titleId: titleId);
+        show: widget.show!,
+        title: title);
 
     await MatchesDatabaseHelper.updateMatches(match);
 
     if (checkedValue) {
-      title = await TitlesDatabaseHelper.readTitle(match.titleId!);
-      List<int> winners = await getWinnersList();
+      title = await TitlesDatabaseHelper.readTitle(match.title!.id!);
+      // List<int> winners = await getWinnersList();
     }
   }
 
   Future addUniverseMatches() async {
-    final stip = await StipulationsDatabaseHelper.readStipulation(stipulation);
+    final stip = await StipulationsDatabaseHelper.readStipulation(stipulation.id!);
     final match = Matches(
         stipulation: stipulation,
         s1: s1,
         s2: s2,
-        s3: stip.type == '1v1' ? 0 : s3,
-        s4: stip.type == '1v1' || stip.type == 'Triple Threat' ? 0 : s4,
-        s5: stip.type == '1v1' ||
-                stip.type == 'Triple Threat' ||
-                stip.type == '2v2' ||
-                stip.type == 'Fatal 4-Way'
-            ? 0
-            : s5,
-        s6: stip.type == '1v1' ||
-                stip.type == 'Triple Threat' ||
-                stip.type == '2v2' ||
-                stip.type == 'Fatal 4-Way' ||
-                stip.type == '5-Way'
-            ? 0
-            : s6,
-        s7: stip.type == '1v1' ||
-                stip.type == 'Triple Threat' ||
-                stip.type == '2v2' ||
-                stip.type == 'Fatal 4-Way' ||
-                stip.type == '5-Way' ||
-                stip.type == '3v3' ||
-                stip.type == '2v2v2' ||
-                stip.type == '6-Way'
-            ? 0
-            : s7,
-        s8: stip.type == '1v1' ||
-                stip.type == 'Triple Threat' ||
-                stip.type == '2v2' ||
-                stip.type == 'Fatal 4-Way' ||
-                stip.type == '5-Way' ||
-                stip.type == '3v3' ||
-                stip.type == '2v2v2' ||
-                stip.type == '6-Way'
-            ? 0
-            : s8,
+        s3 : null,
+        s4 : null,
+        s5 : null,
+        s6 : null,
+        s7 : null,
+        s8 : null,
+        // s3: stip.type == '1v1' ? 0 : s3,
+        // s4: stip.type == '1v1' || stip.type == 'Triple Threat' ? 0 : s4,
+        // s5: stip.type == '1v1' ||
+        //         stip.type == 'Triple Threat' ||
+        //         stip.type == '2v2' ||
+        //         stip.type == 'Fatal 4-Way'
+        //     ? 0
+        //     : s5,
+        // s6: stip.type == '1v1' ||
+        //         stip.type == 'Triple Threat' ||
+        //         stip.type == '2v2' ||
+        //         stip.type == 'Fatal 4-Way' ||
+        //         stip.type == '5-Way'
+        //     ? 0
+        //     : s6,
+        // s7: stip.type == '1v1' ||
+        //         stip.type == 'Triple Threat' ||
+        //         stip.type == '2v2' ||
+        //         stip.type == 'Fatal 4-Way' ||
+        //         stip.type == '5-Way' ||
+        //         stip.type == '3v3' ||
+        //         stip.type == '2v2v2' ||
+        //         stip.type == '6-Way'
+        //     ? 0
+        //     : s7,
+        // s8: stip.type == '1v1' ||
+        //         stip.type == 'Triple Threat' ||
+        //         stip.type == '2v2' ||
+        //         stip.type == 'Fatal 4-Way' ||
+        //         stip.type == '5-Way' ||
+        //         stip.type == '3v3' ||
+        //         stip.type == '2v2v2' ||
+        //         stip.type == '6-Way'
+        //     ? 0
+        //     : s8,
         winner: winner,
         matchOrder: order,
-        showId: widget.show!.id,
-        titleId: titleId);
+        show: widget.show!,
+        title: title);
 
     await MatchesDatabaseHelper.createMatch(match);
     if (checkedValue) {
-      title = await TitlesDatabaseHelper.readTitle(match.titleId!);
-      List<int> winners = await getWinnersList();
-      TitlesDatabaseHelper.setChampion(title, winners);
+      title = await TitlesDatabaseHelper.readTitle(match.title!.id!);
+      // List<int> winners = await getWinnersList();
+      // TitlesDatabaseHelper.setChampion(title, winners);
     }
   }
 
@@ -366,10 +353,10 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
                   color: Colors.black87.withOpacity(0.5), fontSize: 18),
               border: const OutlineInputBorder(),
             ),
-            value: stipulation != 0 ? stipulation : defaultStip.id,
+            value: stipulation.id,
             onChanged: (stipulation) {
               setState(() {
-                this.stipulation = stipulation!;
+                this.stipulation = stipulation as Stipulations;
                 refreshFields();
               });
             },
@@ -383,7 +370,41 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
                 stipulation == null ? "Please choose a match type" : null),
       );
 
-  Widget buildS1() => DropdownSearch<int>(
+  Widget buildS1() => DropdownSearch<Superstars>(
+    itemAsString: (Superstars s1) => s1.name,
+    items: (f, cs) => listSuperstars,
+        popupProps: PopupProps.menu(
+          showSelectedItems: false,
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            decoration: InputDecoration(
+              labelText: "Superstar 1",
+              labelStyle: TextStyle(
+                  color: Colors.black87.withOpacity(0.5), fontSize: 18),
+              border: const OutlineInputBorder(),
+            ),
+            autofocus: true,
+          ),
+        ),
+        compareFn: (Superstars a, Superstars b) => a.id == b.id,
+        decoratorProps: DropDownDecoratorProps(
+          decoration: InputDecoration(
+            labelText: "Superstar 1",
+            labelStyle:
+                TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        onChanged: (Superstars? value) {
+          onChangedS1(value);
+        },
+        validator: (Superstars? s1) =>
+            s1?.id == null ? "Please choose a superstar" : null,
+      );
+
+  Widget buildS2() => DropdownSearch<Superstars>(
+    itemAsString: (Superstars superstar) => superstar.name,
+    items: (f, cs) => listSuperstars,
         popupProps: PopupProps.menu(
           showSelectedItems: false,
           showSearchBox: true,
@@ -397,57 +418,21 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
             autofocus: true,
           ),
         ),
+        compareFn: (Superstars a, Superstars b) => a.id == b.id,
         decoratorProps: DropDownDecoratorProps(
           decoration: InputDecoration(
-            labelText: "Superstar 1",
+            labelText: "Superstar 2",
             labelStyle:
                 TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
             border: const OutlineInputBorder(),
           ),
         ),
-        itemAsString: (int? id) {
-          final superstar = listSuperstars.firstWhere((s1) => s1.id == id);
-          return superstar.name;
+        onChanged: (Superstars? value) {
+          onChangedS2(value);
         },
-        onChanged: (int? value) {
-          onChangedS1(value);
-        },
-        validator: (int? s1) => s1 == null ? "Please choose a superstar" : null,
+        validator: (Superstars? s2) =>
+            s2?.id == null ? "Please choose a superstar" : null,
       );
-
-//   Widget buildS2() => DropdownSearch<int>(
-//         popupProps: PopupProps.menu(
-//           showSelectedItems: false,
-//           showSearchBox: true,
-//           searchFieldProps: TextFieldProps(
-//             decoration: InputDecoration(
-//               labelText: "Superstar 2",
-//               labelStyle: TextStyle(
-//                   color: Colors.black87.withOpacity(0.5), fontSize: 18),
-//               border: const OutlineInputBorder(),
-//             ),
-//             autofocus: true,
-//           ),
-//         ),
-//         items: listSuperstars.map((s2) => s2.id!).toList(),
-//         dropdownDecoratorProps: DropDownDecoratorProps(
-//           dropdownSearchDecoration: InputDecoration(
-//             labelText: "Superstar 2",
-//             labelStyle:
-//                 TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
-//             border: const OutlineInputBorder(),
-//           ),
-//         ),
-//         itemAsString: (int? id) {
-//           final superstar = listSuperstars.firstWhere((s2) => s2.id == id);
-//           return superstar.name;
-//         },
-//         onChanged: (int? value) {
-//           onChangedS2(value);
-//         },
-//         validator: (int? s2) => s2 == null ? "Please choose a superstar" : null,
-//       );
-
 //  Widget buildS3() => DropdownSearch<int>(
 //         popupProps: PopupProps.menu(
 //           showSelectedItems: false,
@@ -705,195 +690,228 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
         });
       });
 
-  Widget buildTitle() => ButtonTheme(
-        alignedDropdown: true,
-        child: DropdownButtonFormField(
+  // Widget buildTitle() => ButtonTheme(
+  //       alignedDropdown: true,
+  //       child: DropdownButtonFormField(
+  //         decoration: InputDecoration(
+  //           labelText: 'Title',
+  //           labelStyle:
+  //               TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+  //           border: const OutlineInputBorder(),
+  //         ),
+  //         value: title != 0 ? title : defaultTitle.id,
+  //         onChanged: onChangedTitleId,
+  //         items: listTitles.map((title) {
+  //           return DropdownMenuItem(value: title.id, child: Text(title.name));
+  //         }).toList(),
+  //         validator: (title) =>
+  //             validateWinner() ? null : "The winner must be in the match",
+  //       ),
+  //     );
+
+  Widget buildTitle() => DropdownSearch<Titles>(
+    itemAsString: (Titles title) => title.name,
+    items: (f, cs) => listTitles,
+        popupProps: PopupProps.menu(
+          showSelectedItems: false,
+          showSearchBox: true,
+          searchFieldProps: TextFieldProps(
+            decoration: InputDecoration(
+              labelText: "Title",
+              labelStyle: TextStyle(
+                  color: Colors.black87.withOpacity(0.5), fontSize: 18),
+              border: const OutlineInputBorder(),
+            ),
+            autofocus: true,
+          ),
+        ),
+        compareFn: (Titles a, Titles b) => a.id == b.id,
+        decoratorProps: DropDownDecoratorProps(
           decoration: InputDecoration(
-            labelText: 'Title',
+            labelText: "Title",
             labelStyle:
                 TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
             border: const OutlineInputBorder(),
           ),
-          value: titleId != 0 ? titleId : defaultTitle.id,
-          onChanged: onChangedTitleId,
-          items: listTitles.map((title) {
-            return DropdownMenuItem(value: title.id, child: Text(title.name));
-          }).toList(),
-          validator: (title) =>
-              validateWinner() ? null : "The winner must be in the match",
         ),
+        onChanged: (Titles? value) {
+          onChangedTitleId(value);
+        },
+        validator: (Titles? title) =>
+            title?.id == null ? "Please choose a title" : null,
       );
 
-  Future<List<int>> getWinnersList() async {
-    List<int> winners = [];
-    if (soloType.contains(stip.type)) {
-      return winners = [winner];
-    } else {
-      switch (stip.type) {
-        case '2v2':
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
-                  .id!);
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
-                  .id!);
-          break;
-        case '3v3':
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
-                  .id!);
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
-                  .id!);
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s6))
-                  .id!);
-          break;
-        case '4v4':
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
-                  .id!);
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
-                  .id!);
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
-                  .id!);
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s6))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s7))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s8))
-                  .id!);
-          break;
-        case '3-Way Tag':
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
-                  .id!);
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
-                  .id!);
-          team3.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
-                  .id!);
-          team3.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s6))
-                  .id!);
-          break;
-        case '4-Way Tag':
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
-                  .id!);
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
-                  .id!);
-          team3.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
-                  .id!);
-          team3.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s6))
-                  .id!);
-          team4.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s7))
-                  .id!);
-          team4.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s8))
-                  .id!);
-          break;
-        case 'Handicap 1v2':
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
-                  .id!);
-          break;
-        case 'Handicap 1v3':
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
-                  .id!);
-          break;
-        case 'Handicap 2v3':
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
-                  .id!);
-          team1.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
-                  .id!);
-          team2.add(
-              (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
-                  .id!);
-          break;
-        default:
-          break;
-      }
 
-      if (team1.contains(widget.match!.winner)) {
-        winners = team1;
-      } else if (team2.contains(widget.match!.winner)) {
-        winners = team2;
-      } else if (team3.contains(widget.match!.winner)) {
-        winners = team3;
-      } else if (team4.contains(widget.match!.winner)) {
-        winners = team4;
-      }
-    }
-    return winners;
-  }
+  // Future<List<int>> getWinnersList() async {
+  //   List<int> winners = [];
+  //   if (soloType.contains(stip.type)) {
+  //     return winners = [winner];
+  //   } else {
+  //     switch (stip.type) {
+  //       case '2v2':
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
+  //                 .id!);
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
+  //                 .id!);
+  //         break;
+  //       case '3v3':
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
+  //                 .id!);
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
+  //                 .id!);
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s6))
+  //                 .id!);
+  //         break;
+  //       case '4v4':
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
+  //                 .id!);
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
+  //                 .id!);
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
+  //                 .id!);
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s6))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s7))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s8))
+  //                 .id!);
+  //         break;
+  //       case '3-Way Tag':
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
+  //                 .id!);
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
+  //                 .id!);
+  //         team3.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
+  //                 .id!);
+  //         team3.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s6))
+  //                 .id!);
+  //         break;
+  //       case '4-Way Tag':
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
+  //                 .id!);
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
+  //                 .id!);
+  //         team3.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
+  //                 .id!);
+  //         team3.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s6))
+  //                 .id!);
+  //         team4.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s7))
+  //                 .id!);
+  //         team4.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s8))
+  //                 .id!);
+  //         break;
+  //       case 'Handicap 1v2':
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
+  //                 .id!);
+  //         break;
+  //       case 'Handicap 1v3':
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
+  //                 .id!);
+  //         break;
+  //       case 'Handicap 2v3':
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s1))
+  //                 .id!);
+  //         team1.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s2))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s3))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s4))
+  //                 .id!);
+  //         team2.add(
+  //             (await SuperstarsDatabaseHelper.readSuperstar(widget.match!.s5))
+  //                 .id!);
+  //         break;
+  //       default:
+  //         break;
+  //     }
+
+  //     if (team1.contains(widget.match!.winner)) {
+  //       winners = team1;
+  //     } else if (team2.contains(widget.match!.winner)) {
+  //       winners = team2;
+  //     } else if (team3.contains(widget.match!.winner)) {
+  //       winners = team3;
+  //     } else if (team4.contains(widget.match!.winner)) {
+  //       winners = team4;
+  //     }
+  //   }
+  //   return winners;
+  // }
 
   bool validateWinner() {
     switch (stip.type) {
@@ -1090,6 +1108,6 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
   }
 
   Future<List<int>> fetchSuperstarIds() async {
-  return listSuperstars.map((s1) => s1.id!).toList();
-}
+    return listSuperstars.map((s1) => s1.id!).toList();
+  }
 }

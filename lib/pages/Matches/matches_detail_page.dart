@@ -58,21 +58,21 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
 
     show = await ShowsDatabaseHelper.readShow(widget.showId);
     match = await MatchesDatabaseHelper.readMatch(widget.matchId);
-    stipulation = await StipulationsDatabaseHelper.readStipulation(match.stipulation);
-    if(match.titleId != 0) title = await TitlesDatabaseHelper.readTitle(match.titleId!);
-    s1 = await SuperstarsDatabaseHelper.readSuperstar(match.s1);
+    stipulation = await StipulationsDatabaseHelper.readStipulation(match.stipulation.id!);
+    if(match.title != null) title = await TitlesDatabaseHelper.readTitle(match.title!.id!);
+    s1 = await SuperstarsDatabaseHelper.readSuperstar(match.s1.id!);
     // s2 = await UniverseDatabaseService.instance.readSuperstar(match.s2);
     stipulationsList = await StipulationsDatabaseHelper.readAllStipulations();
     superstarsList = await SuperstarsDatabaseHelper.readAllSuperstars();
 
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' ? s2 = await SuperstarsDatabaseHelper.readSuperstar(match.s2) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' ? s3 = await SuperstarsDatabaseHelper.readSuperstar(match.s3) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != 'Handicap 1v2' ? s4 = await SuperstarsDatabaseHelper.readSuperstar(match.s4) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' ? s5 = await SuperstarsDatabaseHelper.readSuperstar(match.s5) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' ? s6 = await SuperstarsDatabaseHelper.readSuperstar(match.s6) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s7 = await SuperstarsDatabaseHelper.readSuperstar(match.s7) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s8 = await SuperstarsDatabaseHelper.readSuperstar(match.s8) : null;
-    winner = await SuperstarsDatabaseHelper.readSuperstar(match.winner);
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' ? s2 = await SuperstarsDatabaseHelper.readSuperstar(match.s2.id!) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' ? s3 = await SuperstarsDatabaseHelper.readSuperstar(match.s3!.id!) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != 'Handicap 1v2' ? s4 = await SuperstarsDatabaseHelper.readSuperstar(match.s4!.id!) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' ? s5 = await SuperstarsDatabaseHelper.readSuperstar(match.s5!.id!) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' ? s6 = await SuperstarsDatabaseHelper.readSuperstar(match.s6!.id!) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s7 = await SuperstarsDatabaseHelper.readSuperstar(match.s7!.id!) : null;
+    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s8 = await SuperstarsDatabaseHelper.readSuperstar(match.s8!.id!) : null;
+    winner = await SuperstarsDatabaseHelper.readSuperstar(match.winner.id!);
 
     setState(() => isLoading = false);
   }

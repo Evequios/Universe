@@ -40,10 +40,10 @@ class SuperstarsDatabaseHelper {
       orderBy: orderBy
     );
 
-    return result.map((json) => Superstars.fromJson(json)).toList();
+    return Future.wait(result.map((json) => Superstars.fromJson(json)).toList());
   }
 
-  static Future<List<Superstars>> readAllSuperstarsFilter(int brandId) async {
+  static Future<List<Future<Superstars>>> readAllSuperstarsFilter(int brandId) async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -57,7 +57,7 @@ class SuperstarsDatabaseHelper {
     return result.map((json) => Superstars.fromJson(json)).toList();
   }
 
-  static Future<List<Superstars>> readAllSuperstarsDivision(int titleId) async {
+  static Future<List<Future<Superstars>>> readAllSuperstarsDivision(int titleId) async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -71,7 +71,7 @@ class SuperstarsDatabaseHelper {
     return result.map((json) => Superstars.fromJson(json)).toList();
   }
 
-  static Future<List<Superstars>> readAllSuperstarsSearch(String n) async {
+  static Future<List<Future<Superstars>>> readAllSuperstarsSearch(String n) async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -108,30 +108,6 @@ class SuperstarsDatabaseHelper {
       row,
       where: '${TitlesFields.holder1} = $id OR ${TitlesFields.holder2} = $id'
     );
-
-    String queryA1 = "UPDATE $tableSuperstars SET ${SuperstarsFields.ally1} = 0 WHERE ${SuperstarsFields.ally1} = $id;";
-    String queryA2 = "UPDATE $tableSuperstars SET ${SuperstarsFields.ally2} = 0 WHERE ${SuperstarsFields.ally2} = $id;";
-    String queryA3 = "UPDATE $tableSuperstars SET ${SuperstarsFields.ally3} = 0 WHERE ${SuperstarsFields.ally3} = $id;";
-    String queryA4 = "UPDATE $tableSuperstars SET ${SuperstarsFields.ally4} = 0 WHERE ${SuperstarsFields.ally4} = $id;";
-    String queryA5 = "UPDATE $tableSuperstars SET ${SuperstarsFields.ally5} = 0 WHERE ${SuperstarsFields.ally5} = $id;";
-    String queryR1 = "UPDATE $tableSuperstars SET ${SuperstarsFields.rival1} = 0 WHERE ${SuperstarsFields.rival1} = $id;";
-    String queryR2 = "UPDATE $tableSuperstars SET ${SuperstarsFields.rival2} = 0 WHERE ${SuperstarsFields.rival2} = $id;";
-    String queryR3 = "UPDATE $tableSuperstars SET ${SuperstarsFields.rival3} = 0 WHERE ${SuperstarsFields.rival3} = $id;";
-    String queryR4 = "UPDATE $tableSuperstars SET ${SuperstarsFields.rival4} = 0 WHERE ${SuperstarsFields.rival4} = $id;";
-    String queryR5 = "UPDATE $tableSuperstars SET ${SuperstarsFields.rival5} = 0 WHERE ${SuperstarsFields.rival5} = $id;";
-
-    await db.rawUpdate(queryA1);
-    await db.rawUpdate(queryA2);
-    await db.rawUpdate(queryA3);
-    await db.rawUpdate(queryA4);
-    await db.rawUpdate(queryA5);
-    await db.rawUpdate(queryR1);
-    await db.rawUpdate(queryR2);
-    await db.rawUpdate(queryR3);
-    await db.rawUpdate(queryR4);
-    await db.rawUpdate(queryR5);
-
-
 
     await db.delete(
       tableMatches,

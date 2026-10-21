@@ -22,10 +22,10 @@ class TitlesDetailPage extends StatefulWidget {
 }
 
 class TitlesDetailPageState extends State<TitlesDetailPage> {
-  Titles title = const Titles(name: '', tag: 0, brand: 0, holder1: 0, holder2: 0);
+  Titles title = const Titles(name: '', tag: 0, brand: null, holder1: null, holder2: null);
   Brands brand = const Brands(name: '');
-  Superstars h1 = const Superstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0); 
-  Superstars h2 = const Superstars(name: 'nom', brand: 0, orientation: 'orientation', ally1: 0, ally2: 0, ally3: 0, ally4: 0, ally5: 0, rival1: 0, rival2: 0, rival3: 0, rival4: 0, rival5: 0, division: 0);
+  Superstars h1 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null); 
+  Superstars h2 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null);
   late List<Brands> brandsList;
   late List<Superstars> superstarsList;
   bool isLoading = false;
@@ -42,10 +42,10 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
     setState(() => isLoading = true);
 
     title = await TitlesDatabaseHelper.readTitle(widget.titleId);
-    if(title.brand != 0) brand = await BrandsDatabaseHelper.readBrand(title.brand);
-    if(title.holder1 != 0) h1 = await SuperstarsDatabaseHelper.readSuperstar(title.holder1);
-    if(title.holder2 != 0) h2 = await SuperstarsDatabaseHelper.readSuperstar(title.holder2);
-    superstarsList = await SuperstarsDatabaseHelper.readAllSuperstarsDivision(title.id!);
+    if(title.brand != null) brand = await BrandsDatabaseHelper.readBrand(title.brand!.id!);
+    if(title.holder1 != null) h1 = await SuperstarsDatabaseHelper.readSuperstar(title.holder1!.id!);
+    if(title.holder2 != null) h2 = await SuperstarsDatabaseHelper.readSuperstar(title.holder2!.id!);
+    // superstarsList = await SuperstarsDatabaseHelper.readAllSuperstarsDivision(title.id!);
     brandsList = await BrandsDatabaseHelper.readAllBrands();
 
     setState(() => isLoading = false);  

@@ -1,14 +1,14 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:wwe_universe/classes/Brands.dart';
-import 'package:wwe_universe/classes/Matches.dart';
-import 'package:wwe_universe/classes/News.dart';
-import 'package:wwe_universe/classes/Reigns.dart';
-import 'package:wwe_universe/classes/Shows.dart';
-import 'package:wwe_universe/classes/Stipulations.dart';
-import 'package:wwe_universe/classes/Storylines.dart';
-import 'package:wwe_universe/classes/Superstars.dart';
-import 'package:wwe_universe/classes/Teams.dart';
+import 'package:wwe_universe/classes/brands.dart';
+import 'package:wwe_universe/classes/matches.dart';
+import 'package:wwe_universe/classes/news.dart';
+import 'package:wwe_universe/classes/reigns.dart';
+import 'package:wwe_universe/classes/shows.dart';
+import 'package:wwe_universe/classes/stipulations.dart';
+import 'package:wwe_universe/classes/storylines.dart';
+import 'package:wwe_universe/classes/superstars.dart';
+import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/classes/titles.dart';
 
 
@@ -35,7 +35,7 @@ class DatabaseService {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 67, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 72, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -63,17 +63,7 @@ class DatabaseService {
         ${SuperstarsFields.name} $textType,
         ${SuperstarsFields.brand} $intType,
         ${SuperstarsFields.orientation} $textType,
-        ${SuperstarsFields.ally1} $intType DEFAULT 0,
-        ${SuperstarsFields.ally2} $intType DEFAULT 0,
-        ${SuperstarsFields.ally3} $intType DEFAULT 0,
-        ${SuperstarsFields.ally4} $intType DEFAULT 0,
-        ${SuperstarsFields.ally5} $intType DEFAULT 0,
-        ${SuperstarsFields.rival1} $intType DEFAULT 0,
-        ${SuperstarsFields.rival2} $intType DEFAULT 0,
-        ${SuperstarsFields.rival3} $intType DEFAULT 0,
-        ${SuperstarsFields.rival4} $intType DEFAULT 0,
-        ${SuperstarsFields.rival5} $intType DEFAULT 0,
-        ${SuperstarsFields.division} $intType DEFAULT 0
+        ${SuperstarsFields.division} $intType DEFAULT NULL
       ); '''
     );
 
@@ -165,7 +155,15 @@ class DatabaseService {
 
   Future _updateDB(Database db, int oldVersion, int newVersion) async {
     if (newVersion > oldVersion) {
-      await db.execute('''ALTER TABLE $tableMatches ADD COLUMN ${MatchesFields.titleId} $intTypeNN DEFAULT 0;''');
+      await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableSuperstars ( 
+        ${SuperstarsFields.id} $idType, 
+        ${SuperstarsFields.name} $textType,
+        ${SuperstarsFields.brand} $intType,
+        ${SuperstarsFields.orientation} $textType,
+        ${SuperstarsFields.division} $intType
+      ); '''
+    );
     }
   }
 }
