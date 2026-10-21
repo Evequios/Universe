@@ -104,7 +104,7 @@ class StipulationsPageState extends State<StipulationsPage> with AutomaticKeepAl
         : buildUniverseStipulations(),
     ),
     floatingActionButton: FloatingActionButton(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       child: const Icon(Icons.add),
       onPressed: () async {
         await Navigator.of(context).push(
@@ -124,8 +124,8 @@ class StipulationsPageState extends State<StipulationsPage> with AutomaticKeepAl
       final stipulation = stipulationsList[index];
       return Card(
         shape:RoundedRectangleBorder(
-          side: const BorderSide(color: Color.fromARGB(189, 96, 125, 139)),
-          borderRadius: BorderRadius.circular(4.0)
+          side: const BorderSide(color: Color(0xFF30303A)),
+          borderRadius: BorderRadius.circular(16.0)
         ),
         elevation : 2,
         child: ListTile(
