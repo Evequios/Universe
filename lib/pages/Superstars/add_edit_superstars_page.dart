@@ -26,8 +26,6 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
   late String name;
   late Brands? brand;
   late String orientation;
-  late Superstars? ally1, ally2, ally3, ally4, ally5;
-  late Superstars? rival1, rival2, rival3, rival4, rival5;
   late int division;
 
   @override
@@ -37,16 +35,6 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
     name = widget.superstar?.name ?? '';
     brand = widget.superstar?.brand;
     orientation = widget.superstar?.orientation ?? '';
-    ally1 = widget.superstar?.ally1;
-    ally2 = widget.superstar?.ally2;
-    ally3 = widget.superstar?.ally3;
-    ally4 = widget.superstar?.ally4;
-    ally5 = widget.superstar?.ally5;
-    rival1 = widget.superstar?.rival1;
-    rival2 = widget.superstar?.rival2;
-    rival3 = widget.superstar?.rival3;
-    rival4 = widget.superstar?.rival4;
-    rival5 = widget.superstar?.rival5;
     division = widget.superstar?.division ?? 0;
     listBrands = widget.listBrands!;
     if(widget.listSuperstars != null) listSuperstars = widget.listSuperstars!;
@@ -66,30 +54,10 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
         name: name,
         brand: brand,
         orientation: orientation,
-        ally1 : ally1,
-        ally2 : ally2,
-        ally3 : ally3,
-        ally4 : ally4,
-        ally5 : ally5,
-        rival1 : rival1,
-        rival2 : rival2,
-        rival3 : rival3,
-        rival4 : rival4,
-        rival5 : rival5,
         division : division,
         onChangedName: (name) => setState(() => this.name = name!),
         onChangedBrand: (brand) => setState(() => this.brand = brand!),
         onChangedOrientation: (orientation) => setState(() => this.orientation = orientation.toString()),
-        onChangedAlly1: (ally1) => setState(() => this.ally1 = ally1!),
-        onChangedAlly2: (ally2) => setState(() => this.ally2 = ally2!),
-        onChangedAlly3: (ally3) => setState(() => this.ally3 = ally3!),
-        onChangedAlly4: (ally4) => setState(() => this.ally4 = ally4!),
-        onChangedAlly5: (ally5) => setState(() => this.ally5 = ally5!),
-        onChangedRival1: (rival1) => setState(() => this.rival1 = rival1!),
-        onChangedRival2: (rival2) => setState(() => this.rival2 = rival2!),
-        onChangedRival3: (rival3) => setState(() => this.rival3 = rival3!),
-        onChangedRival4: (rival4) => setState(() => this.rival4 = rival4!),
-        onChangedRival5: (rival5) => setState(() => this.rival5 = rival5!),
         onChangedDivision:(division) => setState(() => this.division = division!)
       ),
     ),
@@ -135,16 +103,6 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
       name: name,
       brand: brand,
       orientation: orientation,
-      ally1: ally1,
-      ally2: ally2,
-      ally3: ally3,
-      ally4: ally4,
-      ally5: ally5,
-      rival1: rival1,
-      rival2: rival2,
-      rival3: rival3,
-      rival4: rival4,
-      rival5: rival5,
       division: division,
     );
     await SuperstarsDatabaseHelper.updateSuperstar(superstar);
@@ -155,16 +113,6 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
       name: name,
       brand: brand,
       orientation: orientation,
-      ally1: ally1,
-      ally2: ally2,
-      ally3: ally3,
-      ally4: ally4,
-      ally5: ally5,
-      rival1: rival1,
-      rival2: rival2,
-      rival3: rival3,
-      rival4: rival4,
-      rival5: rival5,
       division: division
     );
     await SuperstarsDatabaseHelper.createSuperstar(superstar);

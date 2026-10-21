@@ -34,16 +34,6 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
         name: 'nom',
         brand: null,
         orientation: 'orientation',
-        ally1: null,
-        ally2: null,
-        ally3: null,
-        ally4: null,
-        ally5: null,
-        rival1: null,
-        rival2: null,
-        rival3: null,
-        rival4: null,
-        rival5: null,
         division: null);
   @override
   void initState() {

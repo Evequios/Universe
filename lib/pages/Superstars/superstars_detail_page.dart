@@ -217,66 +217,6 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
                 ),
 
                 const SizedBox(height: 8),
-                superstar.ally1 != null ? Text(
-                  'Ally 1 : ${superstar.ally1!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-
-                const SizedBox(height: 8),
-                superstar.ally2 != null ? Text(
-                  'Ally 2 : ${superstar.ally2!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-
-                const SizedBox(height: 8),
-                superstar.ally3!= null ? Text(
-                  'Ally 3 : ${superstar.ally3!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-
-                const SizedBox(height: 8),
-                superstar.ally4 != null ? Text(
-                  'Ally 4 : ${superstar.ally4!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-
-                const SizedBox(height: 8),
-                superstar.ally5 != null ? Text(
-                  'Ally 5 : ${superstar.ally5!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-
-                const SizedBox(height: 8),
-                superstar.rival1 != null ? Text(
-                  'Rival 1 : ${superstar.rival1!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-                const SizedBox(height: 8),
-
-                superstar.rival2 != null ? Text(
-                  'Rival 2 : ${superstar.rival2!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-                const SizedBox(height: 8),
-
-                superstar.rival3 != null ? Text(
-                  'Rival 3 : ${superstar.rival3!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-
-                const SizedBox(height: 8),
-                superstar.rival4 != null ? Text(
-                  'Rival 4 : ${superstar.rival4!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-
-                const SizedBox(height: 8),
-                superstar.rival5 != null ? Text(
-                  'Rival5 : ${superstar.rival5!.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                ) : const SizedBox(height: 0,),
-
-                const SizedBox(height: 8),
                 Text(
                   'Wins : $wins',
                   style: const TextStyle(color: Colors.black, fontSize: 18),

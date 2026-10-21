@@ -21,11 +21,11 @@ class TeamsDetailPage extends StatefulWidget {
 class TeamsDetailPageState extends State<TeamsDetailPage> {
   late Teams team;
   late List<Superstars> superstarList;
-  Superstars m1 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
-  Superstars m2 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
-  Superstars m3 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
-  Superstars m4 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
-  Superstars m5 = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+  Superstars m1 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
+  Superstars m2 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
+  Superstars m3 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
+  Superstars m4 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
+  Superstars m5 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
   bool isLoading = false;
 
   @override

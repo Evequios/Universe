@@ -24,8 +24,8 @@ class TitlesDetailPage extends StatefulWidget {
 class TitlesDetailPageState extends State<TitlesDetailPage> {
   Titles title = const Titles(name: '', tag: 0, brand: null, holder1: null, holder2: null);
   Brands brand = const Brands(name: '');
-  Superstars h1 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null); 
-  Superstars h2 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: null);
+  Superstars h1 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null); 
+  Superstars h2 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null);
   late List<Brands> brandsList;
   late List<Superstars> superstarsList;
   bool isLoading = false;

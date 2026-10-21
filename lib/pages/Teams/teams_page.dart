@@ -17,7 +17,7 @@ class TeamsPage extends StatefulWidget{
 }
 
 class TeamsPageState extends State<TeamsPage> with AutomaticKeepAliveClientMixin {
-  Superstars defaultSuperstar = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: 0);
+  Superstars defaultSuperstar = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: 0);
   late List<Superstars> superstarsList;
   late List<Teams> teamsList;
   bool isLoading = false;

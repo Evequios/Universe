@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 
-Superstars defaultSup = const Superstars(name: 'name', brand: null, orientation: 'orientation', ally1: null, ally2: null, ally3: null, ally4: null, ally5: null, rival1: null, rival2: null, rival3: null, rival4: null, rival5: null, division: 0);
+Superstars defaultSup = const Superstars(name: 'name', brand: null, orientation: 'orientation',division: 0);
 
 class TeamsFormWidget extends StatelessWidget {
   final List<Superstars>? listSuperstars;

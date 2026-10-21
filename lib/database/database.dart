@@ -63,16 +63,6 @@ class DatabaseService {
         ${SuperstarsFields.name} $textType,
         ${SuperstarsFields.brand} $intType,
         ${SuperstarsFields.orientation} $textType,
-        ${SuperstarsFields.ally1} $intType DEFAULT NULL,
-        ${SuperstarsFields.ally2} $intType DEFAULT NULL,
-        ${SuperstarsFields.ally3} $intType DEFAULT NULL,
-        ${SuperstarsFields.ally4} $intType DEFAULT NULL,
-        ${SuperstarsFields.ally5} $intType DEFAULT NULL,
-        ${SuperstarsFields.rival1} $intType DEFAULT NULL,
-        ${SuperstarsFields.rival2} $intType DEFAULT NULL,
-        ${SuperstarsFields.rival3} $intType DEFAULT NULL,
-        ${SuperstarsFields.rival4} $intType DEFAULT NULL,
-        ${SuperstarsFields.rival5} $intType DEFAULT NULL,
         ${SuperstarsFields.division} $intType DEFAULT NULL
       ); '''
     );
@@ -171,16 +161,6 @@ class DatabaseService {
         ${SuperstarsFields.name} $textType,
         ${SuperstarsFields.brand} $intType,
         ${SuperstarsFields.orientation} $textType,
-        ${SuperstarsFields.ally1} $intType,
-        ${SuperstarsFields.ally2} $intType,
-        ${SuperstarsFields.ally3} $intType,
-        ${SuperstarsFields.ally4} $intType,
-        ${SuperstarsFields.ally5} $intType,
-        ${SuperstarsFields.rival1} $intType,
-        ${SuperstarsFields.rival2} $intType,
-        ${SuperstarsFields.rival3} $intType,
-        ${SuperstarsFields.rival4} $intType,
-        ${SuperstarsFields.rival5} $intType,
         ${SuperstarsFields.division} $intType
       ); '''
     );
