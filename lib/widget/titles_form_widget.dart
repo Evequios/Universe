@@ -89,7 +89,7 @@ class TitlesFormWidget extends StatelessWidget {
         labelText: 'Brand',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: brand ?? defaultBrand,
+        initialValue: brand ?? defaultBrand,
         onChanged: onChangedBrand,
         items: listBrands!.map((brand){
         return DropdownMenuItem(
@@ -108,7 +108,7 @@ class TitlesFormWidget extends StatelessWidget {
         labelText: 'Title type',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: tag,
+        initialValue: tag,
         onChanged: onChangedTag,
         items: listTag.map((tag){
         return DropdownMenuItem(
@@ -128,7 +128,7 @@ class TitlesFormWidget extends StatelessWidget {
         labelText: 'Holder 1',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: holder1 ?? defaultSup,
+        initialValue: findSuperstarInList(holder1),
         onChanged: onChangedHolder1,
         items: listSuperstars!.map((holder1){
         return DropdownMenuItem(
@@ -149,7 +149,7 @@ class TitlesFormWidget extends StatelessWidget {
         labelText: 'Holder 2',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: holder2 ?? defaultSup,
+        initialValue: findSuperstarInList(holder2),
         onChanged: onChangedHolder2,
         items: listSuperstars!.map((holder2){
         return DropdownMenuItem(
@@ -158,4 +158,16 @@ class TitlesFormWidget extends StatelessWidget {
       }).toList(),
       ),
     );
+
+    Superstars? findSuperstarInList(Superstars? superstar) {
+      if (superstar?.id == null) return null;
+
+      for (final item in listSuperstars ?? <Superstars>[]) {
+        if (item.id == superstar!.id) {
+          return item;
+        }
+      }
+
+      return null;
+    }
 }

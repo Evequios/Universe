@@ -1,10 +1,6 @@
 const String tableStorylines = 'storylines';
 
 class StorylinesFields {
-  static final List<String> values = [
-    id, title, text, yearStart, yearEnd, start, end
-  ];
-
   static const String id = '_id';
   static const String title = 'title';
   static const String text = 'text';
@@ -13,6 +9,9 @@ class StorylinesFields {
   static const String start = 'start';
   static const String end = 'end';
 
+  static const List<String> values = [
+    id, title, text, yearStart, yearEnd, start, end
+  ];
 }
 
 class Storylines{
@@ -42,18 +41,20 @@ class Storylines{
     int? yearEnd,
     int? start,
     int? end,
-  }) =>
-      Storylines(
-        id: id ?? this.id,
-        title: title ?? this.title,
-        text: text ?? this.text,
-        yearStart : yearStart ?? this.yearStart,
+  }) {
+    return Storylines(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      text: text ?? this.text,
+      yearStart : yearStart ?? this.yearStart,
         yearEnd : yearEnd ?? this.yearEnd,
         start: start ?? this.start,
         end: end ?? this.end,
       );
+  }
 
-  static Storylines fromJson(Map<String, dynamic> json) => Storylines(
+  static Storylines fromJson(Map<String, dynamic> json) {
+    return Storylines(
         id: json[StorylinesFields.id] as int ?,
         title: json[StorylinesFields.title] as String,
         text: json[StorylinesFields.text] as String,
@@ -62,14 +63,17 @@ class Storylines{
         start: json[StorylinesFields.start] as int,
         end: json[StorylinesFields.end] as int,
       );
+  }
 
-  Map<String, dynamic> toJson() => {
-        StorylinesFields.id: id,
-        StorylinesFields.title: title,
-        StorylinesFields.text: text,
-        StorylinesFields.yearStart : yearStart,
-        StorylinesFields.yearEnd : yearEnd,
-        StorylinesFields.start: start,
-        StorylinesFields.end: end,
-      };
+  Map<String, Object?> toJson() { 
+    return {
+      StorylinesFields.id: id,
+      StorylinesFields.title: title,
+      StorylinesFields.text: text,
+      StorylinesFields.yearStart : yearStart,
+      StorylinesFields.yearEnd : yearEnd,
+      StorylinesFields.start: start,
+      StorylinesFields.end: end,
+    };
+  }
 }

@@ -4,7 +4,7 @@ import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/matches.dart';
 import 'package:wwe_universe/classes/news.dart';
 import 'package:wwe_universe/classes/reigns.dart';
-import 'package:wwe_universe/classes/shows.dart';
+import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/classes/stipulations.dart';
 import 'package:wwe_universe/classes/storylines.dart';
 import 'package:wwe_universe/classes/superstars.dart';
@@ -35,7 +35,7 @@ class DatabaseService {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 72, onCreate: _createDB, onUpgrade: _updateDB);
+    return await openDatabase(path, version: 73, onCreate: _createDB, onUpgrade: _updateDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -80,13 +80,14 @@ class DatabaseService {
     );
 
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS $tableShows( 
-      ${ShowFields.id} $idType, 
-      ${ShowFields.name} $textType,
-      ${ShowFields.year} $intTypeNN,
-      ${ShowFields.week} $intTypeNN,
-      ${ShowFields.summary} $textType
-      ); '''
+      CREATE TABLE IF NOT EXISTS $tableShows (
+        ${ShowFields.id} $idType,
+        ${ShowFields.name} $textType,
+        ${ShowFields.year} $intTypeNN,
+        ${ShowFields.week} $intTypeNN,
+        ${ShowFields.dayOfWeek} $intTypeNN,
+        ${ShowFields.summary} $textType
+      );'''
     );
 
     await db.execute('''
@@ -109,10 +110,10 @@ class DatabaseService {
         ${MatchesFields.s6} $intType,
         ${MatchesFields.s7} $intType,
         ${MatchesFields.s8} $intType,
-        ${MatchesFields.winner} $intTypeNN,
+        ${MatchesFields.winner} $intType,
         ${MatchesFields.matchOrder} $intTypeNN DEFAULT 0,
         ${MatchesFields.showId} $intTypeNN,
-        ${MatchesFields.titleId} $intTypeNN DEFAULT 0
+        ${MatchesFields.titleId} $intType
       ); '''
     );
 
@@ -153,17 +154,22 @@ class DatabaseService {
     ''');
   }
 
-  Future _updateDB(Database db, int oldVersion, int newVersion) async {
-    if (newVersion > oldVersion) {
-      await db.execute('''
-      CREATE TABLE IF NOT EXISTS $tableSuperstars ( 
-        ${SuperstarsFields.id} $idType, 
-        ${SuperstarsFields.name} $textType,
-        ${SuperstarsFields.brand} $intType,
-        ${SuperstarsFields.orientation} $textType,
-        ${SuperstarsFields.division} $intType
-      ); '''
-    );
-    }
+  Future<void> _updateDB(
+  Database db,
+  int oldVersion,
+  int newVersion
+  ) async {
+    await db.execute('DROP TABLE IF EXISTS $tableMatches');
+    await db.execute('DROP TABLE IF EXISTS $tableReigns');
+    await db.execute('DROP TABLE IF EXISTS $tableTeams');
+    await db.execute('DROP TABLE IF EXISTS $tableTitles');
+    await db.execute('DROP TABLE IF EXISTS $tableStipulations');
+    await db.execute('DROP TABLE IF EXISTS $tableShows');
+    await db.execute('DROP TABLE IF EXISTS $tableStorylines');
+    await db.execute('DROP TABLE IF EXISTS $tableSuperstars');
+    await db.execute('DROP TABLE IF EXISTS $tableBrands');
+    await db.execute('DROP TABLE IF EXISTS $tableNews');
+
+    await _createDB(db, newVersion);
   }
 }

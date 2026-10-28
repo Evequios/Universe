@@ -133,8 +133,7 @@ class TitlesPageState extends State<TitlesPage> with AutomaticKeepAliveClientMix
     itemCount: titlesList.length,
     itemBuilder: (context, index){
       final title = titlesList[index];
-      Brands brand = defaultBrand;
-      if (title.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == title.brand);
+      final brand = title.brand;
       // if (title.holder1 != 0) final h1 = superstarsList.firstWhere((h1) => h1.id == title.holder1);
       // if (title.holder2 != 0) final h2 = superstarsList.firstWhere((h2) => h2.id == title.holder2);
       return GestureDetector( 
@@ -164,11 +163,30 @@ class TitlesPageState extends State<TitlesPage> with AutomaticKeepAliveClientMix
                     )
                   ),
                   const Spacer(),
-                  Container(child : ((){ if(title.brand != 0 && (brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt')) {
-                    return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));
-                  } else {
-                    return Text(brand.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
-                  }}()))
+                  if (brand != null)
+                  Container(
+                    child: (() {
+                      final brandName = brand.name.toLowerCase();
+
+                      if (brandName == 'raw' ||
+                          brandName == 'smackdown' ||
+                          brandName == 'nxt') {
+                        return Image(
+                          image: AssetImage('assets/$brandName.png'),
+                        );
+                      }
+
+                      return Text(
+                        brand.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
+                      );
+                    }()),
+                  )
+                else
+                  const SizedBox.shrink(),
                 ]
               ),
             )

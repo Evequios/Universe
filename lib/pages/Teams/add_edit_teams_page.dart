@@ -34,9 +34,9 @@ class AddEditTeamsPageState extends State<AddEditTeamsPage> {
     name = widget.team?.name ?? '';
     m1 = widget.team!.member1;
     m2 = widget.team!.member2;
-    m3 = widget.team!.member3;
-    m4 = widget.team!.member4;
-    m5 = widget.team!.member5;
+    m3 = widget.team!.member3!;
+    m4 = widget.team!.member4!;
+    m5 = widget.team!.member5!;
     if(widget.listSuperstars != null) listSuperstars = widget.listSuperstars!;
   }
 

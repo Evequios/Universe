@@ -1,7 +1,18 @@
 import 'package:wwe_universe/classes/titles.dart';
+import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/database/database.dart';
+import 'package:wwe_universe/database/superstars_database_helper.dart';
 
 class TitlesDatabaseHelper {
+  static Future<Titles> _fromMap(Map<String, Object?> json) async => Titles(
+      id: json[TitlesFields.id] as int?,
+      name: json[TitlesFields.name] as String,
+      tag: json[TitlesFields.tag] as int,
+      brand: json[TitlesFields.brand] != null ? await BrandsDatabaseHelper.readBrand(json[TitlesFields.brand] as int) : null,
+      holder1: json[TitlesFields.holder1] != null ? await SuperstarsDatabaseHelper.readSuperstar(json[TitlesFields.holder1] as int) : null,
+      holder2: json[TitlesFields.holder2] != null ? await SuperstarsDatabaseHelper.readSuperstar(json[TitlesFields.holder2] as int) : null
+    );
+
   static Future<Titles> createTitle(Titles title) async {
     final db = await DatabaseService.instance.database;
 
@@ -20,7 +31,7 @@ class TitlesDatabaseHelper {
     );
 
     if (maps.isNotEmpty) {
-      return Titles.fromJson(maps.first);
+      return await _fromMap(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
@@ -34,7 +45,7 @@ class TitlesDatabaseHelper {
       orderBy: orderBy,
     );
 
-    return result.map((json) => Titles.fromJson(json)).toList();
+    return Future.wait(result.map((json) => _fromMap(json)).toList());
   }
 
   static Future<List<Titles>> readAllTitlesSearch(String n) async {
@@ -48,7 +59,7 @@ class TitlesDatabaseHelper {
       orderBy: orderBy
     );
 
-    return result.map((json) => Titles.fromJson(json)).toList();
+    return Future.wait(result.map((json) => _fromMap(json)).toList());
   }
 
   static Future<int> updateTitle(Titles title) async {

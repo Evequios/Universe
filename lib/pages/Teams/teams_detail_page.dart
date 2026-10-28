@@ -42,9 +42,9 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
     team = await TeamsDatabaseHelper.readTeam(widget.teamId);
     m1 = await SuperstarsDatabaseHelper.readSuperstar(team.member1.id!);
     m2 = await SuperstarsDatabaseHelper.readSuperstar(team.member2.id!);
-    m3 = await SuperstarsDatabaseHelper.readSuperstar(team.member3.id!);
-    m4 = await SuperstarsDatabaseHelper.readSuperstar(team.member4.id!);
-    m5 = await SuperstarsDatabaseHelper.readSuperstar(team.member5.id!);
+    m3 = await SuperstarsDatabaseHelper.readSuperstar(team.member3!.id!);
+    m4 = await SuperstarsDatabaseHelper.readSuperstar(team.member4!.id!);
+    m5 = await SuperstarsDatabaseHelper.readSuperstar(team.member5!.id!);
 
     setState(() => isLoading = false);  
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/matches.dart';
-import 'package:wwe_universe/classes/shows.dart';
+import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/classes/stipulations.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/database/matches_database_helper.dart';
@@ -24,11 +24,11 @@ class ShowsDetailPage extends StatefulWidget {
 }
 
 class ShowsDetailPageState extends State<ShowsDetailPage> {
-  late Shows show;
+  late Show show;
   late List<Matches> matchesList;
   late List<Stipulations> stipulationsList;
   late List<Superstars> superstarsList;
-  bool isLoading = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -54,7 +54,11 @@ class ShowsDetailPageState extends State<ShowsDetailPage> {
       title: const Text('Matches',),
       actions: [editButton(), deleteButton()]
     ),
-    body: Column(
+    body: isLoading
+    ? const Center(
+        child: CircularProgressIndicator(),
+      )
+    : Column(
       children: [
         Container(
           padding: const EdgeInsets.all(8),
@@ -113,8 +117,8 @@ class ShowsDetailPageState extends State<ShowsDetailPage> {
       final stipulation = stipulationsList.firstWhere((stipulation) => stipulation.id == match.stipulation.id);
       final s1 = superstarsList.firstWhere((superstar) => superstar.id == match.s1.id);
       final s2 = superstarsList.firstWhere((superstar) => superstar.id == match.s2.id);
-      final winner = superstarsList.firstWhere((superstar) => superstar.id == match.winner.id!);
-
+      final winner = match.winner == null ? null : superstarsList.firstWhere((superstar) => superstar.id == match.winner!.id,
+);
       return SizedBox(
       height: 80,
       child: Card(
@@ -137,7 +141,7 @@ class ShowsDetailPageState extends State<ShowsDetailPage> {
               case '10 Man' : 
               case '20 Man' :
               case '30 Man' :
-                return Text(winner.name, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
+                return Text(winner?.name ?? 'No Winner', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
               default : 
                 return null;
             }

@@ -1,15 +1,15 @@
 const String tableNews = 'news';
 
 class NewsFields {
-  static final List<String> values = [
-    id, title, text, createdTime, type
-  ];
-
   static const String id = '_id';
   static const String title = 'title';
   static const String text = 'text';
   static const String createdTime = 'createdTime';
   static const String type = 'type';
+
+  static const List<String> values = [
+    id, title, text, createdTime, type
+  ];
 }
 
 class News{
@@ -33,28 +33,33 @@ class News{
     String? text,
     DateTime? createdTime,
     String? type
-  }) =>
-    News(
+  }) {
+    return News(
       id : id ?? this.id,
       title: title ?? this.title,
       text: text ?? this.text,
       createdTime: createdTime ?? this.createdTime,
       type: type ?? this.type
     );
+  }
 
-  static News fromJson(Map<String, dynamic> json) => News(
-        id: json[NewsFields.id] as int ?,
+  factory News.fromJson(Map<String, dynamic> json) {
+    return News(
+        id: json[NewsFields.id] as int?,
         title: json[NewsFields.title] as String,
         text: json[NewsFields.text] as String, 
         createdTime: DateTime.parse(json[NewsFields.createdTime] as String),
         type: json[NewsFields.type] as String
       );
+  }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, Object?> toJson() {
+    return {
         NewsFields.id: id,
         NewsFields.title: title,
         NewsFields.text: text,
         NewsFields.createdTime: createdTime.toIso8601String(),
         NewsFields.type: type
-      };
+    };
+  }
 }

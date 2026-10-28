@@ -38,17 +38,46 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
     refreshTitle();
   }
 
-  Future refreshTitle() async {
+  Future<void> refreshTitle() async {
     setState(() => isLoading = true);
 
     title = await TitlesDatabaseHelper.readTitle(widget.titleId);
-    if(title.brand != null) brand = await BrandsDatabaseHelper.readBrand(title.brand!.id!);
-    if(title.holder1 != null) h1 = await SuperstarsDatabaseHelper.readSuperstar(title.holder1!.id!);
-    if(title.holder2 != null) h2 = await SuperstarsDatabaseHelper.readSuperstar(title.holder2!.id!);
-    // superstarsList = await SuperstarsDatabaseHelper.readAllSuperstarsDivision(title.id!);
-    brandsList = await BrandsDatabaseHelper.readAllBrands();
 
-    setState(() => isLoading = false);  
+    // Chargement des données liées au titre
+    if (title.brand != null) {
+      brand = await BrandsDatabaseHelper.readBrand(title.brand!.id!);
+    } else {
+      brand = const Brands(name: '');
+    }
+
+    if (title.holder1 != null) {
+      h1 = await SuperstarsDatabaseHelper.readSuperstar(title.holder1!.id!);
+    } else {
+      h1 = const Superstars(
+        name: 'nom',
+        brand: null,
+        orientation: 'orientation',
+        division: null,
+      );
+    }
+
+    if (title.holder2 != null) {
+      h2 = await SuperstarsDatabaseHelper.readSuperstar(title.holder2!.id!);
+    } else {
+      h2 = const Superstars(
+        name: 'nom',
+        brand: null,
+        orientation: 'orientation',
+        division: null,
+      );
+    }
+
+    // Listes nécessaires au formulaire et à l'affichage
+    brandsList = await BrandsDatabaseHelper.readAllBrands();
+    superstarsList = await SuperstarsDatabaseHelper.readAllSuperstars();
+
+    if (!mounted) return;
+    setState(() => isLoading = false);
   }
 
 
@@ -75,20 +104,23 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
                 ),
                 const SizedBox(height: 8),
                 const SizedBox(height: 8),
-                Text("Brand : ${brand.name}",
-                  style: const TextStyle(color: Colors.black, fontSize: 18)
+                Text(
+                  'Brand : ${title.brand?.name ?? "Aucune"}',
+                  style: const TextStyle(color: Colors.black, fontSize: 18),
                 ),
                 const SizedBox(height: 8),
-                title.tag == 0 && title.holder1 != 0 ?
-                Text("Champion : ${h1.name}",
+                if (title.tag == 0 && title.holder1 != null)
+                Text(
+                  'Champion : ${h1.name}',
                   style: const TextStyle(color: Colors.black, fontSize: 18),
                 )
-                :
-                title.tag == 1 && title.holder1 != 0 && title.holder2 != 0 ?
-                Text("Champions : ${h1.name} & ${h2.name}",
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                )
-                : const SizedBox(height: 0),
+                else if (title.tag == 1 &&
+                    title.holder1 != null &&
+                    title.holder2 != null)
+                  Text(
+                    'Champions : ${h1.name} & ${h2.name}',
+                    style: const TextStyle(color: Colors.black, fontSize: 18),
+                  ),
                 const SizedBox(height : 24),
                 Material(
                   color: Colors.blueGrey,
@@ -128,7 +160,7 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
     itemCount: superstarsList.length,
     itemBuilder: (context, index){
       final superstar = superstarsList[index];
-      if(superstar.brand != 0) brand = brandsList.firstWhere((brand) => brand.id == superstar.brand);
+      final superstarBrand = superstar.brand;
       return GestureDetector( 
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
@@ -156,11 +188,24 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
                     )
                   ),
                   const Spacer(),
-                  Container(child : ((){ if(superstar.brand != 0 && (brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt')) {
-                    return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png')); 
-                  } else {
-                    return Text(brand.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
-                  }}()))
+                  if (superstarBrand != null)
+                  if (['raw', 'smackdown', 'nxt']
+                      .contains(superstarBrand.name.toLowerCase()))
+                    Image(
+                      image: AssetImage(
+                        'assets/${superstarBrand.name.toLowerCase()}.png',
+                      ),
+                    )
+                  else
+                    Text(
+                      superstarBrand.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                    )
+                else
+                  const SizedBox.shrink(),
                 ],
               )
             )

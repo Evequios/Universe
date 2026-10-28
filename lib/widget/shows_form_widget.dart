@@ -5,10 +5,12 @@ class ShowsFormWidget extends StatelessWidget {
   final String? name;
   final int? year;
   final int? week;
+  final int? dayOfWeek;
   final String? summary;
   final ValueChanged<String> onChangedName;
   final ValueChanged<String> onChangedYear;
   final ValueChanged<String> onChangedWeek;
+  final ValueChanged<String> onChangedDayOfWeek;
   final ValueChanged<String> onChangedSummary;
 
 
@@ -17,10 +19,12 @@ class ShowsFormWidget extends StatelessWidget {
     this.name = '',
     this.year,
     this.week,
+    this.dayOfWeek,
     this.summary = '',
     required this.onChangedName,
     required this.onChangedYear,
     required this.onChangedWeek,
+    required this.onChangedDayOfWeek,
     required this.onChangedSummary,
   });
 
@@ -36,6 +40,8 @@ class ShowsFormWidget extends StatelessWidget {
           buildAnnee(),
           const SizedBox(height: 8),
           buildSemaine(),
+          const SizedBox(height: 8),
+          buildDayOfWeek(),
           const SizedBox(height: 8),
           buildResume(),
         ],
@@ -99,6 +105,31 @@ class ShowsFormWidget extends StatelessWidget {
     validator: (week) =>
       week == null || week.isEmpty ? "The show's week can't be empty" : null,
     onChanged: onChangedWeek,
+  );
+
+  Widget buildDayOfWeek() => ButtonTheme(
+    child: DropdownButtonFormField<int>(
+      initialValue: dayOfWeek ?? 1,
+      decoration: InputDecoration(
+        labelText: "Day of the week",
+        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
+        border: const OutlineInputBorder(),
+      ),
+      items: const [
+        DropdownMenuItem(value: 1, child: Text("Monday")),
+        DropdownMenuItem(value: 2, child: Text("Tuesday")),
+        DropdownMenuItem(value: 3, child: Text("Wednesday")),
+        DropdownMenuItem(value: 4, child: Text("Thursday")),
+        DropdownMenuItem(value: 5, child: Text("Friday")),
+        DropdownMenuItem(value: 6, child: Text("Saturday")),
+        DropdownMenuItem(value: 7, child: Text("Sunday")),
+      ],
+      onChanged: (value) {
+        if (value != null) {
+          onChangedDayOfWeek(value.toString());
+        }
+      },
+    ),
   );
   
   Widget buildResume() => TextFormField(
