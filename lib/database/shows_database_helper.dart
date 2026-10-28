@@ -1,16 +1,16 @@
 import 'package:wwe_universe/classes/matches.dart';
-import 'package:wwe_universe/classes/shows.dart';
+import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/database/database.dart';
 
 class ShowsDatabaseHelper {
-  static Future<Shows> createShow(Shows universeShows) async {
+  static Future<Show> createShow(Show universeShows) async {
     final db = await DatabaseService.instance.database;
 
     final id = await db.insert(tableShows, universeShows.toJson());
     return universeShows.copy(id: id);
   }
 
-  static Future<Shows> readShow(int id) async {
+  static Future<Show> readShow(int id) async {
     final db = await DatabaseService.instance.database;
 
     final maps = await db.query(
@@ -21,24 +21,27 @@ class ShowsDatabaseHelper {
     );
 
     if (maps.isNotEmpty) {
-      return Shows.fromJson(maps.first);
+      return Show.fromJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  static Future<List<Shows>> readAllShows() async {
+  static Future<List<Show>> readAllShows() async {
     final db = await DatabaseService.instance.database;
-    const orderBy = '${ShowFields.year} DESC, ${ShowFields.week} DESC';
 
     final result = await db.query(
       tableShows,
-      orderBy: orderBy);
+      orderBy:
+        '${ShowFields.year} ASC, '
+        '${ShowFields.week} ASC, '
+        '${ShowFields.dayOfWeek} ASC',
+    );
 
-    return result.map((json) => Shows.fromJson(json)).toList();
+    return result.map((json) => Show.fromJson(json)).toList();
   }
 
-  static Future<int> updateShow(Shows universeShows) async {
+  static Future<int> updateShow(Show universeShows) async {
     final db = await DatabaseService.instance.database;
 
     return db.update(

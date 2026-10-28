@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wwe_universe/classes/matches.dart';
-import 'package:wwe_universe/classes/shows.dart';
+import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/classes/stipulations.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/titles.dart';
@@ -13,7 +13,7 @@ import 'package:wwe_universe/database/titles_database_helper.dart';
 
 class AddEditMatchesPage extends StatefulWidget {
   final Matches? match;
-  final Shows? show;
+  final Show? show;
   final List<Stipulations>? listStipulations;
   final List<Superstars>? listSuperstars;
 
@@ -45,7 +45,7 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
   late Superstars s8;
   late Superstars winner;
   late int order;
-  late Shows showId;
+  late Show showId;
   late Titles? title;
   late ValueChanged<Stipulations?> onChangedStipulation;
   late ValueChanged<Superstars?> onChangedS1;
@@ -59,7 +59,7 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
   late ValueChanged<Superstars?> onChangedWinner;
   late ValueChanged<String?> onChangedOrder;
   late ValueChanged<Titles?> onChangedTitleId;
-  Shows defaultShow = const Shows(name: 'name', year: 0, week: 0, summary: '');
+  Show defaultShow = const Show(name: 'name', year: 0, week: 0, dayOfWeek: 0, summary: '');
   Titles defaultTitle =
       const Titles(name: 'name', tag: 0, brand: null, holder1: null, holder2: null);
   Stipulations defaultStip =
@@ -144,11 +144,41 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
     refreshFields();
   }
 
-  Future refreshFields() async {
-    setState(() => isLoading = true);
+  Future<void> refreshFields() async {
+  setState(() => isLoading = true);
+
+  try {
     listTitles = await TitlesDatabaseHelper.readAllTitles();
-    await getDetails(stipulation);
+
+    // Vérifier que des stipulations sont disponibles.
+    if (listStipulations.isEmpty) {
+      return;
+    }
+
+    // Pour un nouveau match, sélectionner la première
+    // stipulation existante. Pour un match modifié,
+    // conserver sa stipulation si elle existe toujours.
+    if (widget.match == null) {
+      stipulation = listStipulations.first;
+    } else {
+      final existingId = widget.match!.stipulation.id;
+
+      stipulation = listStipulations.firstWhere(
+        (s) => s.id == existingId,
+        orElse: () => listStipulations.first,
+      );
+    }
+
+    // Charger les détails à partir de l'identifiant.
+    final id = stipulation.id;
+    if (id == null) {
+      throw Exception('La stipulation sélectionnée ne possède pas d’identifiant.');
+    }
+
+    await getDetails(id);
+
     winner = defaultSup;
+
     disable2 = await disable(2);
     disable3 = await disable(3);
     disable4 = await disable(4);
@@ -156,8 +186,12 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
     disable6 = await disable(6);
     disable7 = await disable(7);
     disable8 = await disable(8);
-    setState(() => isLoading = false);
+  } finally {
+    if (mounted) {
+      setState(() => isLoading = false);
+    }
   }
+}
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -353,7 +387,7 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
                   color: Colors.black87.withOpacity(0.5), fontSize: 18),
               border: const OutlineInputBorder(),
             ),
-            value: stipulation.id,
+            initialValue: stipulation.id,
             onChanged: (stipulation) {
               setState(() {
                 this.stipulation = stipulation as Stipulations;
@@ -370,69 +404,71 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
                 stipulation == null ? "Please choose a match type" : null),
       );
 
-  Widget buildS1() => DropdownSearch<Superstars>(
-    itemAsString: (Superstars s1) => s1.name,
-    items: (f, cs) => listSuperstars,
-        popupProps: PopupProps.menu(
-          showSelectedItems: false,
-          showSearchBox: true,
-          searchFieldProps: TextFieldProps(
-            decoration: InputDecoration(
-              labelText: "Superstar 1",
-              labelStyle: TextStyle(
-                  color: Colors.black87.withOpacity(0.5), fontSize: 18),
-              border: const OutlineInputBorder(),
-            ),
-            autofocus: true,
-          ),
-        ),
-        compareFn: (Superstars a, Superstars b) => a.id == b.id,
-        decoratorProps: DropDownDecoratorProps(
-          decoration: InputDecoration(
-            labelText: "Superstar 1",
-            labelStyle:
-                TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
-            border: const OutlineInputBorder(),
-          ),
-        ),
-        onChanged: (Superstars? value) {
-          onChangedS1(value);
-        },
-        validator: (Superstars? s1) =>
-            s1?.id == null ? "Please choose a superstar" : null,
-      );
-
-  Widget buildS2() => DropdownSearch<Superstars>(
+  
+Widget buildS1() => DropdownSearch<Superstars>(
+    selectedItem: s1.id == null ? null : s1,
     itemAsString: (Superstars superstar) => superstar.name,
-    items: (f, cs) => listSuperstars,
-        popupProps: PopupProps.menu(
-          showSelectedItems: false,
-          showSearchBox: true,
-          searchFieldProps: TextFieldProps(
-            decoration: InputDecoration(
-              labelText: "Superstar 2",
-              labelStyle: TextStyle(
-                  color: Colors.black87.withOpacity(0.5), fontSize: 18),
-              border: const OutlineInputBorder(),
-            ),
-            autofocus: true,
-          ),
+    items: (filter, cs) => listSuperstars
+        .where((superstar) =>
+            s2.id == null || superstar.id != s2.id)
+        .toList(),
+    compareFn: (Superstars a, Superstars b) => a.id == b.id,
+    popupProps: PopupProps.menu(
+      showSearchBox: true,
+      searchFieldProps: const TextFieldProps(
+        decoration: InputDecoration(
+          labelText: 'Superstar 1',
+          border: OutlineInputBorder(),
         ),
-        compareFn: (Superstars a, Superstars b) => a.id == b.id,
-        decoratorProps: DropDownDecoratorProps(
-          decoration: InputDecoration(
-            labelText: "Superstar 2",
-            labelStyle:
-                TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18),
-            border: const OutlineInputBorder(),
-          ),
+      ),
+    ),
+    decoratorProps: const DropDownDecoratorProps(
+      decoration: InputDecoration(
+        labelText: 'Superstar 1',
+        border: OutlineInputBorder(),
+      ),
+    ),
+    onChanged: (Superstars? value) {
+      if (value == null) return;
+      setState(() => s1 = value);
+    },
+    validator: (Superstars? value) =>
+        value?.id == null ? 'Please choose a superstar' : null,
+  );
+
+
+  
+Widget buildS2() => DropdownSearch<Superstars>(
+    selectedItem: s2.id == null ? null : s2,
+    itemAsString: (Superstars superstar) => superstar.name,
+    items: (filter, cs) => listSuperstars
+        .where((superstar) =>
+            s1.id == null || superstar.id != s1.id)
+        .toList(),
+    compareFn: (Superstars a, Superstars b) => a.id == b.id,
+    popupProps: PopupProps.menu(
+      showSearchBox: true,
+      searchFieldProps: const TextFieldProps(
+        decoration: InputDecoration(
+          labelText: 'Superstar 2',
+          border: OutlineInputBorder(),
         ),
-        onChanged: (Superstars? value) {
-          onChangedS2(value);
-        },
-        validator: (Superstars? s2) =>
-            s2?.id == null ? "Please choose a superstar" : null,
-      );
+      ),
+    ),
+    decoratorProps: const DropDownDecoratorProps(
+      decoration: InputDecoration(
+        labelText: 'Superstar 2',
+        border: OutlineInputBorder(),
+      ),
+    ),
+    onChanged: (Superstars? value) {
+      if (value == null) return;
+      setState(() => s2 = value);
+    },
+    validator: (Superstars? value) =>
+        value?.id == null ? 'Please choose a superstar' : null,
+  );
+
 //  Widget buildS3() => DropdownSearch<int>(
 //         popupProps: PopupProps.menu(
 //           showSelectedItems: false,
@@ -988,12 +1024,8 @@ class AddEditMatchesPageState extends State<AddEditMatchesPage> {
     }
   }
 
-  Future getDetails(id) async {
-    setState(() => isLoading = true);
-
+  Future<void> getDetails(int id) async {
     stip = await StipulationsDatabaseHelper.readStipulation(id);
-
-    setState(() => isLoading = false);
   }
 
   Future<bool> disable(int nb) async {

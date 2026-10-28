@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/shows.dart';
+import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/database/shows_database_helper.dart';
 import 'package:wwe_universe/widget/shows_form_widget.dart';
 
 class AddEditShowsPage extends StatefulWidget {
-  final Shows? show;
+  final Show? show;
+  final int? initialYear;
+  final int? initialWeek;
+  final int? initialDayOfWeek;
 
   const AddEditShowsPage({
     super.key,
     this.show,
+    this.initialYear,
+    this.initialWeek,
+    this.initialDayOfWeek,
   });
   @override
   AddEditShowsPageState createState() => AddEditShowsPageState();
@@ -19,6 +25,7 @@ class AddEditShowsPageState extends State<AddEditShowsPage> {
   late String name;
   late int year;
   late int week;
+  late int dayOfWeek;
   late String summary;
 
   @override
@@ -26,8 +33,10 @@ class AddEditShowsPageState extends State<AddEditShowsPage> {
     super.initState();
 
     name = widget.show?.name ?? '';
-    year = widget.show?.year ?? 0;
-    week = widget.show?.week ?? 0;
+    year = widget.show?.year ?? widget.initialYear ?? 1;
+    week = widget.show?.week ?? widget.initialWeek ?? 1;
+    dayOfWeek =
+        widget.show?.dayOfWeek ?? widget.initialDayOfWeek ?? 1;
     summary = widget.show?.summary ?? '';
   }
 
@@ -44,17 +53,19 @@ class AddEditShowsPageState extends State<AddEditShowsPage> {
         name: name,
         year : year,
         week: week,
+        dayOfWeek: dayOfWeek,
         summary: summary,
         onChangedName: (name) => setState(() => this.name = name),
         onChangedYear: (year) => setState(() => this.year = int.parse(year)),
         onChangedWeek: (week) => setState(() => this.week = int.parse(week)),
+        onChangedDayOfWeek: (dayOfWeek) => setState(() => this.dayOfWeek = int.parse(dayOfWeek)),
         onChangedSummary: (summary) => setState(() => this.summary = summary),
       ),
     ),
   );
 
   Widget buildButton() {
-    final isFormValid = name.isNotEmpty && name.isNotEmpty;
+    final isFormValid = name.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -99,10 +110,11 @@ class AddEditShowsPageState extends State<AddEditShowsPage> {
   }
 
   Future addUniverseShows() async {
-    final show = Shows(
+    final show = Show(
       name: name,
       year: year,
       week: week,
+      dayOfWeek: dayOfWeek,
       summary: summary
     );
     await ShowsDatabaseHelper.createShow(show);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/matches.dart';
-import 'package:wwe_universe/classes/shows.dart';
+import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/classes/stipulations.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/titles.dart';
@@ -27,9 +27,9 @@ class MatchesDetailPage extends StatefulWidget {
 
 class MatchesDetailPageState extends State<MatchesDetailPage> {
   late Matches match;
-  late Shows show;
+  late Show show;
   late Stipulations stipulation;
-  late Titles title;
+  Titles? title;
   late Superstars s1;
   late Superstars s2;
   late Superstars s3;
@@ -40,7 +40,7 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
   late Superstars s8;
   late Superstars s9;
   late Superstars s10;
-  late Superstars winner;
+  late Superstars? winner;
   late List<Stipulations> stipulationsList;
   late List<Superstars> superstarsList;
 
@@ -59,9 +59,9 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
     show = await ShowsDatabaseHelper.readShow(widget.showId);
     match = await MatchesDatabaseHelper.readMatch(widget.matchId);
     stipulation = await StipulationsDatabaseHelper.readStipulation(match.stipulation.id!);
-    if(match.title != null) title = await TitlesDatabaseHelper.readTitle(match.title!.id!);
+    title = match.title == null ? null : await TitlesDatabaseHelper.readTitle(match.title!.id!);
     s1 = await SuperstarsDatabaseHelper.readSuperstar(match.s1.id!);
-    // s2 = await UniverseDatabaseService.instance.readSuperstar(match.s2);
+    s2 = await SuperstarsDatabaseHelper.readSuperstar(match.s2.id!);
     stipulationsList = await StipulationsDatabaseHelper.readAllStipulations();
     superstarsList = await SuperstarsDatabaseHelper.readAllSuperstars();
 
@@ -72,7 +72,13 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
     stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' ? s6 = await SuperstarsDatabaseHelper.readSuperstar(match.s6!.id!) : null;
     stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s7 = await SuperstarsDatabaseHelper.readSuperstar(match.s7!.id!) : null;
     stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s8 = await SuperstarsDatabaseHelper.readSuperstar(match.s8!.id!) : null;
-    winner = await SuperstarsDatabaseHelper.readSuperstar(match.winner.id!);
+    if (match.winner != null && match.winner!.id != null) {
+        winner = await SuperstarsDatabaseHelper.readSuperstar(
+          match.winner!.id!,
+        );
+      } else {
+        winner = null;
+      }
 
     setState(() => isLoading = false);
   }
@@ -137,7 +143,7 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
             }
               }())),
               const SizedBox(height: 30,),
-              Text('Winner : ${winner.name}',
+              Text('Winner : ${winner?.name}',
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 22,
@@ -146,14 +152,16 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height:8),
-              Text('${title.name} Championship',
+              if (title != null)
+              Text(
+                '${title!.name} Championship',
                 style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontStyle: FontStyle.italic
-                  ),
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontStyle: FontStyle.italic,
+                ),
                 textAlign: TextAlign.center,
-              )
+              ),
             ],
           ),
         ),

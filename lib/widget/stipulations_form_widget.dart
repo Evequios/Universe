@@ -42,7 +42,7 @@ class StipulationsFormWidget extends StatelessWidget {
         labelText: 'Type',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: type != '' && type != null ? type : null,
+        initialValue: type != '' && type != null ? type : null,
         onChanged: onChangedType,
         items: listTypes.map((type){
         return DropdownMenuItem(
@@ -60,7 +60,7 @@ class StipulationsFormWidget extends StatelessWidget {
         labelText: 'Stipulation',
         labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
       ),
-        value: stipulation != '' && stipulation != null ? stipulation : null,
+        initialValue: stipulation != '' && stipulation != null ? stipulation : null,
         onChanged: onChangedStipulation,
         items: listStipulations.map((stipulation){
         return DropdownMenuItem(

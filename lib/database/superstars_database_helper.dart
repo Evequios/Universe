@@ -5,8 +5,28 @@ import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/classes/titles.dart';
 import 'package:wwe_universe/database/database.dart';
+import 'package:wwe_universe/database/brands_database_helper.dart';
 
 class SuperstarsDatabaseHelper {
+
+  static Future<Superstars> _fromMap(
+    Map<String, Object?> json,
+  ) async {
+    final brandId = json[SuperstarsFields.brand] as int?;
+
+    final brand = brandId == null
+        ? null
+        : await BrandsDatabaseHelper.readBrand(brandId);
+
+    return Superstars(
+      id: json[SuperstarsFields.id] as int?,
+      name: json[SuperstarsFields.name] as String,
+      brand: brand,
+      orientation: json[SuperstarsFields.orientation] as String,
+      division: json[SuperstarsFields.division] as int?,
+    );
+  }
+
   static Future<Superstars> createSuperstar(Superstars universeSuperstars) async {
     final db = await DatabaseService.instance.database;
 
@@ -25,7 +45,7 @@ class SuperstarsDatabaseHelper {
     );
 
     if (maps.isNotEmpty) {
-      return Superstars.fromJson(maps.first);
+      return await _fromMap(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
@@ -40,10 +60,10 @@ class SuperstarsDatabaseHelper {
       orderBy: orderBy
     );
 
-    return Future.wait(result.map((json) => Superstars.fromJson(json)).toList());
+    return Future.wait(result.map((json) => _fromMap(json)).toList());
   }
 
-  static Future<List<Future<Superstars>>> readAllSuperstarsFilter(int brandId) async {
+  static Future<List<Superstars>> readAllSuperstarsFilter(int brandId) async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -54,10 +74,12 @@ class SuperstarsDatabaseHelper {
       orderBy: orderBy
     );
 
-    return result.map((json) => Superstars.fromJson(json)).toList();
+    return await Future.wait(
+      result.map((json) => _fromMap(json)),
+    );
   }
 
-  static Future<List<Future<Superstars>>> readAllSuperstarsDivision(int titleId) async {
+  static Future<List<Superstars>> readAllSuperstarsDivision(int titleId) async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -68,10 +90,12 @@ class SuperstarsDatabaseHelper {
       orderBy: orderBy
     );
 
-    return result.map((json) => Superstars.fromJson(json)).toList();
+    return await Future.wait(
+      result.map((json) => _fromMap(json)),
+    );
   }
 
-  static Future<List<Future<Superstars>>> readAllSuperstarsSearch(String n) async {
+  static Future<List<Superstars>> readAllSuperstarsSearch(String n) async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${SuperstarsFields.name} ASC';
 
@@ -82,7 +106,9 @@ class SuperstarsDatabaseHelper {
       orderBy: orderBy
     );
 
-    return result.map((json) => Superstars.fromJson(json)).toList();
+    return await Future.wait(
+      result.map((json) => _fromMap(json)),
+    );
   }
 
   static Future<int> updateSuperstar(Superstars universeSuperstars) async {
