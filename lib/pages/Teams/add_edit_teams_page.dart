@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/teams.dart';
@@ -11,115 +12,161 @@ class AddEditTeamsPage extends StatefulWidget {
   const AddEditTeamsPage({
     super.key,
     this.team,
-    this.listSuperstars
+    this.listSuperstars,
   });
+
   @override
   AddEditTeamsPageState createState() => AddEditTeamsPageState();
 }
 
 class AddEditTeamsPageState extends State<AddEditTeamsPage> {
   final _formKey = GlobalKey<FormState>();
-  late List<Superstars> listSuperstars = [];
+
+  late List<Superstars> listSuperstars;
+
   late String name;
-  late Superstars m1;
-  late Superstars m2;
-  late Superstars m3;
-  late Superstars m4;
-  late Superstars m5;
+
+  int? m1;
+  int? m2;
+  int? m3;
+  int? m4;
+  int? m5;
+
+  bool isSaving = false;
 
   @override
   void initState() {
     super.initState();
 
+    listSuperstars = widget.listSuperstars ?? [];
+
     name = widget.team?.name ?? '';
-    m1 = widget.team!.member1;
-    m2 = widget.team!.member2;
-    m3 = widget.team!.member3!;
-    m4 = widget.team!.member4!;
-    m5 = widget.team!.member5!;
-    if(widget.listSuperstars != null) listSuperstars = widget.listSuperstars!;
+
+    m1 = widget.team?.member1.id;
+    m2 = widget.team?.member2.id;
+    m3 = widget.team?.member3?.id;
+    m4 = widget.team?.member4?.id;
+    m5 = widget.team?.member5?.id;
+  }
+
+  Superstars? getSuperstar(int? id) {
+    if (id == null) return null;
+
+    for (final superstar in listSuperstars) {
+      if (superstar.id == id) return superstar;
+    }
+
+    return null;
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          actions: [buildButton()],
-        ),
-        body: Form(
-          key: _formKey,
-          child: TeamsFormWidget(
-            listSuperstars: listSuperstars,
-            name: name,
-            m1: m1,
-            m2: m2,
-            m3: m3,
-            m4: m4,
-            m5: m5,
-            onChangedName: (name) => setState(() => this.name = name!),
-            onChangedM1: (m1) => setState(() => this.m1 = m1!),
-            onChangedM2: (m2) => setState(() => this.m2 = m2!),
-            onChangedM3: (m3) => setState(() => this.m3 = m3!),
-            onChangedM4: (m4) => setState(() => this.m4 = m4!),
-            onChangedM5: (m5) => setState(() => this.m5 = m5!),
+  Widget build(BuildContext context) {
+    final isEditing = widget.team != null;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF101010),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF101010),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          isEditing ? 'EDIT TEAM' : 'CREATE TEAM',
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
           ),
         ),
-      );
-
-  Widget buildButton() {
-    final isFormValid = name.isNotEmpty;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white, 
-          backgroundColor: isFormValid ? null : Colors.grey.shade700,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
+            child: FilledButton.icon(
+              onPressed: isSaving ? null : addOrUpdateUniverseTeams,
+              icon: isSaving
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.save_outlined),
+              label: const Text('SAVE'),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFD71920),
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Form(
+        key: _formKey,
+        child: TeamsFormWidget(
+          listSuperstars: listSuperstars,
+          name: name,
+          m1: m1,
+          m2: m2,
+          m3: m3,
+          m4: m4,
+          m5: m5,
+          onChangedName: (value) {
+            name = value ?? '';
+          },
+          onChangedM1: (value) => setState(() => m1 = value),
+          onChangedM2: (value) => setState(() => m2 = value),
+          onChangedM3: (value) => setState(() => m3 = value),
+          onChangedM4: (value) => setState(() => m4 = value),
+          onChangedM5: (value) => setState(() => m5 = value),
         ),
-        onPressed: addOrUpdateUniverseTeams,
-        child: const Text('Save'),
       ),
     );
   }
 
-  void addOrUpdateUniverseTeams() async {
-    final isValid = _formKey.currentState!.validate();
+  Future<void> addOrUpdateUniverseTeams() async {
+    if (isSaving) return;
 
-    if (isValid) {
-      final isUpdating = widget.team != null;
+    if (!_formKey.currentState!.validate()) return;
 
-      if (isUpdating) {
-        await updateUniverseTeams();
+    final member1 = getSuperstar(m1);
+    final member2 = getSuperstar(m2);
+
+    if (member1 == null || member2 == null) return;
+
+    setState(() => isSaving = true);
+
+    try {
+      final team = Teams(
+        id: widget.team?.id,
+        name: name.trim(),
+        member1: member1,
+        member2: member2,
+        member3: getSuperstar(m3),
+        member4: getSuperstar(m4),
+        member5: getSuperstar(m5),
+      );
+
+      if (widget.team == null) {
+        await TeamsDatabaseHelper.createTeam(team);
       } else {
-        await addUniverseTeams();
+        await TeamsDatabaseHelper.updateTeam(team);
       }
 
-      if (mounted) Navigator.of(context).pop();
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+    } catch (e) {
+      if (!mounted) return;
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unable to save the team: $e'),
+        ),
+      );
+
+      setState(() => isSaving = false);
     }
-  }
-
-  Future updateUniverseTeams() async {
-    final team = widget.team!.copy(
-      name: name,
-      member1: m1,
-      member2: m2,
-      member3: m3,
-      member4: m4,
-      member5: m5,
-    );
-    await TeamsDatabaseHelper.updateTeam(team);
-  }
-
-  Future addUniverseTeams() async {
-    final team = Teams(
-      name: name,
-      member1 : m1,
-      member2 : m2,
-      member3 : m3,
-      member4 : m4,
-      member5 : m5,
-    );
-
-    await TeamsDatabaseHelper.createTeam(team);
   }
 }

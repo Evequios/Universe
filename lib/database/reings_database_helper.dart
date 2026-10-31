@@ -1,4 +1,4 @@
-import 'package:wwe_universe/classes/Reigns.dart';
+import 'package:wwe_universe/classes/reigns.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 
 class ReignsDatabaseHelper {

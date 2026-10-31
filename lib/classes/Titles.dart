@@ -32,23 +32,27 @@ class Titles{
     required this.holder2,
   });
 
-   Titles copy ({
+  Titles copy({
     int? id,
     String? name,
     int? tag,
     Brands? brand,
     Superstars? holder1,
     Superstars? holder2,
+    bool clearBrand = false,
+    bool clearHolder1 = false,
+    bool clearHolder2 = false,
   }) {
     return Titles(
-      id : id ?? this.id,
+      id: id ?? this.id,
       name: name ?? this.name,
       tag: tag ?? this.tag,
-      brand: brand ?? this.brand,
-      holder1: holder1 ?? this.holder1,
-      holder2: holder2 ?? this.holder2
+      brand: clearBrand ? null : brand ?? this.brand,
+      holder1: clearHolder1 ? null : holder1 ?? this.holder1,
+      holder2: clearHolder2 ? null : holder2 ?? this.holder2,
     );
   }
+
 
   Map<String, dynamic> toJson() => {
     TitlesFields.id: id,

@@ -4,14 +4,34 @@ import 'package:wwe_universe/database/database.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 
 class TitlesDatabaseHelper {
-  static Future<Titles> _fromMap(Map<String, Object?> json) async => Titles(
+  
+  static Future<Titles> _fromMap(Map<String, Object?> json) async {
+    final brandId = json[TitlesFields.brand] as int?;
+    final holder1Id = json[TitlesFields.holder1] as int?;
+    final holder2Id = json[TitlesFields.holder2] as int?;
+
+    final brand = brandId == null
+        ? null
+        : await BrandsDatabaseHelper.readBrandIfExists(brandId);
+
+    final holder1 = holder1Id == null
+        ? null
+        : await SuperstarsDatabaseHelper.readSuperstar(holder1Id);
+
+    final holder2 = holder2Id == null
+        ? null
+        : await SuperstarsDatabaseHelper.readSuperstar(holder2Id);
+
+    return Titles(
       id: json[TitlesFields.id] as int?,
       name: json[TitlesFields.name] as String,
       tag: json[TitlesFields.tag] as int,
-      brand: json[TitlesFields.brand] != null ? await BrandsDatabaseHelper.readBrand(json[TitlesFields.brand] as int) : null,
-      holder1: json[TitlesFields.holder1] != null ? await SuperstarsDatabaseHelper.readSuperstar(json[TitlesFields.holder1] as int) : null,
-      holder2: json[TitlesFields.holder2] != null ? await SuperstarsDatabaseHelper.readSuperstar(json[TitlesFields.holder2] as int) : null
+      brand: brand,
+      holder1: holder1,
+      holder2: holder2,
     );
+  }
+
 
   static Future<Titles> createTitle(Titles title) async {
     final db = await DatabaseService.instance.database;

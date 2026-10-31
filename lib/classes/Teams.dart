@@ -35,7 +35,7 @@ class Teams{
     this.member5,
   });
 
-  Teams copy ({
+  Teams copy({
     int? id,
     String? name,
     Superstars? member1,
@@ -43,15 +43,18 @@ class Teams{
     Superstars? member3,
     Superstars? member4,
     Superstars? member5,
+    bool clearMember3 = false,
+    bool clearMember4 = false,
+    bool clearMember5 = false,
   }) {
     return Teams(
-      id : id ?? this.id,
-      name : name ?? this.name,
+      id: id ?? this.id,
+      name: name ?? this.name,
       member1: member1 ?? this.member1,
       member2: member2 ?? this.member2,
-      member3: member3 ?? this.member3,
-      member4: member4 ?? this.member4,
-      member5: member5 ?? this.member5,
+      member3: clearMember3 ? null : member3 ?? this.member3,
+      member4: clearMember4 ? null : member4 ?? this.member4,
+      member5: clearMember5 ? null : member5 ?? this.member5,
     );
   }
 

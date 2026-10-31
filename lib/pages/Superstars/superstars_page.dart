@@ -120,51 +120,148 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
     ),
   );
   }
-
-
+  
   Widget buildUniverseSuperstars() => ListView.builder(
-    padding : const EdgeInsets.all(8),
+    padding: const EdgeInsets.fromLTRB(12, 8, 12, 100),
     itemCount: superstarsList.length,
-    itemBuilder: (context, index){
+    itemBuilder: (context, index) {
       final superstar = superstarsList[index];
-      return GestureDetector( 
-        onTap: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => SuperstarsDetailPage(superstarId: superstar.id!),
-          )).then((value) => refreshSuperstars());
-        },
-        child :SizedBox(
-          height: 100,
-          child : Card(
-            shape:RoundedRectangleBorder(
-              side: const BorderSide(color: Color(0xFF30303A)),
-              borderRadius: BorderRadius.circular(16.0)
+      final brandName = superstar.brand?.name ?? '';
+      final normalizedBrand = brandName.toLowerCase();
+
+      final hasBrandLogo = normalizedBrand == 'raw' ||
+          normalizedBrand == 'smackdown' ||
+          normalizedBrand == 'nxt';
+
+      final trimmedName = superstar.name.trim();
+      final initials = trimmedName.isEmpty
+          ? '?'
+          : trimmedName
+              .split(RegExp(r'\s+'))
+              .map((part) => part[0])
+              .take(2)
+              .join()
+              .toUpperCase();
+
+      return Card(
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => SuperstarsDetailPage(
+                  superstarId: superstar.id!,
+                ),
+              ),
+            );
+
+            if (!mounted) return;
+            await refreshSuperstars();
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
             ),
-            elevation: 2,
-            child: Padding(    
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-              child: Row(
-                children: [ 
-                  Expanded(
-                    flex:10,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(superstar.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
-                    )
+            child: Row(
+              children: [
+                Container(
+                  width: 54,
+                  height: 54,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF35171D),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFFE11D2E).withOpacity(0.55),
+                    ),
                   ),
-                  const Spacer(),
-                  Container(child : ((){ if(superstar.brand?.name.toLowerCase() == 'raw' || superstar.brand?.name.toLowerCase() == 'smackdown' || superstar.brand?.name.toLowerCase() == 'nxt') {
-                    return Image(image: AssetImage('assets/${superstar.brand?.name.toLowerCase()}.png')); 
-                  } else {
-                    return Text(superstar.brand?.name ?? "", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
-                  }}()))
-                ],
-              )
-            )
-          )
-        )
+                  alignment: Alignment.center,
+                  child: Text(
+                    initials,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        superstar.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 7),
+                      if (brandName.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF292930),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            brandName.toUpperCase(),
+                            style: const TextStyle(
+                              color: Color(0xFFCACAD4),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        )
+                      else
+                        const Text(
+                          'NO BRAND',
+                          style: TextStyle(
+                            color: Color(0xFF8E8E9A),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                if (hasBrandLogo)
+                  SizedBox(
+                    width: 48,
+                    height: 38,
+                    child: Image.asset(
+                      'assets/$normalizedBrand.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.sports_mma,
+                        color: Color(0xFF8E8E9A),
+                        size: 24,
+                      ),
+                    ),
+                  )
+                else
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: Color(0xFF8E8E9A),
+                    size: 26,
+                  ),
+              ],
+            ),
+          ),
+        ),
       );
-    }
+    },
   );
+
 }

@@ -98,11 +98,12 @@ class AddEditShowsPageState extends State<AddEditShowsPage> {
     }
   }
 
-  Future updateUniverseShows() async {
+  Future<void> updateUniverseShows() async {
     final show = widget.show!.copy(
       name: name,
       year: year,
       week: week,
+      dayOfWeek: dayOfWeek,
       summary: summary,
     );
 

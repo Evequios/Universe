@@ -1,3 +1,4 @@
+
 const String tableStipulations = 'stipulations';
 
 class StipulationsFields {
@@ -6,27 +7,34 @@ class StipulationsFields {
   static const String stipulation = 'stipulation';
 
   static const List<String> values = [
-    id, type, stipulation
+    id,
+    type,
+    stipulation,
   ];
 }
-class Stipulations{
+
+class Stipulations {
   final int? id;
+
+  // Champ conservé temporairement pour la compatibilité.
   final String type;
+
+  // Nom de la stipulation.
   final String stipulation;
 
   const Stipulations({
     this.id,
-    required this.type,
+    this.type = '',
     required this.stipulation,
   });
 
-  Stipulations copy ({
+  Stipulations copy({
     int? id,
     String? type,
     String? stipulation,
   }) {
     return Stipulations(
-      id : id ?? this.id,
+      id: id ?? this.id,
       type: type ?? this.type,
       stipulation: stipulation ?? this.stipulation,
     );
@@ -35,7 +43,7 @@ class Stipulations{
   factory Stipulations.fromJson(Map<String, dynamic> json) {
     return Stipulations(
       id: json[StipulationsFields.id] as int?,
-      type: json[StipulationsFields.type] as String,
+      type: json[StipulationsFields.type] as String? ?? '',
       stipulation: json[StipulationsFields.stipulation] as String,
     );
   }

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/teams.dart';
@@ -7,7 +8,6 @@ import 'package:wwe_universe/pages/Teams/add_edit_teams_page.dart';
 
 class TeamsDetailPage extends StatefulWidget {
   final int teamId;
-
 
   const TeamsDetailPage({
     super.key,
@@ -21,134 +21,432 @@ class TeamsDetailPage extends StatefulWidget {
 class TeamsDetailPageState extends State<TeamsDetailPage> {
   late Teams team;
   late List<Superstars> superstarList;
-  Superstars m1 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
-  Superstars m2 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
-  Superstars m3 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
-  Superstars m4 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
-  Superstars m5 = const Superstars(name: 'name', brand: null, orientation: 'orientation', division: null);
-  bool isLoading = false;
+
+  bool isLoading = true;
+  bool hasTeam = false;
+  String? loadError;
+
+  static const Color background = Color(0xFF101010);
+  static const Color surface = Color(0xFF1B1B1B);
+  static const Color border = Color(0xFF303030);
+  static const Color primary = Color(0xFFD71920);
+  static const Color secondaryText = Color(0xFFAAAAAA);
 
   @override
   void initState() {
     super.initState();
-
     refreshTeam();
   }
 
-  Future refreshTeam() async {
-    setState(() => isLoading = true);
+  Future<void> refreshTeam() async {
+    setState(() {
+      isLoading = true;
+      loadError = null;
+    });
 
-    superstarList = await SuperstarsDatabaseHelper.readAllSuperstars();
-    team = await TeamsDatabaseHelper.readTeam(widget.teamId);
-    m1 = await SuperstarsDatabaseHelper.readSuperstar(team.member1.id!);
-    m2 = await SuperstarsDatabaseHelper.readSuperstar(team.member2.id!);
-    m3 = await SuperstarsDatabaseHelper.readSuperstar(team.member3!.id!);
-    m4 = await SuperstarsDatabaseHelper.readSuperstar(team.member4!.id!);
-    m5 = await SuperstarsDatabaseHelper.readSuperstar(team.member5!.id!);
+    try {
+      superstarList = await SuperstarsDatabaseHelper.readAllSuperstars();
+      team = await TeamsDatabaseHelper.readTeam(widget.teamId);
 
-    setState(() => isLoading = false);  
+      hasTeam = true;
+    } catch (e) {
+      loadError = e.toString();
+      debugPrint('Error loading team: $e');
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
   }
 
-  
-  int getNbMembres(){
-    int n = 2;
-    if(team.member3 != 0) {
-      n++;
-    }
-    if(team.member4 != 0) {
-      n++;
-    }
-    if(team.member5 != 0) {
-      n++;
-    }
-    return n;
-  }
-
+  List<Superstars> get members => [
+        team.member1,
+        team.member2,
+        if (team.member3 != null) team.member3!,
+        if (team.member4 != null) team.member4!,
+        if (team.member5 != null) team.member5!,
+      ];
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      actions: [editButton(), deleteButton()],
-    ),
-    body: isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : Padding(
-            padding: const EdgeInsets.all(12),
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: background,
+      appBar: AppBar(
+        backgroundColor: background,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'TEAM DETAILS',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+            fontSize: 16,
+          ),
+        ),
+        actions: [
+          IconButton(
+            tooltip: 'Edit team',
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: isLoading || !hasTeam ? null : editTeam,
+          ),
+          IconButton(
+            tooltip: 'Delete team',
+            icon: const Icon(Icons.delete_outline),
+            onPressed: isLoading || !hasTeam ? null : confirmDelete,
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: primary),
+      );
+    }
+
+    if (loadError != null || !hasTeam) {
+      return _buildErrorState();
+    }
+
+    return RefreshIndicator(
+      color: primary,
+      onRefresh: refreshTeam,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+        children: [
+          _buildTeamHeader(),
+          const SizedBox(height: 28),
+          _buildSectionTitle(
+            'TEAM ROSTER',
+            '${members.length} MEMBERS',
+          ),
+          const SizedBox(height: 14),
+          ...List.generate(
+            members.length,
+            (index) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _buildMemberCard(members[index], index),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTeamHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: border),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 76,
+            height: 76,
+            decoration: BoxDecoration(
+              color: primary.withOpacity(0.13),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: primary.withOpacity(0.45),
+              ),
+            ),
+            child: const Icon(
+              Icons.groups_rounded,
+              color: primary,
+              size: 42,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Text(
+            team.name.toUpperCase(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 25,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.1,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 13,
+              vertical: 6,
+            ),
+            decoration: BoxDecoration(
+              color: primary.withOpacity(0.13),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '${members.length} ${members.length > 1 ? 'MEMBERS' : 'MEMBER'}',
+              style: const TextStyle(
+                color: primary,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, String subtitle) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.4,
+          ),
+        ),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            color: secondaryText,
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.8,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMemberCard(Superstars superstar, int index) {
+    final brandName = superstar.brand?.name;
+
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: primary.withOpacity(0.13),
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Text(
+              '${index + 1}',
+              style: const TextStyle(
+                color: primary,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  team.name,
+                  superstar.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
+                    color: Colors.white,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
-                const SizedBox(height: 8),
-                Text("Members : ${m1.name}, ${m2.name}${getNbMembres() >= 3 ? ", ${m3.name}" : ""}${getNbMembres() >= 4 ? ", ${m4.name}" : ""}${getNbMembres() == 5 ? ", ${m5.name}" : ""}",
-                  style: const TextStyle(color: Colors.black, fontSize: 18)
+                const SizedBox(height: 7),
+                Wrap(
+                  spacing: 7,
+                  runSpacing: 6,
+                  children: [
+                    if (brandName != null && brandName.isNotEmpty)
+                      _memberTag(
+                        brandName,
+                        Icons.branding_watermark_outlined,
+                      ),
+                    if (superstar.orientation.isNotEmpty)
+                      _memberTag(
+                        superstar.orientation,
+                        Icons.person_outline,
+                      ),
+                  ],
                 ),
               ],
             ),
           ),
-  );
-
-  Widget editButton() => IconButton(
-    icon: const Icon(Icons.edit_outlined),
-    onPressed: () async {
-      if (isLoading) return;
-
-      await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => AddEditTeamsPage(team: team, listSuperstars: superstarList,),
-      ));
-
-      refreshTeam();
-  });
-
-  Widget deleteButton() => IconButton(
-    icon: const Icon(Icons.delete),
-    onPressed: () async {
-      showAlertDialog(context);
-    },
-  );
-
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: const Text("Cancel"),
-      onPressed:  () { 
-        Navigator.pop(context);
-      },
+          const SizedBox(width: 8),
+          const Icon(
+            Icons.check_circle,
+            color: primary,
+            size: 20,
+          ),
+        ],
+      ),
     );
-    Widget continueButton = TextButton(
-      child: const Text("Continue"),
-      onPressed:  () async {
-        await TeamsDatabaseHelper.deleteTeam(widget.teamId);
-        if(context.mounted){
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        }
-      },
+  }
+
+  Widget _memberTag(String label, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 5,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFF252525),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 12,
+            color: secondaryText,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: const TextStyle(
+              color: secondaryText,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              color: primary,
+              size: 48,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Unable to load this team',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (loadError != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                loadError!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: secondaryText,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+            const SizedBox(height: 20),
+            FilledButton.icon(
+              onPressed: refreshTeam,
+              icon: const Icon(Icons.refresh),
+              label: const Text('RETRY'),
+              style: FilledButton.styleFrom(
+                backgroundColor: primary,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> editTeam() async {
+    if (isLoading) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddEditTeamsPage(
+          team: team,
+          listSuperstars: superstarList,
+        ),
+      ),
     );
 
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text("Confirmation"),
-      content: const Text("Are you sure you want to delete this team ?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
+    if (mounted) {
+      await refreshTeam();
+    }
+  }
 
-    // show the dialog
-    showDialog(
+  Future<void> confirmDelete() async {
+    final shouldDelete = await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: surface,
+        title: const Text(
+          'Delete team?',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete "${team.name}"?',
+          style: const TextStyle(color: secondaryText),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text(
+              'CANCEL',
+              style: TextStyle(color: secondaryText),
+            ),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: primary,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('DELETE'),
+          ),
+        ],
+      ),
     );
+
+    if (shouldDelete != true || !mounted) return;
+
+    try {
+      await TeamsDatabaseHelper.deleteTeam(widget.teamId);
+
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unable to delete team: $e'),
+        ),
+      );
+    }
   }
 }
