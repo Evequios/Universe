@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/titles.dart';
-import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
 import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
@@ -23,11 +21,8 @@ class TitlesDetailPage extends StatefulWidget {
 
 class TitlesDetailPageState extends State<TitlesDetailPage> {
   Titles title = const Titles(name: '', tag: 0, brand: null, holder1: null, holder2: null);
-  Brands brand = const Brands(name: '');
   Superstars h1 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null); 
   Superstars h2 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null);
-  late List<Brands> brandsList;
-  late List<Superstars> superstarsList;
   bool isLoading = false;
   
 
@@ -42,13 +37,6 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
     setState(() => isLoading = true);
 
     title = await TitlesDatabaseHelper.readTitle(widget.titleId);
-
-    // Chargement des données liées au titre
-    if (title.brand != null) {
-      brand = await BrandsDatabaseHelper.readBrand(title.brand!.id!);
-    } else {
-      brand = const Brands(name: '');
-    }
 
     if (title.holder1 != null) {
       h1 = await SuperstarsDatabaseHelper.readSuperstar(title.holder1!.id!);
@@ -72,159 +60,209 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
       );
     }
 
-    // Listes nécessaires au formulaire et à l'affichage
-    brandsList = await BrandsDatabaseHelper.readAllBrands();
-    superstarsList = await SuperstarsDatabaseHelper.readAllSuperstars();
-
     if (!mounted) return;
     setState(() => isLoading = false);
   }
-
-
-
+  
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      actions: [editButton(), deleteButton()],
+      title: const Text('Title details'),
+      actions: [
+        editButton(),
+        deleteButton(),
+      ],
     ),
     body: isLoading
         ? const Center(child: CircularProgressIndicator())
-        : Padding(
-            padding: const EdgeInsets.all(12),
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              children: [
-                Text(
-                  title.name,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+        : ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // Title identity card
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1B1B1B),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFF383838),
                   ),
                 ),
-                const SizedBox(height: 8),
-                const SizedBox(height: 8),
-                Text(
-                  'Brand : ${title.brand?.name ?? "Aucune"}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'CHAMPIONSHIP',
+                      style: TextStyle(
+                        color: Color(0xFFD71920),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      title.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Divider(color: Color(0xFF383838)),
+                    const SizedBox(height: 12),
+                    _buildInfoRow(
+                      Icons.branding_watermark_outlined,
+                      'Brand',
+                      title.brand?.name ?? 'None',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildInfoRow(
+                      Icons.emoji_events_outlined,
+                      'Title type',
+                      title.tag == 1 ? 'Tag Team' : 'Singles',
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                if (title.tag == 0 && title.holder1 != null)
-                Text(
-                  'Champion : ${h1.name}',
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                )
-                else if (title.tag == 1 &&
-                    title.holder1 != null &&
-                    title.holder2 != null)
-                  Text(
-                    'Champions : ${h1.name} & ${h2.name}',
-                    style: const TextStyle(color: Colors.black, fontSize: 18),
-                  ),
-                const SizedBox(height : 24),
-                Material(
-                  color: Colors.blueGrey,
-                  elevation: 5,
-                  borderRadius: BorderRadius.circular(15),
-                  child: MaterialButton(
-                    
-                    onPressed: () async {
-                      
-                    }, 
-                    child: const Text("Title history", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),),
-                  )
-                ),
-                const SizedBox(height: 8),
-                Material(
-                  color: Colors.blueGrey,
-                  elevation: 5,
-                  borderRadius: BorderRadius.circular(15),
-                  child: MaterialButton(
-                    
-                    onPressed: () async {
+              ),
+              const SizedBox(height: 20),
 
-                    }, 
-                    child: const Text("Set divisions", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),),
-                  )
+              // Current champion(s)
+              const Text(
+                'CURRENT CHAMPION',
+                style: TextStyle(
+                  color: Color(0xFFD71920),
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
                 ),
-                Container(child: buildUniverseSuperstars(),)
+              ),
+              const SizedBox(height: 10),
+              if (title.holder1 != null)
+                _buildChampionCard(h1.name)
+              else
+                _buildEmptyChampionCard(),
+              if (title.tag == 1) ...[
+                const SizedBox(height: 10),
+                if (title.holder2 != null)
+                  _buildChampionCard(h2.name)
+                else
+                  _buildEmptyChampionCard(),
               ],
-            ),
+            ],
           ),
   );
 
-  Widget buildUniverseSuperstars() => ListView.builder(
-    physics: const NeverScrollableScrollPhysics(),
-    shrinkWrap: true,
-    padding : const EdgeInsets.all(8),
-    itemCount: superstarsList.length,
-    itemBuilder: (context, index){
-      final superstar = superstarsList[index];
-      final superstarBrand = superstar.brand;
-      return GestureDetector( 
-        onTap: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => SuperstarsDetailPage(superstarId: superstar.id!),
-          )).then((value) => refreshTitle());
-        },
-        child :SizedBox(
-          height: 100,
-          child : Card(
-            shape:RoundedRectangleBorder(
-              side: const BorderSide(color: Color(0xFF30303A)),
-              borderRadius: BorderRadius.circular(16.0)
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, color: const Color(0xFFD71920), size: 22),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xFFAAAAAA),
+              fontSize: 15,
             ),
-            elevation: 2,
-            child: Padding(    
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-              child: Row(
-                children: [ 
-                  Expanded(
-                    flex:10,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(superstar.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
-                    )
-                  ),
-                  const Spacer(),
-                  if (superstarBrand != null)
-                  if (['raw', 'smackdown', 'nxt']
-                      .contains(superstarBrand.name.toLowerCase()))
-                    Image(
-                      image: AssetImage(
-                        'assets/${superstarBrand.name.toLowerCase()}.png',
-                      ),
-                    )
-                  else
-                    Text(
-                      superstarBrand.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                      ),
-                    )
-                else
-                  const SizedBox.shrink(),
-                ],
-              )
-            )
-          )
-        )
-      );
-    }
-  );
+          ),
+        ),
+        const SizedBox(width: 12),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChampionCard(String name) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF222222),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF383838)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: const Color(0xFF351719),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.person,
+              color: Color(0xFFD71920),
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const Icon(
+            Icons.emoji_events,
+            color: Color(0xFFD71920),
+            size: 22,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyChampionCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1B1B1B),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF383838)),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.person_outline, color: Color(0xFF888888)),
+          SizedBox(width: 12),
+          Text(
+            'No champion assigned',
+            style: TextStyle(color: Color(0xFFAAAAAA)),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget editButton() => IconButton(
     icon: const Icon(Icons.edit_outlined),
+    tooltip: 'Edit title',
     onPressed: () async {
+      final updated = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (context) => AddEditTitlesPage(title: title),
+        ),
+      );
 
-      await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => AddEditTitlesPage(title: title, listBrands: brandsList, listSuperstars: superstarsList,),
-      ));
-
-      refreshTitle();
-    }
+      if (updated == true && mounted) {
+        await refreshTitle();
+      }
+    },
   );
 
   Widget deleteButton() => IconButton(

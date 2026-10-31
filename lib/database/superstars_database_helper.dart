@@ -1,6 +1,4 @@
 import 'dart:collection';
-
-import 'package:wwe_universe/classes/matches.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/classes/titles.dart';
@@ -14,9 +12,9 @@ class SuperstarsDatabaseHelper {
   ) async {
     final brandId = json[SuperstarsFields.brand] as int?;
 
-    final brand = brandId == null
+    final brand = brandId == null || brandId == 0
         ? null
-        : await BrandsDatabaseHelper.readBrand(brandId);
+        : await BrandsDatabaseHelper.readBrandIfExists(brandId);
 
     return Superstars(
       id: json[SuperstarsFields.id] as int?,
@@ -121,36 +119,50 @@ class SuperstarsDatabaseHelper {
       whereArgs: [universeSuperstars.id],
     );
   }
-
+  
   static Future<int> deleteSuperstar(int id) async {
     final db = await DatabaseService.instance.database;
 
-    Map<String, dynamic> row = {
-      TitlesFields.holder1 : 0,
-      TitlesFields.holder2 : 0
-    };
-    await db.update(
-      tableTitles, 
-      row,
-      where: '${TitlesFields.holder1} = $id OR ${TitlesFields.holder2} = $id'
-    );
+    return db.transaction((txn) async {
+      // Retire la Superstar des titres.
+      await txn.update(
+        tableTitles,
+        {TitlesFields.holder1: null},
+        where: '${TitlesFields.holder1} = ?',
+        whereArgs: [id],
+      );
 
-    await db.delete(
-      tableMatches,
-      where: '${MatchesFields.s1} = $id OR ${MatchesFields.s2} = $id OR ${MatchesFields.s3} = $id OR ${MatchesFields.s4} = $id OR ${MatchesFields.s5} = $id OR ${MatchesFields.s6} = $id OR ${MatchesFields.s7} = $id OR ${MatchesFields.s8} = $id '
-    );
+      await txn.update(
+        tableTitles,
+        {TitlesFields.holder2: null},
+        where: '${TitlesFields.holder2} = ?',
+        whereArgs: [id],
+      );
 
-    await db.delete(
-      tableTeams,
-      where: '${TeamsFields.member1} = $id OR ${TeamsFields.member2} = $id OR ${TeamsFields.member3} = $id OR ${TeamsFields.member4} = $id OR ${TeamsFields.member5} = $id'
-    );
-    
-    return await db.delete(
-      tableSuperstars,
-      where: '${SuperstarsFields.id} = ?',
-      whereArgs: [id],
-    );
+      // Supprime les équipes auxquelles elle appartient.
+      // Les camps historiques des combats sont conservés.
+      await txn.delete(
+        tableTeams,
+        where: '${TeamsFields.member1} = ? '
+            'OR ${TeamsFields.member2} = ? '
+            'OR ${TeamsFields.member3} = ? '
+            'OR ${TeamsFields.member4} = ? '
+            'OR ${TeamsFields.member5} = ?',
+        whereArgs: List.filled(5, id),
+      );
+
+      // Les références Superstar des participants et des vainqueurs
+      // seront mises à NULL par les clés étrangères.
+      // Les noms historiques restent conservés.
+      return txn.delete(
+        tableSuperstars,
+        where: '${SuperstarsFields.id} = ?',
+        whereArgs: [id],
+      );
+    });
   }
+
+
 
   static Future draft(HashMap map) async {
     final db = await DatabaseService.instance.database;

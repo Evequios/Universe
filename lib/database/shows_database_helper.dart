@@ -1,4 +1,3 @@
-import 'package:wwe_universe/classes/matches.dart';
 import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/database/database.dart';
 
@@ -55,13 +54,7 @@ class ShowsDatabaseHelper {
   static Future<int> deleteShow(int id) async {
     final db = await DatabaseService.instance.database;
 
-    await db.delete(
-      tableMatches,
-      where: '${MatchesFields.showId} = ?',
-      whereArgs: [id]
-    );
-
-    return await db.delete(
+    return db.delete(
       tableShows,
       where: '${ShowFields.id} = ?',
       whereArgs: [id],

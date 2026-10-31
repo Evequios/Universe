@@ -1,3 +1,4 @@
+import 'package:wwe_universe/classes/titles.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/database/database.dart';
@@ -27,6 +28,24 @@ class BrandsDatabaseHelper {
     }
   }
 
+  static Future<Brands?> readBrandIfExists(int id) async {
+    final db = await DatabaseService.instance.database;
+
+    final maps = await db.query(
+      tableBrands,
+      columns: BrandsFields.values,
+      where: '${BrandsFields.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isEmpty) {
+      return null;
+    }
+
+    return Brands.fromJson(maps.first);
+  }
+
+
   static Future<List<Brands>> readAllBrands() async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${BrandsFields.name} ASC';
@@ -49,23 +68,31 @@ class BrandsDatabaseHelper {
     );
   }
 
+  
   static Future<int> deleteBrand(int id) async {
     final db = await DatabaseService.instance.database;
 
-    Map<String, dynamic> row = {
-      SuperstarsFields.brand : 0,
-    };
-    await db.update(
-      tableSuperstars, 
-      row,
-      where: '${SuperstarsFields.brand} = ?',
-      whereArgs: [id]
-    );
+    return db.transaction((txn) async {
+      await txn.update(
+        tableTitles,
+        {TitlesFields.brand: null},
+        where: '${TitlesFields.brand} = ?',
+        whereArgs: [id],
+      );
 
-    return await db.delete(
-      tableBrands,
-      where: '${BrandsFields.id} = ?',
-      whereArgs: [id],
-    );
+      await txn.update(
+        tableSuperstars,
+        {SuperstarsFields.brand: null},
+        where: '${SuperstarsFields.brand} = ?',
+        whereArgs: [id],
+      );
+
+      return txn.delete(
+        tableBrands,
+        where: '${BrandsFields.id} = ?',
+        whereArgs: [id],
+      );
+    });
   }
+
 }

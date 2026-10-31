@@ -2,5 +2,7 @@
     "cmake.configureOnOpen": true,
     "java.configuration.updateBuildConfiguration": "interactive",
     "files.autoSave": "afterDelay",
-    "dart.flutterHotReloadOnSave": "all",    
+    "dart.flutterHotReloadOnSave": "all",
+    "cmake.ignoreCMakeListsMissing": true,
+    
 }

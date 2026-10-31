@@ -1,176 +1,196 @@
+
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/superstars.dart';
-
-Superstars defaultSup = const Superstars(name: 'name', brand: null, orientation: 'orientation',division: 0);
+import 'package:wwe_universe/widget/app_form_widgets.dart';
 
 class TeamsFormWidget extends StatelessWidget {
-  final List<Superstars>? listSuperstars;
-  final String? name;
-  final Superstars? m1;
-  final Superstars? m2;
-  final Superstars? m3;
-  final Superstars? m4;
-  final Superstars? m5;
+  final List<Superstars> listSuperstars;
+
+  final String name;
+
+  final int? m1;
+  final int? m2;
+  final int? m3;
+  final int? m4;
+  final int? m5;
+
   final ValueChanged<String?> onChangedName;
-  final ValueChanged<Superstars?> onChangedM1;
-  final ValueChanged<Superstars?> onChangedM2;
-  final ValueChanged<Superstars?> onChangedM3;
-  final ValueChanged<Superstars?> onChangedM4;
-  final ValueChanged<Superstars?> onChangedM5;
+  final ValueChanged<int?> onChangedM1;
+  final ValueChanged<int?> onChangedM2;
+  final ValueChanged<int?> onChangedM3;
+  final ValueChanged<int?> onChangedM4;
+  final ValueChanged<int?> onChangedM5;
 
   const TeamsFormWidget({
     super.key,
     required this.listSuperstars,
-    this.name = '',
-    this.m1,
-    this.m2,
-    this.m3,
-    this.m4,
-    this.m5,
+    required this.name,
+    required this.m1,
+    required this.m2,
+    required this.m3,
+    required this.m4,
+    required this.m5,
     required this.onChangedName,
     required this.onChangedM1,
     required this.onChangedM2,
     required this.onChangedM3,
     required this.onChangedM4,
-    required this.onChangedM5
+    required this.onChangedM5,
   });
 
+  List<Superstars> availableMembers(int? currentMember) {
+    final selectedIds = {
+      m1,
+      m2,
+      m3,
+      m4,
+      m5,
+    }..remove(null);
+
+    selectedIds.remove(currentMember);
+
+    return listSuperstars.where((superstar) {
+      return superstar.id != null &&
+          !selectedIds.contains(superstar.id);
+    }).toList();
+  }
+
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-    child: Padding(
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          buildName(),
-          const SizedBox(height: 8),
-          buildM1(),
-          const SizedBox(height: 8),
-          buildM2(),
-          const SizedBox(height: 8),
-          buildM3(),
-          const SizedBox(height: 8),
-          buildM4(),
-          const SizedBox(height: 8),
-          buildM5(),
-          const SizedBox(height: 8),
+          AppFormSection(
+            title: 'Team information',
+            child: TextFormField(
+              initialValue: name,
+              textCapitalization: TextCapitalization.words,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              decoration: AppFormStyles.inputDecoration(
+                label: 'Team name',
+                hint: 'Enter the team name',
+                icon: Icons.groups_outlined,
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'The team name cannot be empty';
+                }
+                return null;
+              },
+              onChanged: onChangedName,
+            ),
+          ),
+          const SizedBox(height: 16),
+          AppFormSection(
+            title: 'Team members',
+            child: Column(
+              children: [
+                buildMember(
+                  number: 1,
+                  selectedId: m1,
+                  required: true,
+                  onChanged: onChangedM1,
+                ),
+                const SizedBox(height: 16),
+                buildMember(
+                  number: 2,
+                  selectedId: m2,
+                  required: true,
+                  onChanged: onChangedM2,
+                ),
+                const SizedBox(height: 16),
+                buildMember(
+                  number: 3,
+                  selectedId: m3,
+                  required: false,
+                  onChanged: onChangedM3,
+                ),
+                const SizedBox(height: 16),
+                buildMember(
+                  number: 4,
+                  selectedId: m4,
+                  required: false,
+                  onChanged: onChangedM4,
+                ),
+                const SizedBox(height: 16),
+                buildMember(
+                  number: 5,
+                  selectedId: m5,
+                  required: false,
+                  onChanged: onChangedM5,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              'A team must have at least two members. '
+              'Additional members are optional.',
+              style: TextStyle(
+                color: AppFormStyles.secondaryText,
+                fontSize: 12,
+              ),
+            ),
+          ),
         ],
       ),
-    ),
-  );
+    );
+  }
 
-  Widget buildName() => TextFormField(
-    textCapitalization: TextCapitalization.sentences,
-    initialValue: name,
-    style: const TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 18,
-    ),
-    decoration: InputDecoration(
-      labelText: "Name",
-      labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5), fontSize: 18, ),
-      border: const OutlineInputBorder(),
-    ),
-    validator: (name) =>
-        name != null && name.isEmpty ? "The name can't be empty" : null,
-    onChanged: onChangedName,
-  );
+  Widget buildMember({
+    required int number,
+    required int? selectedId,
+    required bool required,
+    required ValueChanged<int?> onChanged,
+  }) {
+    final options = availableMembers(selectedId);
 
-
-  Widget buildM1() => 
-  ButtonTheme( 
-    alignedDropdown: true, 
-    child: DropdownButtonFormField<Superstars>(
-      decoration: InputDecoration(
-      border: const OutlineInputBorder(),
-        labelText: 'Member 1',
-        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
-    ),
-      value: m1 ?? defaultSup,
-      onChanged: onChangedM1,
-      items: listSuperstars!.map((m1){
-      return DropdownMenuItem(
-        value: m1,
-        child: Text(m1.name));
-    }).toList(),
-    ),
-  );
-
-  Widget buildM2() => 
-    ButtonTheme( 
-    alignedDropdown: true, 
-    child: DropdownButtonFormField<Superstars>(
-      decoration: InputDecoration(
-      border: const OutlineInputBorder(),
-        labelText: 'Member 2',
-        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
-    ),
-      value: m2 ?? defaultSup,
-      onChanged: onChangedM2,
-      items: listSuperstars!.map((m2){
-      return DropdownMenuItem(
-        value: m2,
-        child: Text(m2.name));
-    }).toList(),
-    ),
-  );
-
-
-    Widget buildM3() => 
-    ButtonTheme( 
-    alignedDropdown: true, 
-    child: DropdownButtonFormField<Superstars>(
-      decoration: InputDecoration(
-      border: const OutlineInputBorder(),
-        labelText: 'Member 3',
-        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
-    ),
-      value: m3 ?? defaultSup,
-      onChanged: onChangedM3,
-      items: listSuperstars!.map((m3){
-      return DropdownMenuItem(
-        value: m3,
-        child: Text(m3.name));
-    }).toList(),
-    ),
-  );
-
-
-  Widget buildM4() => 
-  ButtonTheme( 
-    alignedDropdown: true, 
-    child: DropdownButtonFormField<Superstars>(
-      decoration: InputDecoration(
-      border: const OutlineInputBorder(),
-        labelText: 'Member 4',
-        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
-    ),
-      value: m4 ?? defaultSup,
-      onChanged: onChangedM4,
-      items: listSuperstars!.map((m4){
-      return DropdownMenuItem(
-        value: m4,
-        child: Text(m4.name));
-    }).toList(),
-    ),
-  );
-
-  Widget buildM5() => 
-  ButtonTheme( 
-    alignedDropdown: true, 
-    child: DropdownButtonFormField<Superstars>(
-      decoration: InputDecoration(
-      border: const OutlineInputBorder(),
-        labelText: 'Member 5',
-        labelStyle: TextStyle(color: Colors.black87.withOpacity(0.5)),
-    ),
-      value: m5 ?? defaultSup,
-      onChanged: onChangedM5,
-      items: listSuperstars!.map((m5){
-      return DropdownMenuItem(
-        value: m5,
-        child: Text(m5.name));
-    }).toList(),
-    ),
-  );
+    return DropdownButtonFormField<int?>(
+      key: ValueKey('member-$number-$selectedId'),
+      initialValue: selectedId,
+      isExpanded: true,
+      dropdownColor: AppFormStyles.surface,
+      style: const TextStyle(color: Colors.white),
+      decoration: AppFormStyles.inputDecoration(
+        label: 'Member $number${required ? ' *' : ' (optional)'}',
+        icon: Icons.person_outline,
+      ),
+      items: [
+        DropdownMenuItem<int?>(
+          value: null,
+          child: Text(
+            required ? 'Select a Superstar' : 'No member',
+            style: const TextStyle(
+              color: AppFormStyles.secondaryText,
+            ),
+          ),
+        ),
+        ...options.map(
+          (superstar) => DropdownMenuItem<int?>(
+            value: superstar.id,
+            child: Text(
+              superstar.name,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ],
+      validator: required
+          ? (value) {
+              if (value == null) {
+                return 'Please select a Superstar';
+              }
+              return null;
+            }
+          : null,
+      onChanged: onChanged,
+    );
+  }
 }

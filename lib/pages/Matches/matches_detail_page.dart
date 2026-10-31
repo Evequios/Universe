@@ -1,14 +1,12 @@
+
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/classes/matches.dart';
+
+import 'package:wwe_universe/classes/match_record.dart';
+import 'package:wwe_universe/classes/match_sides.dart';
+import 'package:wwe_universe/classes/match_participants.dart';
 import 'package:wwe_universe/classes/show.dart';
-import 'package:wwe_universe/classes/stipulations.dart';
-import 'package:wwe_universe/classes/superstars.dart';
-import 'package:wwe_universe/classes/titles.dart';
 import 'package:wwe_universe/database/matches_database_helper.dart';
 import 'package:wwe_universe/database/shows_database_helper.dart';
-import 'package:wwe_universe/database/stipulations_database_helper.dart';
-import 'package:wwe_universe/database/superstars_database_helper.dart';
-import 'package:wwe_universe/database/titles_database_helper.dart';
 import 'package:wwe_universe/pages/Matches/add_edit_matches_page.dart';
 
 class MatchesDetailPage extends StatefulWidget {
@@ -22,206 +20,426 @@ class MatchesDetailPage extends StatefulWidget {
   });
 
   @override
-  MatchesDetailPageState createState() => MatchesDetailPageState();
+  State<MatchesDetailPage> createState() => MatchesDetailPageState();
 }
 
 class MatchesDetailPageState extends State<MatchesDetailPage> {
-  late Matches match;
-  late Show show;
-  late Stipulations stipulation;
-  Titles? title;
-  late Superstars s1;
-  late Superstars s2;
-  late Superstars s3;
-  late Superstars s4;
-  late Superstars s5;
-  late Superstars s6;
-  late Superstars s7;
-  late Superstars s8;
-  late Superstars s9;
-  late Superstars s10;
-  late Superstars? winner;
-  late List<Stipulations> stipulationsList;
-  late List<Superstars> superstarsList;
+  MatchRecord? match;
+  Show? show;
+  bool isLoading = true;
 
-  bool isLoading = false;
+  static const Color background = Color(0xFF101010);
+  static const Color surface = Color(0xFF1B1B1B);
+  static const Color border = Color(0xFF383838);
+  static const Color primary = Color(0xFFD71920);
+  static const Color secondaryText = Color(0xFFAAAAAA);
 
   @override
   void initState() {
     super.initState();
-
-    refreshMatches();
+    refreshMatch();
   }
 
-  Future refreshMatches() async {
-    setState(() => isLoading = true);
+  Future<void> refreshMatch() async {
+    if (mounted) {
+      setState(() => isLoading = true);
+    }
 
-    show = await ShowsDatabaseHelper.readShow(widget.showId);
-    match = await MatchesDatabaseHelper.readMatch(widget.matchId);
-    stipulation = await StipulationsDatabaseHelper.readStipulation(match.stipulation.id!);
-    title = match.title == null ? null : await TitlesDatabaseHelper.readTitle(match.title!.id!);
-    s1 = await SuperstarsDatabaseHelper.readSuperstar(match.s1.id!);
-    s2 = await SuperstarsDatabaseHelper.readSuperstar(match.s2.id!);
-    stipulationsList = await StipulationsDatabaseHelper.readAllStipulations();
-    superstarsList = await SuperstarsDatabaseHelper.readAllSuperstars();
+    try {
+      final results = await Future.wait([
+        MatchesDatabaseHelper.readMatch(widget.matchId),
+        ShowsDatabaseHelper.readShow(widget.showId),
+      ]);
 
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' ? s2 = await SuperstarsDatabaseHelper.readSuperstar(match.s2.id!) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' ? s3 = await SuperstarsDatabaseHelper.readSuperstar(match.s3!.id!) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != 'Handicap 1v2' ? s4 = await SuperstarsDatabaseHelper.readSuperstar(match.s4!.id!) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' ? s5 = await SuperstarsDatabaseHelper.readSuperstar(match.s5!.id!) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' ? s6 = await SuperstarsDatabaseHelper.readSuperstar(match.s6!.id!) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s7 = await SuperstarsDatabaseHelper.readSuperstar(match.s7!.id!) : null;
-    stipulation.type != '10 Man' && stipulation.type != '20 Man' && stipulation.type != '30 Man' && stipulation.type != '1v1' && stipulation.type != 'Triple Threat' && stipulation.type != '2v2' && stipulation.type != 'Fatal 4-Way' && stipulation.type != '5-Way' && stipulation.type != 'Handicap 1v2' && stipulation.type != 'Handicap 1v3' && stipulation.type != 'Handicap 2v3' && stipulation.type != '3v3' && stipulation.type != '3-Way Tag' && stipulation.type != '6-Way' ? s8 = await SuperstarsDatabaseHelper.readSuperstar(match.s8!.id!) : null;
-    if (match.winner != null && match.winner!.id != null) {
-        winner = await SuperstarsDatabaseHelper.readSuperstar(
-          match.winner!.id!,
-        );
-      } else {
-        winner = null;
-      }
+      if (!mounted) return;
 
-    setState(() => isLoading = false);
+      setState(() {
+        match = results[0] as MatchRecord;
+        show = results[1] as Show;
+        isLoading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => isLoading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Impossible de charger le combat : $error')),
+      );
+    }
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      actions: [editButton(), deleteButton()],
-    ),
-    body: isLoading 
-      ? const Center(child: CircularProgressIndicator())
-      : Padding(
-          padding: const EdgeInsets.all(12),
-          child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            children: [
-              Text(
-                '${stipulation.type} ${stipulation.stipulation}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  decoration: TextDecoration.underline,
-                  color: Colors.black,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(child:(() {
-                switch(stipulation.type){
-              case '1v1' : 
-                return Text('${s1.name} vs ${s2.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-              case '2v2' :
-                return Text('${s1.name} & ${s2.name} vs ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-              case '3v3' : 
-                return Text('${s1.name}, ${s2.name}, ${s3.name} vs ${s4.name}, ${s5.name}, ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-              case '4v4' :
-                return Text('Team ${s1.name} vs Team ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-              case 'Triple Threat' : 
-                return Text('${s1.name} vs ${s2.name} vs ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-              case 'Fatal 4-Way' :
-                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
-              case '5-Way' : 
-                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name} vs ${s5.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
-              case '6-Way' :  
-                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name} vs ${s5.name} vs ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
-              case '3-Way Tag' :
-                return Text('${s1.name} & ${s2.name} & ${s3.name} vs ${s4.name} & ${s5.name} & ${s6.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
-              case '8-Way' :
-                return Text('${s1.name} vs ${s2.name} vs ${s3.name} vs ${s4.name} vs ${s5.name} vs ${s6.name} vs ${s7.name} vs ${s8.name}' , textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-              case '4-Way Tag' :
-                return Text('${s1.name} & ${s2.name} & ${s3.name} vs ${s4.name} & ${s5.name} & ${s6.name} vs ${s7.name} & ${s8.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)); 
-              case 'Handicap 1v2' :  
-                return Text('${s1.name} vs ${s2.name} & ${s3.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-              case 'Handicap 1v3' : 
-                return Text('${s1.name} vs ${s2.name} & ${s3.name} & ${s4.name}', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-              // case '10 Man' : 
-              // case '20 Man' :
-              // case '30 Man' :
-              //   return Text(winner.name, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold));
-              default :
-                return null;
-            }
-              }())),
-              const SizedBox(height: 30,),
-              Text('Winner : ${winner?.name}',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height:8),
-              if (title != null)
-              Text(
-                '${title!.name} Championship',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontStyle: FontStyle.italic,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: background,
+      appBar: AppBar(
+        title: const Text('Détail du combat'),
+        actions: [
+          IconButton(
+            tooltip: 'Modifier',
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: isLoading || match == null ? null : editMatch,
+          ),
+          IconButton(
+            tooltip: 'Supprimer',
+            icon: const Icon(Icons.delete_outline),
+            onPressed: isLoading || match == null ? null : confirmDelete,
+          ),
+        ],
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : match == null
+              ? const Center(
+                  child: Text(
+                    'Combat introuvable.',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              : _buildContent(match!),
+    );
+  }
+
+  Widget _buildContent(MatchRecord value) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Text(
+          value.formatName,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 23,
+            fontWeight: FontWeight.bold,
           ),
         ),
-  );
-
-  Widget editButton() => IconButton(
-    icon: const Icon(Icons.edit_outlined),
-    onPressed: () async {
-      if (isLoading) return;
-
-      await Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => AddEditMatchesPage(match: match, show: show, listStipulations: stipulationsList, listSuperstars: superstarsList),
-      ));
-
-    refreshMatches();
-    }
-  );
-
-  Widget deleteButton() => IconButton(
-    icon: const Icon(Icons.delete),
-    onPressed: () async {
-      showAlertDialog(context);
-    },
-  );
-
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: const Text("Cancel"),
-      onPressed:  () { 
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = TextButton(
-      child: const Text("Continue"),
-      onPressed:  () async {
-        await MatchesDatabaseHelper.deleteMatch(widget.matchId);
-        if(context.mounted){
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        }
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text("Confirmation"),
-      content: const Text("Are you sure you want to delete this match ?"),
-      actions: [
-        cancelButton,
-        continueButton,
+        if (value.stipulationName.trim().isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            value.stipulationName,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: secondaryText,
+              fontSize: 16,
+            ),
+          ),
+        ],
+        const SizedBox(height: 24),
+        _buildResult(value),
+        const SizedBox(height: 24),
+        _buildSectionTitle('Participants'),
+        const SizedBox(height: 12),
+        ...value.sides.map((side) => _buildSide(value, side)),
+        if (value.title != null) ...[
+          const SizedBox(height: 24),
+          _buildSectionTitle('Enjeu'),
+          const SizedBox(height: 10),
+          _buildInfoCard(
+            icon: Icons.workspace_premium_outlined,
+            title: value.title!.name,
+            subtitle: 'Championnat',
+          ),
+        ],
+        const SizedBox(height: 24),
+        _buildSectionTitle('Informations'),
+        const SizedBox(height: 10),
+        _buildInfoCard(
+          icon: Icons.event_outlined,
+          title: show?.name ?? 'Show indisponible',
+          subtitle: show == null
+              ? 'Le show associé n’est plus disponible'
+              : 'Année ${show!.year} • Semaine ${show!.week}',
+        ),
       ],
     );
+  }
 
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
+  Widget _buildResult(MatchRecord value) {
+    String title;
+    String subtitle;
+    IconData icon;
+
+    switch (value.resultStatus) {
+      case MatchResultStatus.winner:
+        final winningSide = value.sides.cast<MatchSides?>().firstWhere(
+              (side) => side?.sideOrder == value.winnerSideOrder,
+              orElse: () => null,
+            );
+
+        if (winningSide != null) {
+          title = 'Vainqueur : ${winningSide.name}';
+          subtitle = 'Victoire du camp';
+        } else {
+          final winner = _findWinner(value);
+          final winnerName = winner?.superstarName ?? value.winnerName;
+
+          title = winnerName == null || winnerName.isEmpty
+              ? 'Vainqueur individuel'
+              : 'Vainqueur : $winnerName';
+
+          subtitle = 'Victoire individuelle';
+        }
+
+        icon = Icons.emoji_events_outlined;
+        break;
+
+      case MatchResultStatus.draw:
+        title = 'Match nul';
+        subtitle = 'Aucun vainqueur';
+        icon = Icons.handshake_outlined;
+        break;
+
+      case MatchResultStatus.noContest:
+        title = 'Sans résultat';
+        subtitle = 'Combat déclaré sans résultat';
+        icon = Icons.block_outlined;
+        break;
+
+      default:
+        title = 'À déterminer';
+        subtitle = 'Le résultat du combat n’a pas encore été renseigné';
+        icon = Icons.hourglass_empty;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: border),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: primary, size: 30),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(color: secondaryText),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  MatchParticipants? _findWinner(MatchRecord value) {
+    for (final side in value.sides) {
+      for (final participant in side.participants) {
+        if (value.winnerSuperstarId != null) {
+          if (participant.superstarId == value.winnerSuperstarId) {
+            return participant;
+          }
+        } else if (value.winnerName != null &&
+            participant.superstarName == value.winnerName) {
+          return participant;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  Widget _buildSide(MatchRecord value, MatchSides side) {
+    final isWinner = value.resultStatus == MatchResultStatus.winner &&
+        value.winnerSideOrder == side.sideOrder;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isWinner ? primary : border,
+          width: isWinner ? 1.5 : 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  side.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              if (isWinner)
+                const Icon(
+                  Icons.emoji_events,
+                  color: primary,
+                  size: 21,
+                ),
+            ],
+          ),
+          if (side.participants.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            ...side.participants.map(_buildParticipant),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildParticipant(MatchParticipants participant) {
+    final currentMatch = match;
+
+    final isIndividualWinner =
+        currentMatch?.resultStatus == MatchResultStatus.winner &&
+        currentMatch?.winnerSideOrder == null &&
+        (currentMatch?.winnerSuperstarId != null
+            ? participant.superstarId == currentMatch!.winnerSuperstarId
+            : currentMatch?.winnerName != null &&
+                participant.superstarName == currentMatch!.winnerName);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(
+            Icons.person_outline,
+            color: isIndividualWinner ? primary : secondaryText,
+            size: 19,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              participant.superstarName,
+              style: TextStyle(
+                color: isIndividualWinner ? Colors.white : secondaryText,
+                fontWeight:
+                    isIndividualWinner ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ),
+          if (isIndividualWinner)
+            const Icon(Icons.emoji_events, color: primary, size: 18),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildInfoCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: border),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: primary, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(color: secondaryText),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> editMatch() async {
+    final currentMatch = match;
+    final currentShow = show;
+
+    if (currentMatch == null || currentShow == null) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AddEditMatchesPage(
+          match: currentMatch,
+          show: currentShow,
+        ),
+      ),
+    );
+
+    if (mounted) {
+      await refreshMatch();
+    }
+  }
+
+  Future<void> confirmDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Supprimer le combat'),
+        content: const Text(
+          'Voulez-vous vraiment supprimer ce combat ? Cette action est définitive.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text(
+              'Supprimer',
+              style: TextStyle(color: primary),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    await MatchesDatabaseHelper.deleteMatch(widget.matchId);
+
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 }
