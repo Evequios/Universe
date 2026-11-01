@@ -113,10 +113,10 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        if (value.stipulationName.trim().isNotEmpty) ...[
+        if ((value.matchTypeName.isNotEmpty ? value.matchTypeName : value.stipulationName).trim().isNotEmpty) ...[
           const SizedBox(height: 6),
           Text(
-            value.stipulationName,
+            value.matchTypeName.isNotEmpty ? value.matchTypeName : value.stipulationName,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: secondaryText,
@@ -130,6 +130,13 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
         _buildSectionTitle('Participants'),
         const SizedBox(height: 12),
         ...value.sides.map((side) => _buildSide(value, side)),
+        if (value.specialParticipants.isNotEmpty) ...[
+          Container(padding: const EdgeInsets.all(14), decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('Participants', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 10),
+            ...value.specialParticipants.map(_buildParticipant),
+          ])),
+        ],
         if (value.title != null) ...[
           const SizedBox(height: 24),
           _buildSectionTitle('Enjeu'),
@@ -238,6 +245,9 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
   }
 
   MatchParticipants? _findWinner(MatchRecord value) {
+    for (final participant in value.specialParticipants) {
+      if (value.winnerSuperstarId != null ? participant.superstarId == value.winnerSuperstarId : value.winnerName != null && participant.superstarName == value.winnerName) return participant;
+    }
     for (final side in value.sides) {
       for (final participant in side.participants) {
         if (value.winnerSuperstarId != null) {

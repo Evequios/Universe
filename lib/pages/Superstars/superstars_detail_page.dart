@@ -440,10 +440,10 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
               ),
             ],
           ),
-          if (match.stipulationName.isNotEmpty) ...[
+          if ((match.matchTypeName.isNotEmpty ? match.matchTypeName : match.stipulationName).isNotEmpty) ...[
             const SizedBox(height: 5),
             Text(
-              match.stipulationName,
+              match.matchTypeName.isNotEmpty ? match.matchTypeName : match.stipulationName,
               style: const TextStyle(
                 color: secondaryText,
                 fontSize: 12,
