@@ -483,10 +483,10 @@ class ShowsDetailPageState extends State<ShowsDetailPage> {
                         fontSize: 12,
                       ),
                     ),
-                    if (match.stipulationName.isNotEmpty) ...[
+                    if ((match.matchTypeName.isNotEmpty ? match.matchTypeName : match.stipulationName).isNotEmpty) ...[
                       const SizedBox(height: 3),
                       Text(
-                        match.stipulationName,
+                        match.matchTypeName.isNotEmpty ? match.matchTypeName : match.stipulationName,
                         style: TextStyle(
                           color: AppFormStyles.secondaryText,
                           fontSize: 12,

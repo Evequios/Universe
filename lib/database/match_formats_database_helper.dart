@@ -2,6 +2,7 @@
 import 'package:wwe_universe/classes/match_formats.dart';
 import 'package:wwe_universe/database/database.dart';
 import 'package:wwe_universe/classes/match_record.dart';
+import 'package:wwe_universe/classes/match_type_formats.dart';
 
 class MatchFormatsDatabaseHelper {
   static Future<MatchFormats> createFormat(
@@ -76,10 +77,12 @@ class MatchFormatsDatabaseHelper {
   static Future<int> deleteFormat(int id) async {
     final db = await DatabaseService.instance.database;
 
-    return db.delete(
-      tableMatchFormats,
-      where: '${MatchFormatsFields.id} = ?',
-      whereArgs: [id],
-    );
+    return db.transaction((txn) async {
+      await txn.update(tableMatches, {MatchRecordFields.formatId: null}, where: '${MatchRecordFields.formatId} = ?', whereArgs: [id]);
+      await txn.delete(tableMatchTypeFormats,
+        where: '${MatchTypeFormatsFields.matchFormatId} = ?', whereArgs: [id]);
+      return txn.delete(tableMatchFormats,
+        where: '${MatchFormatsFields.id} = ?', whereArgs: [id]);
+    });
   }
 }
