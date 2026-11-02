@@ -1,75 +1,72 @@
-import 'package:wwe_universe/classes/superstars.dart';
-
 const String tableReigns = 'reigns';
+const String tableTitleReignEvents = 'title_reign_events';
 
 class ReignsFields {
   static const String id = '_id';
-  static const String holder1 = 'holder1';
-  static const String holder2 = 'holder2';
   static const String titleId = 'titleId';
-  static const String yearDebut = 'yearDebut';
-  static const String weekDebut = 'weekDebut';
+  static const String holder1Id = 'holder1Id';
+  static const String holder1Name = 'holder1Name';
+  static const String holder2Id = 'holder2Id';
+  static const String holder2Name = 'holder2Name';
+  static const String yearStart = 'yearStart';
+  static const String weekStart = 'weekStart';
   static const String yearEnd = 'yearEnd';
   static const String weekEnd = 'weekEnd';
-
-  static final List<String> values = [
-    id, holder1, holder2, titleId, yearDebut, weekDebut, yearEnd, weekEnd
-  ];
+  static const String endReason = 'endReason';
+  static const String startMatchId = 'startMatchId';
+  static const String endMatchId = 'endMatchId';
 }
 
-class Reigns{
+class TitleReignEventFields {
+  static const String id = '_id';
+  static const String titleId = 'titleId';
+  static const String eventType = 'eventType';
+  static const String year = 'year';
+  static const String week = 'week';
+  static const String dayOfWeek = 'dayOfWeek';
+  static const String matchOrder = 'matchOrder';
+  static const String matchId = 'matchId';
+  static const String holder1Id = 'holder1Id';
+  static const String holder1Name = 'holder1Name';
+  static const String holder2Id = 'holder2Id';
+  static const String holder2Name = 'holder2Name';
+}
+
+class Reigns {
   final int? id;
-  final Superstars holder1;
-  final Superstars? holder2;
   final int titleId;
-  final int yearDebut;
-  final int weekDebut;
+  final int? holder1Id;
+  final String holder1Name;
+  final int? holder2Id;
+  final String? holder2Name;
+  final int yearStart;
+  final int weekStart;
   final int? yearEnd;
   final int? weekEnd;
+  final String? endReason;
+  final int? startMatchId;
+  final int? endMatchId;
 
-  const Reigns({
-    this.id,
-    required this.holder1,
-    this.holder2,
-    required this.titleId,
-    required this.yearDebut,
-    required this.weekDebut,
-    this.yearEnd,
-    this.weekEnd
-  });
+  const Reigns({this.id, required this.titleId, this.holder1Id,
+    required this.holder1Name, this.holder2Id, this.holder2Name,
+    required this.yearStart, required this.weekStart, this.yearEnd,
+    this.weekEnd, this.endReason, this.startMatchId, this.endMatchId});
 
-  Reigns copy({
-    int? id,
-    Superstars? holder1,
-    Superstars? holder2,
-    int? titleId,
-    int? yearDebut,
-    int? weekDebut,
-    int? yearEnd,
-    int? weekEnd
-  }) {
-    return Reigns(
-        id: id ?? this.id,
-        holder1: holder1 ?? this.holder1,
-        holder2: holder2 ?? this.holder2,
-        titleId: titleId ?? this.titleId,
-        yearDebut: yearDebut ?? this.yearDebut,
-        weekDebut: weekDebut ?? this.weekDebut,
-        yearEnd: yearEnd ?? this.yearEnd,
-        weekEnd: weekEnd ?? this.weekEnd
-      );
-    }
+  bool get isCurrent => yearEnd == null && weekEnd == null;
 
-  Map<String, Object?> toJson() { 
-    return {
-        ReignsFields.id: id,
-        ReignsFields.holder1: holder1,
-        ReignsFields.holder2: holder2,
-        ReignsFields.titleId: titleId,
-        ReignsFields.yearDebut: yearDebut,
-        ReignsFields.weekDebut: weekDebut,
-        ReignsFields.yearEnd: yearEnd,
-        ReignsFields.weekEnd: weekEnd
-    };
-  }
+  factory Reigns.fromMap(Map<String, Object?> map) => Reigns(
+    id: map[ReignsFields.id] as int?,
+    titleId: map[ReignsFields.titleId] as int,
+    holder1Id: map[ReignsFields.holder1Id] as int?,
+    holder1Name: map[ReignsFields.holder1Name] as String,
+    holder2Id: map[ReignsFields.holder2Id] as int?,
+    holder2Name: map[ReignsFields.holder2Name] as String?,
+    yearStart: map[ReignsFields.yearStart] as int,
+    weekStart: map[ReignsFields.weekStart] as int,
+    yearEnd: map[ReignsFields.yearEnd] as int?,
+    weekEnd: map[ReignsFields.weekEnd] as int?,
+    endReason: map[ReignsFields.endReason] as String?,
+    startMatchId: map[ReignsFields.startMatchId] as int?,
+    endMatchId: map[ReignsFields.endMatchId] as int?,
+  );
 }
