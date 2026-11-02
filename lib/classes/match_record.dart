@@ -30,6 +30,7 @@ class MatchRecordFields {
   static const String showId = 'showId';
   static const String titleId = 'titleId';
   static const String winnerName = 'winnerName';
+  static const String titleChange = 'titleChange';
 
   static const List<String> values = [
     id,
@@ -47,6 +48,7 @@ class MatchRecordFields {
     winnerSideOrder,
     winnerSuperstarId,
     winnerName,
+    titleChange,
     matchOrder,
     showId,
     titleId,
@@ -95,6 +97,7 @@ class MatchRecord {
   final Show show;
   final Titles? title;
   final String? winnerName;
+  final bool titleChange;
 
   const MatchRecord({
     this.id,
@@ -117,6 +120,7 @@ class MatchRecord {
     required this.show,
     this.title,
     this.winnerName,
+    this.titleChange = false,
   });
 
   List<MatchParticipants> get allParticipants => [
@@ -197,6 +201,7 @@ class MatchRecord {
     bool clearTitle = false,
     String? winnerName,
     bool clearWinnerName = false,
+    bool? titleChange,
   }) =>
       MatchRecord(
         id: id ?? this.id,
@@ -224,6 +229,7 @@ class MatchRecord {
         show: show ?? this.show,
         title: clearTitle ? null : title ?? this.title,
         winnerName: clearWinnerName ? null : winnerName ?? this.winnerName,
+        titleChange: titleChange ?? this.titleChange,
       );
 
   Map<String, Object?> toJson() => {
@@ -246,5 +252,6 @@ class MatchRecord {
         MatchRecordFields.showId: show.id,
         MatchRecordFields.titleId: title?.id,
         MatchRecordFields.winnerName: winnerName,
+        MatchRecordFields.titleChange: titleChange ? 1 : 0,
       };
 }

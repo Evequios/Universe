@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/titles.dart';
+import 'package:wwe_universe/classes/reigns.dart';
+import 'package:wwe_universe/database/reings_database_helper.dart';
+import 'package:wwe_universe/widget/wwe_date_dialog.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
 import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
@@ -24,6 +27,7 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
   Superstars h1 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null); 
   Superstars h2 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null);
   bool isLoading = false;
+  List<Reigns> reigns = [];
   
 
   @override
@@ -37,6 +41,7 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
     setState(() => isLoading = true);
 
     title = await TitlesDatabaseHelper.readTitle(widget.titleId);
+    reigns = await ReignsDatabaseHelper.readReigns(widget.titleId);
 
     if (title.holder1 != null) {
       h1 = await SuperstarsDatabaseHelper.readSuperstar(title.holder1!.id!);
@@ -69,6 +74,11 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
     appBar: AppBar(
       title: const Text('Title details'),
       actions: [
+        IconButton(
+          icon: const Icon(Icons.remove_circle_outline),
+          tooltip: 'Declare title vacant',
+          onPressed: _vacateTitle,
+        ),
         editButton(),
         deleteButton(),
       ],
@@ -150,9 +160,81 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
                 else
                   _buildEmptyChampionCard(),
               ],
+              const SizedBox(height: 28),
+              const Text(
+                'REIGN HISTORY',
+                style: TextStyle(color: Color(0xFFD71920), fontSize: 13,
+                  fontWeight: FontWeight.bold, letterSpacing: 1.2),
+              ),
+              const SizedBox(height: 10),
+              if (reigns.isEmpty)
+                const Text('No reign recorded yet.', style: TextStyle(color: Color(0xFFAAAAAA)))
+              else
+                ...reigns.map(_buildReignCard),
             ],
           ),
   );
+
+
+  Widget _buildReignCard(Reigns reign) {
+    final start = 'Year ${reign.yearStart} • Week ${reign.weekStart}';
+    final end = reign.isCurrent
+        ? 'Current reign'
+        : 'Year ${reign.yearEnd} • Week ${reign.weekEnd}';
+    final holders = reign.holder2Name == null
+        ? reign.holder1Name
+        : '${reign.holder1Name} & ${reign.holder2Name}';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF222222),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF383838)),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(holders, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+        const SizedBox(height: 6),
+        Text('$start → $end', style: const TextStyle(color: Color(0xFFAAAAAA))),
+        if (reign.endReason == 'vacated')
+          const Padding(padding: EdgeInsets.only(top: 5), child: Text('Title vacated', style: TextStyle(color: Colors.orangeAccent, fontSize: 12))),
+      ]),
+    );
+  }
+
+  Future<void> _vacateTitle() async {
+    if (title.holder1 == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ce titre est déjà vacant.')),
+      );
+      return;
+    }
+    if (reigns.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aucun règne n’est encore enregistré pour ce titre.')),
+      );
+      return;
+    }
+    final date = await showDialog<Map<String, int>>(
+      context: context,
+      builder: (_) => const WweDateDialog(
+        title: 'Déclarer le titre vacant',
+        confirmLabel: 'Confirmer',
+        initialDay: 1,
+      ),
+    );
+    if (date == null || !mounted) return;
+    final year = date['year']!;
+    final week = date['week']!;
+    final day = date['day']!;
+
+    try {
+      await ReignsDatabaseHelper.vacateTitle(titleId: widget.titleId, year: year, week: week, dayOfWeek: day);
+      await refreshTitle();
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible de libérer le titre : $error')));
+    }
+  }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(

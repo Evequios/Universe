@@ -71,6 +71,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
   int? winnerSideOrder;
   int? winnerSuperstarId;
   String? winnerName;
+  bool titleChange = false;
   bool loading = true;
   bool saving = false;
 
@@ -148,6 +149,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         winnerSideOrder = existing.winnerSideOrder;
         winnerSuperstarId = existing.winnerSuperstarId;
         winnerName = existing.winnerName;
+        titleChange = existing.titleChange;
         for (final side in existing.sides) {
           sides.add(_SideDraft(
             name: side.name,
@@ -469,6 +471,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         matchOrder: parsedOrder < 0 ? 0 : parsedOrder,
         show: widget.show,
         title: selectedTitle,
+        titleChange: titleChange,
       );
 
       if (isEditing) {
@@ -529,7 +532,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         const SizedBox(height: 14),
         _dropdown<Titles>(
           label: 'Championnat (facultatif)', value: selectedTitle, items: titles, itemLabel: (e) => e.name,
-          allowNull: true, onChanged: (value) => setState(() => selectedTitle = value),
+          allowNull: true, onChanged: (value) => setState(() { selectedTitle = value; if (value == null) titleChange = false; }),
         ),
       ]);
 
@@ -667,9 +670,21 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
               winnerSideOrder = null;
               winnerSuperstarId = null;
               winnerName = null;
+              if (resultStatus != MatchResultStatus.winner) titleChange = false;
             });
           },
         ),
+        if (resultStatus == MatchResultStatus.winner && selectedTitle != null) ...[
+          const SizedBox(height: 10),
+          SwitchListTile.adaptive(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Changement de champion', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+            subtitle: const Text('Le vainqueur devient le nouveau champion.', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 12)),
+            value: titleChange,
+            activeColor: AppFormStyles.primary,
+            onChanged: (value) => setState(() => titleChange = value),
+          ),
+        ],
         if (resultStatus == MatchResultStatus.winner) ...[
           const SizedBox(height: 14),
           if (canChooseSideWinner)

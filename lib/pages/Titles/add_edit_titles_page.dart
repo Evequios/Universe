@@ -6,6 +6,8 @@ import 'package:wwe_universe/classes/titles.dart';
 import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
+import 'package:wwe_universe/database/reings_database_helper.dart';
+import 'package:wwe_universe/widget/wwe_date_dialog.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
 import 'package:wwe_universe/widget/titles_form_widget.dart';
 
@@ -254,54 +256,73 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
     );
   }
 
+  Future<Map<String, int>?> _askWweDate() {
+    return showDialog<Map<String, int>>(
+      context: context,
+      builder: (_) => const WweDateDialog(
+        title: 'Date de début du règne',
+      ),
+    );
+  }
+
   Future<void> _save() async {
     if (isSaving) return;
-
     FocusScope.of(context).unfocus();
-
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => isSaving = true);
+    final oldHolder1 = widget.title?.holder1?.id;
+    final oldHolder2 = widget.title?.holder2?.id;
+    final newHolder1 = holder1?.id;
+    final newHolder2 = tag == 1 ? holder2?.id : null;
+    final championChanged = oldHolder1 != newHolder1 || oldHolder2 != newHolder2;
+    final assigningChampion = newHolder1 != null && championChanged;
+    Map<String, int>? reignDate;
+    if (assigningChampion) {
+      reignDate = await _askWweDate();
+      if (reignDate == null) return;
+    }
 
+    setState(() => isSaving = true);
     try {
       final title = Titles(
-        name: name.trim(),
-        brand: brand,
-        tag: tag,
-        holder1: holder1,
-        holder2: tag == 1 ? holder2 : null,
+        name: name.trim(), brand: brand, tag: tag,
+        holder1: holder1, holder2: tag == 1 ? holder2 : null,
       );
 
+      int? savedTitleId;
       if (widget.title != null) {
-        await TitlesDatabaseHelper.updateTitle(
-        widget.title!.copy(
-          name: title.name,
-          tag: title.tag,
-          brand: title.brand,
-          holder1: title.holder1,
-          holder2: title.holder2,
+        await TitlesDatabaseHelper.updateTitle(widget.title!.copy(
+          name: title.name, tag: title.tag, brand: title.brand,
+          holder1: title.holder1, holder2: title.holder2,
           clearBrand: title.brand == null,
           clearHolder2: tag == 0 || holder2 == null,
-        ),
-      );
+        ));
+        savedTitleId = widget.title!.id;
       } else {
-        await TitlesDatabaseHelper.createTitle(title);
+        final created = await TitlesDatabaseHelper.createTitle(title);
+        savedTitleId = created.id;
+      }
+
+      if (assigningChampion && savedTitleId != null && reignDate != null) {
+        await ReignsDatabaseHelper.recordManualChange(
+          titleId: savedTitleId,
+          year: reignDate['year']!, week: reignDate['week']!,
+          dayOfWeek: reignDate['day']!,
+          holder1Id: holder1!.id!, holder1Name: holder1!.name,
+          holder2Id: tag == 1 ? holder2?.id : null,
+          holder2Name: tag == 1 ? holder2?.name : null,
+        );
       }
 
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (error) {
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Unable to save the title.'),
-        ),
+        SnackBar(content: Text('Impossible d’enregistrer le titre : $error')),
       );
     } finally {
-      if (mounted) {
-        setState(() => isSaving = false);
-      }
+      if (mounted) setState(() => isSaving = false);
     }
   }
 }

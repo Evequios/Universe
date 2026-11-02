@@ -43,7 +43,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 80,
+      version: 81,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -226,6 +226,7 @@ class DatabaseService {
         ${MatchRecordFields.winnerSideOrder} $intType,
         ${MatchRecordFields.winnerSuperstarId} $intType,
         ${MatchRecordFields.winnerName} TEXT,
+        ${MatchRecordFields.titleChange} INTEGER NOT NULL DEFAULT 0,
         ${MatchRecordFields.matchOrder} $intTypeNN DEFAULT 0,
         ${MatchRecordFields.showId} $intTypeNN,
         ${MatchRecordFields.titleId} $intType,
@@ -316,15 +317,45 @@ class DatabaseService {
     await db.execute('''
       CREATE TABLE $tableReigns (
         ${ReignsFields.id} $idType,
-        ${ReignsFields.holder1} $intTypeNN,
-        ${ReignsFields.holder2} $intType,
         ${ReignsFields.titleId} $intTypeNN,
-        ${ReignsFields.yearDebut} $intTypeNN,
-        ${ReignsFields.weekDebut} $intTypeNN,
+        ${ReignsFields.holder1Id} $intType,
+        ${ReignsFields.holder1Name} $textType,
+        ${ReignsFields.holder2Id} $intType,
+        ${ReignsFields.holder2Name} TEXT,
+        ${ReignsFields.yearStart} $intTypeNN,
+        ${ReignsFields.weekStart} $intTypeNN,
         ${ReignsFields.yearEnd} $intType,
-        ${ReignsFields.weekEnd} $intType
+        ${ReignsFields.weekEnd} $intType,
+        ${ReignsFields.endReason} TEXT,
+        ${ReignsFields.startMatchId} $intType,
+        ${ReignsFields.endMatchId} $intType,
+        FOREIGN KEY (${ReignsFields.titleId}) REFERENCES $tableTitles (${TitlesFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (${ReignsFields.holder1Id}) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE SET NULL,
+        FOREIGN KEY (${ReignsFields.holder2Id}) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE SET NULL,
+        FOREIGN KEY (${ReignsFields.startMatchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE SET NULL,
+        FOREIGN KEY (${ReignsFields.endMatchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE SET NULL
       )
     ''');
+    await db.execute('''
+      CREATE TABLE $tableTitleReignEvents (
+        ${TitleReignEventFields.id} $idType,
+        ${TitleReignEventFields.titleId} $intTypeNN,
+        ${TitleReignEventFields.eventType} $textType,
+        ${TitleReignEventFields.year} $intTypeNN,
+        ${TitleReignEventFields.week} $intTypeNN,
+        ${TitleReignEventFields.dayOfWeek} INTEGER NOT NULL DEFAULT 0,
+        ${TitleReignEventFields.matchOrder} INTEGER NOT NULL DEFAULT 0,
+        ${TitleReignEventFields.matchId} $intType,
+        ${TitleReignEventFields.holder1Id} $intType,
+        ${TitleReignEventFields.holder1Name} TEXT,
+        ${TitleReignEventFields.holder2Id} $intType,
+        ${TitleReignEventFields.holder2Name} TEXT,
+        FOREIGN KEY (${TitleReignEventFields.titleId}) REFERENCES $tableTitles (${TitlesFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (${TitleReignEventFields.matchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE CASCADE
+      )
+    ''');
+    await db.execute('CREATE INDEX idx_reigns_title_start ON $tableReigns (${ReignsFields.titleId}, ${ReignsFields.yearStart}, ${ReignsFields.weekStart})');
+    await db.execute('CREATE INDEX idx_title_events_match ON $tableTitleReignEvents (${TitleReignEventFields.matchId})');
 
     // ---------------------------------------------------------
     // INDEXES
@@ -512,6 +543,54 @@ class DatabaseService {
         WHERE ${MatchRecordFields.formatId} IS NOT NULL
       ''');
     }
+
+    if (oldVersion < 81) {
+      final columns = await db.rawQuery('PRAGMA table_info($tableMatches)');
+      final existing = columns.map((row) => row['name'] as String).toSet();
+      if (!existing.contains(MatchRecordFields.titleChange)) {
+        await db.execute('ALTER TABLE $tableMatches ADD COLUMN ${MatchRecordFields.titleChange} INTEGER NOT NULL DEFAULT 0');
+      }
+      await db.execute('DROP TABLE IF EXISTS $tableReigns');
+      await db.execute('''CREATE TABLE $tableReigns (
+        ${ReignsFields.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${ReignsFields.titleId} INTEGER NOT NULL,
+        ${ReignsFields.holder1Id} INTEGER,
+        ${ReignsFields.holder1Name} TEXT NOT NULL,
+        ${ReignsFields.holder2Id} INTEGER,
+        ${ReignsFields.holder2Name} TEXT,
+        ${ReignsFields.yearStart} INTEGER NOT NULL,
+        ${ReignsFields.weekStart} INTEGER NOT NULL,
+        ${ReignsFields.yearEnd} INTEGER,
+        ${ReignsFields.weekEnd} INTEGER,
+        ${ReignsFields.endReason} TEXT,
+        ${ReignsFields.startMatchId} INTEGER,
+        ${ReignsFields.endMatchId} INTEGER,
+        FOREIGN KEY (${ReignsFields.titleId}) REFERENCES $tableTitles (${TitlesFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (${ReignsFields.holder1Id}) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE SET NULL,
+        FOREIGN KEY (${ReignsFields.holder2Id}) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE SET NULL,
+        FOREIGN KEY (${ReignsFields.startMatchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE SET NULL,
+        FOREIGN KEY (${ReignsFields.endMatchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE SET NULL
+      )''');
+      await db.execute('''CREATE TABLE $tableTitleReignEvents (
+        ${TitleReignEventFields.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${TitleReignEventFields.titleId} INTEGER NOT NULL,
+        ${TitleReignEventFields.eventType} TEXT NOT NULL,
+        ${TitleReignEventFields.year} INTEGER NOT NULL,
+        ${TitleReignEventFields.week} INTEGER NOT NULL,
+        ${TitleReignEventFields.dayOfWeek} INTEGER NOT NULL DEFAULT 0,
+        ${TitleReignEventFields.matchOrder} INTEGER NOT NULL DEFAULT 0,
+        ${TitleReignEventFields.matchId} INTEGER,
+        ${TitleReignEventFields.holder1Id} INTEGER,
+        ${TitleReignEventFields.holder1Name} TEXT,
+        ${TitleReignEventFields.holder2Id} INTEGER,
+        ${TitleReignEventFields.holder2Name} TEXT,
+        FOREIGN KEY (${TitleReignEventFields.titleId}) REFERENCES $tableTitles (${TitlesFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (${TitleReignEventFields.matchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE CASCADE
+      )''');
+      await db.execute('CREATE INDEX idx_reigns_title_start ON $tableReigns (${ReignsFields.titleId}, ${ReignsFields.yearStart}, ${ReignsFields.weekStart})');
+      await db.execute('CREATE INDEX idx_title_events_match ON $tableTitleReignEvents (${TitleReignEventFields.matchId})');
+    }
+
   }
 
   Future<void> _seedMatchCatalog(DatabaseExecutor db) async {

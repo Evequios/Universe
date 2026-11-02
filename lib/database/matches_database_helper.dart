@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 import 'package:wwe_universe/classes/match_record.dart';
+import 'package:wwe_universe/classes/reigns.dart';
 import 'package:wwe_universe/classes/match_sides.dart';
 import 'package:wwe_universe/classes/match_participants.dart';
 import 'package:wwe_universe/database/database.dart';
@@ -9,6 +10,7 @@ import 'package:wwe_universe/database/match_types_database_helper.dart';
 import 'package:wwe_universe/database/stipulations_database_helper.dart';
 import 'package:wwe_universe/database/shows_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
+import 'package:wwe_universe/database/reings_database_helper.dart';
 
 class MatchesDatabaseHelper {
   static List<MatchParticipants> _participantsOf(MatchRecord match) =>
@@ -281,6 +283,7 @@ class MatchesDatabaseHelper {
       show: await ShowsDatabaseHelper.readShow(showId),
       title: titleId == null ? null : await TitlesDatabaseHelper.readTitle(titleId),
       winnerName: json[MatchRecordFields.winnerName] as String?,
+      titleChange: (json[MatchRecordFields.titleChange] as int? ?? 0) == 1,
     );
   }
 
@@ -291,6 +294,7 @@ class MatchesDatabaseHelper {
       final values = match.toJson()..remove(MatchRecordFields.id);
       final matchId = await txn.insert(tableMatches, values);
       await _insertStructure(txn, match, matchId);
+      await ReignsDatabaseHelper.syncMatch(txn, match, matchId);
       return matchId;
     });
     return readMatch(id);
@@ -338,23 +342,52 @@ class MatchesDatabaseHelper {
       await txn.delete(tableMatchParticipants,
         where: '${MatchParticipantsFields.matchId} = ?', whereArgs: [match.id]);
       await _insertStructure(txn, match, match.id!);
+      await ReignsDatabaseHelper.syncMatch(txn, match, match.id!);
     });
     return 1;
   }
 
   static Future<int> deleteMatch(int id) async {
     final db = await DatabaseService.instance.database;
-    return db.delete(tableMatches,
-      where: '${MatchRecordFields.id} = ?', whereArgs: [id]);
+    return db.transaction((txn) async {
+      final rows = await txn.query(tableMatches,
+        columns: [MatchRecordFields.titleId],
+        where: '${MatchRecordFields.id} = ?', whereArgs: [id]);
+      final titleId = rows.isEmpty ? null : rows.first[MatchRecordFields.titleId] as int?;
+      final count = await txn.delete(tableMatches,
+        where: '${MatchRecordFields.id} = ?', whereArgs: [id]);
+      if (titleId != null) {
+        await txn.delete(tableTitleReignEvents,
+          where: '${TitleReignEventFields.matchId} = ?', whereArgs: [id]);
+        // Replaying remaining title events restores the correct champion.
+        await ReignsDatabaseHelper.rebuildAfterMatchDeletion(txn, titleId);
+      }
+      return count;
+    });
   }
 
   static Future<void> reorderMatches(int showId, List<int> orderedMatchIds) async {
     final db = await DatabaseService.instance.database;
     await db.transaction((txn) async {
+      final affectedTitles = <int>{};
       for (var index = 0; index < orderedMatchIds.length; index++) {
+        final matchId = orderedMatchIds[index];
         await txn.update(tableMatches, {MatchRecordFields.matchOrder: index},
           where: '${MatchRecordFields.id} = ? AND ${MatchRecordFields.showId} = ?',
-          whereArgs: [orderedMatchIds[index], showId]);
+          whereArgs: [matchId, showId]);
+        final event = await txn.query(tableTitleReignEvents,
+          columns: [TitleReignEventFields.titleId],
+          where: '${TitleReignEventFields.matchId} = ?', whereArgs: [matchId], limit: 1);
+        if (event.isNotEmpty) {
+          final titleId = event.first[TitleReignEventFields.titleId] as int;
+          await txn.update(tableTitleReignEvents,
+            {TitleReignEventFields.matchOrder: index},
+            where: '${TitleReignEventFields.matchId} = ?', whereArgs: [matchId]);
+          affectedTitles.add(titleId);
+        }
+      }
+      for (final titleId in affectedTitles) {
+        await ReignsDatabaseHelper.rebuildAfterMatchDeletion(txn, titleId);
       }
     });
   }
