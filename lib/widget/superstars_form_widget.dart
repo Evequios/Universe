@@ -15,10 +15,12 @@ class SuperstarsFormWidget extends StatelessWidget {
   final String name;
   final int? selectedBrandId;
   final String orientation;
+  final String photoUrl;
 
   final ValueChanged<String?> onChangedName;
   final ValueChanged<int?> onChangedBrand;
   final ValueChanged<String?> onChangedOrientation;
+  final ValueChanged<String?> onChangedPhotoUrl;
 
   const SuperstarsFormWidget({
     super.key,
@@ -26,9 +28,11 @@ class SuperstarsFormWidget extends StatelessWidget {
     required this.name,
     required this.selectedBrandId,
     required this.orientation,
+    required this.photoUrl,
     required this.onChangedName,
     required this.onChangedBrand,
     required this.onChangedOrientation,
+    required this.onChangedPhotoUrl,
   });
 
   @override
@@ -108,6 +112,32 @@ class SuperstarsFormWidget extends StatelessWidget {
                   onChanged: onChangedBrand,
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          AppFormSection(
+            title: 'Profile photo',
+            child: TextFormField(
+              initialValue: photoUrl,
+              keyboardType: TextInputType.url,
+              style: const TextStyle(color: Colors.white),
+              decoration: AppFormStyles.inputDecoration(
+                label: 'Photo URL',
+                hint: 'https://…',
+                icon: Icons.image_outlined,
+              ),
+              validator: (value) {
+                final text = value?.trim() ?? '';
+                if (text.isEmpty) return null;
+                final uri = Uri.tryParse(text);
+                if (uri == null || !uri.hasScheme ||
+                    (uri.scheme != 'http' && uri.scheme != 'https') ||
+                    uri.host.isEmpty) {
+                  return 'Enter a valid http or https URL';
+                }
+                return null;
+              },
+              onChanged: onChangedPhotoUrl,
             ),
           ),
           const SizedBox(height: 16),

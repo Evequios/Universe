@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 import 'package:wwe_universe/classes/match_record.dart';
+import 'package:wwe_universe/classes/storyline_event.dart';
 import 'package:wwe_universe/classes/reigns.dart';
 import 'package:wwe_universe/classes/match_sides.dart';
 import 'package:wwe_universe/classes/match_participants.dart';
@@ -354,6 +355,9 @@ class MatchesDatabaseHelper {
         columns: [MatchRecordFields.titleId],
         where: '${MatchRecordFields.id} = ?', whereArgs: [id]);
       final titleId = rows.isEmpty ? null : rows.first[MatchRecordFields.titleId] as int?;
+      // Retire aussi les entrées de chronologie : un match supprimé ne doit pas
+      // laisser un événement orphelin dans une storyline.
+      await txn.delete(tableStorylineEvents, where: '${StorylineEventFields.matchId} = ?', whereArgs: [id]);
       final count = await txn.delete(tableMatches,
         where: '${MatchRecordFields.id} = ?', whereArgs: [id]);
       if (titleId != null) {

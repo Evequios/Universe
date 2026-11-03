@@ -1,3 +1,4 @@
+import 'package:wwe_universe/widget/news_profile_section.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/match_record.dart';
 import 'package:wwe_universe/classes/match_sides.dart';
@@ -161,6 +162,8 @@ class ShowsDetailPageState extends State<ShowsDetailPage> {
             _buildEmptyMatches()
           else
             _buildReorderableMatches(),
+          const SizedBox(height: 28),
+          NewsProfileSection(relationTable: 'news_shows', relationColumn: 'show_id', entityId: widget.showId),
           const SizedBox(height: 80),
         ],
       ),

@@ -1,3 +1,4 @@
+import 'package:wwe_universe/widget/news_profile_section.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/titles.dart';
@@ -171,6 +172,8 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
                 const Text('No reign recorded yet.', style: TextStyle(color: Color(0xFFAAAAAA)))
               else
                 ...reigns.map(_buildReignCard),
+              const SizedBox(height: 28),
+              NewsProfileSection(relationTable: 'news_titles', relationColumn: 'title_id', entityId: widget.titleId),
             ],
           ),
   );

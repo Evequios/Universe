@@ -22,6 +22,7 @@ class SuperstarsDatabaseHelper {
       brand: brand,
       orientation: json[SuperstarsFields.orientation] as String,
       division: json[SuperstarsFields.division] as int?,
+      photoUrl: json[SuperstarsFields.photoUrl] as String?,
     );
   }
 

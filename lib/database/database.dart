@@ -14,6 +14,7 @@ import 'package:wwe_universe/classes/reigns.dart';
 import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/classes/stipulations.dart';
 import 'package:wwe_universe/classes/storylines.dart';
+import 'package:wwe_universe/classes/storyline_event.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/classes/titles.dart';
@@ -43,7 +44,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 81,
+      version: 87,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -63,9 +64,16 @@ class DatabaseService {
         ${NewsFields.title} $textType,
         ${NewsFields.text} $textType,
         ${NewsFields.createdTime} $textType,
-        ${NewsFields.type} $textType DEFAULT 'Other'
+        ${NewsFields.type} $textType DEFAULT 'Other',
+        ${NewsFields.year} INTEGER,
+        ${NewsFields.week} INTEGER,
+        ${NewsFields.dayOfWeek} INTEGER
       )
     ''');
+
+    await db.execute('CREATE INDEX idx_news_wwe_date ON $tableNews (${NewsFields.year}, ${NewsFields.week}, ${NewsFields.dayOfWeek})');
+
+    await _createNewsAssociationTables(db);
 
     // ---------------------------------------------------------
     // BRANDS
@@ -88,7 +96,8 @@ class DatabaseService {
         ${SuperstarsFields.name} $textType,
         ${SuperstarsFields.brand} $intType,
         ${SuperstarsFields.orientation} $textType,
-        ${SuperstarsFields.division} $intType DEFAULT NULL
+        ${SuperstarsFields.division} $intType DEFAULT NULL,
+        ${SuperstarsFields.photoUrl} TEXT DEFAULT NULL
       )
     ''');
 
@@ -104,9 +113,61 @@ class DatabaseService {
         ${StorylinesFields.yearStart} $intTypeNN,
         ${StorylinesFields.yearEnd} $intTypeNN,
         ${StorylinesFields.start} $intTypeNN,
-        ${StorylinesFields.end} $intTypeNN
+        ${StorylinesFields.end} $intTypeNN,
+        ${StorylinesFields.status} TEXT NOT NULL DEFAULT 'ongoing'
       )
     ''');
+
+    await db.execute('''CREATE TABLE storyline_news (
+      storyline_id INTEGER NOT NULL,
+      news_id INTEGER NOT NULL,
+      position INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (storyline_id, news_id),
+      FOREIGN KEY (storyline_id) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+      FOREIGN KEY (news_id) REFERENCES $tableNews (${NewsFields.id}) ON DELETE CASCADE
+    )''');
+
+    await db.execute('''CREATE TABLE storyline_matches (
+      storyline_id INTEGER NOT NULL,
+      match_id INTEGER NOT NULL,
+      position INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (storyline_id, match_id),
+      FOREIGN KEY (storyline_id) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+      FOREIGN KEY (match_id) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE CASCADE
+    )''');
+    await db.execute('CREATE INDEX idx_storyline_news_news ON storyline_news (news_id)');
+    await db.execute('CREATE INDEX idx_storyline_matches_match ON storyline_matches (match_id)');
+    await db.execute('''CREATE TABLE $tableStorylineEvents (
+      ${StorylineEventFields.id} $idType,
+      ${StorylineEventFields.storylineId} INTEGER NOT NULL,
+      ${StorylineEventFields.type} TEXT NOT NULL DEFAULT 'segment',
+      ${StorylineEventFields.title} $textType,
+      ${StorylineEventFields.description} TEXT NOT NULL DEFAULT '',
+      ${StorylineEventFields.year} INTEGER NOT NULL,
+      ${StorylineEventFields.week} INTEGER NOT NULL,
+      ${StorylineEventFields.dayOfWeek} INTEGER NOT NULL DEFAULT 1,
+      ${StorylineEventFields.position} INTEGER NOT NULL DEFAULT 0,
+      ${StorylineEventFields.matchId} INTEGER,
+      ${StorylineEventFields.newsId} INTEGER,
+      FOREIGN KEY (${StorylineEventFields.storylineId}) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+      FOREIGN KEY (${StorylineEventFields.matchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE SET NULL,
+      FOREIGN KEY (${StorylineEventFields.newsId}) REFERENCES $tableNews (${NewsFields.id}) ON DELETE SET NULL
+    )''');
+    await db.execute('CREATE INDEX idx_storyline_events_order ON $tableStorylineEvents (${StorylineEventFields.storylineId}, ${StorylineEventFields.year}, ${StorylineEventFields.week}, ${StorylineEventFields.dayOfWeek}, ${StorylineEventFields.position})');
+    await db.execute('''CREATE TABLE storyline_superstars (
+      storyline_id INTEGER NOT NULL,
+      superstar_id INTEGER NOT NULL,
+      PRIMARY KEY (storyline_id, superstar_id),
+      FOREIGN KEY (storyline_id) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+      FOREIGN KEY (superstar_id) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE CASCADE
+    )''');
+    await db.execute('''CREATE TABLE storyline_teams (
+      storyline_id INTEGER NOT NULL,
+      team_id INTEGER NOT NULL,
+      PRIMARY KEY (storyline_id, team_id),
+      FOREIGN KEY (storyline_id) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+      FOREIGN KEY (team_id) REFERENCES $tableTeams (${TeamsFields.id}) ON DELETE CASCADE
+    )''');
 
     // ---------------------------------------------------------
     // SHOWS
@@ -425,7 +486,137 @@ class DatabaseService {
     ''');
   }
 
+  Future<void> _createNewsAssociationTables(DatabaseExecutor db) async {
+    final definitions = <String, String>{
+      'news_superstars': 'superstar_id',
+      'news_teams': 'team_id',
+      'news_titles': 'title_id',
+      'news_shows': 'show_id',
+    };
+    final references = <String, String>{
+      'news_superstars': '$tableSuperstars (${SuperstarsFields.id})',
+      'news_teams': '$tableTeams (${TeamsFields.id})',
+      'news_titles': '$tableTitles (${TitlesFields.id})',
+      'news_shows': '$tableShows (${ShowFields.id})',
+    };
+    for (final entry in definitions.entries) {
+      await db.execute('''CREATE TABLE IF NOT EXISTS ${entry.key} (
+        news_id INTEGER NOT NULL,
+        ${entry.value} INTEGER NOT NULL,
+        PRIMARY KEY (news_id, ${entry.value}),
+        FOREIGN KEY (news_id) REFERENCES $tableNews (${NewsFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (${entry.value}) REFERENCES ${references[entry.key]} ON DELETE CASCADE
+      )''');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_${entry.key}_entity ON ${entry.key} (${entry.value})');
+    }
+  }
+
   Future<void> _updateDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 87) {
+      await _createNewsAssociationTables(db);
+    }
+
+    if (oldVersion < 86) {
+      // News dates are optional for legacy records; new records enter through
+      // the form with a complete WWE calendar date.
+      final columns = await db.rawQuery('PRAGMA table_info($tableNews)');
+      final existing = columns.map((row) => row['name'] as String).toSet();
+      final additions = <String, String>{
+        NewsFields.year: 'INTEGER',
+        NewsFields.week: 'INTEGER',
+        NewsFields.dayOfWeek: 'INTEGER',
+      };
+      for (final entry in additions.entries) {
+        if (!existing.contains(entry.key)) {
+          await db.execute('ALTER TABLE $tableNews ADD COLUMN ${entry.key} ${entry.value}');
+        }
+      }
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_news_wwe_date ON $tableNews (${NewsFields.year}, ${NewsFields.week}, ${NewsFields.dayOfWeek})');
+    }
+    if (oldVersion < 85) {
+      await db.execute('''CREATE TABLE IF NOT EXISTS $tableStorylineEvents (
+        ${StorylineEventFields.id} $idType,
+        ${StorylineEventFields.storylineId} INTEGER NOT NULL,
+        ${StorylineEventFields.type} TEXT NOT NULL DEFAULT 'segment',
+        ${StorylineEventFields.title} $textType,
+        ${StorylineEventFields.description} TEXT NOT NULL DEFAULT '',
+        ${StorylineEventFields.year} INTEGER NOT NULL,
+        ${StorylineEventFields.week} INTEGER NOT NULL,
+        ${StorylineEventFields.dayOfWeek} INTEGER NOT NULL DEFAULT 1,
+        ${StorylineEventFields.position} INTEGER NOT NULL DEFAULT 0,
+        ${StorylineEventFields.matchId} INTEGER,
+        ${StorylineEventFields.newsId} INTEGER,
+        FOREIGN KEY (${StorylineEventFields.storylineId}) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (${StorylineEventFields.matchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE SET NULL,
+        FOREIGN KEY (${StorylineEventFields.newsId}) REFERENCES $tableNews (${NewsFields.id}) ON DELETE SET NULL
+      )''');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_storyline_events_order ON $tableStorylineEvents (${StorylineEventFields.storylineId}, ${StorylineEventFields.year}, ${StorylineEventFields.week}, ${StorylineEventFields.dayOfWeek}, ${StorylineEventFields.position})');
+    }
+    if (oldVersion < 84) {
+      await db.execute('''CREATE TABLE IF NOT EXISTS storyline_superstars (
+        storyline_id INTEGER NOT NULL,
+        superstar_id INTEGER NOT NULL,
+        PRIMARY KEY (storyline_id, superstar_id),
+        FOREIGN KEY (storyline_id) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (superstar_id) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE CASCADE
+      )''');
+      await db.execute('''CREATE TABLE IF NOT EXISTS storyline_teams (
+        storyline_id INTEGER NOT NULL,
+        team_id INTEGER NOT NULL,
+        PRIMARY KEY (storyline_id, team_id),
+        FOREIGN KEY (storyline_id) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (team_id) REFERENCES $tableTeams (${TeamsFields.id}) ON DELETE CASCADE
+      )''');
+    }
+    if (oldVersion < 83) {
+      final newsColumns = await db.rawQuery('PRAGMA table_info($tableNews)');
+      final newsExisting = newsColumns.map((row) => row['name'] as String).toSet();
+      final newsAdditions = <String, String>{
+        NewsFields.year: 'INTEGER',
+        NewsFields.week: 'INTEGER',
+        NewsFields.dayOfWeek: 'INTEGER',
+      };
+      for (final entry in newsAdditions.entries) {
+        if (!newsExisting.contains(entry.key)) {
+          await db.execute('ALTER TABLE $tableNews ADD COLUMN ${entry.key} ${entry.value}');
+        }
+      }
+
+      final storylineColumns = await db.rawQuery('PRAGMA table_info($tableStorylines)');
+      final storylineExisting = storylineColumns.map((row) => row['name'] as String).toSet();
+      if (!storylineExisting.contains(StorylinesFields.status)) {
+        await db.execute("ALTER TABLE $tableStorylines ADD COLUMN ${StorylinesFields.status} TEXT NOT NULL DEFAULT 'ongoing'");
+        // Preserve the old convention: a non-zero ending week means completed.
+        await db.execute("UPDATE $tableStorylines SET ${StorylinesFields.status} = 'completed' WHERE ${StorylinesFields.end} != 0");
+      }
+
+      await db.execute('''CREATE TABLE IF NOT EXISTS storyline_news (
+        storyline_id INTEGER NOT NULL,
+        news_id INTEGER NOT NULL,
+        position INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (storyline_id, news_id),
+        FOREIGN KEY (storyline_id) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (news_id) REFERENCES $tableNews (${NewsFields.id}) ON DELETE CASCADE
+      )''');
+      await db.execute('''CREATE TABLE IF NOT EXISTS storyline_matches (
+        storyline_id INTEGER NOT NULL,
+        match_id INTEGER NOT NULL,
+        position INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (storyline_id, match_id),
+        FOREIGN KEY (storyline_id) REFERENCES $tableStorylines (${StorylinesFields.id}) ON DELETE CASCADE,
+        FOREIGN KEY (match_id) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE CASCADE
+      )''');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_storyline_news_news ON storyline_news (news_id)');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_storyline_matches_match ON storyline_matches (match_id)');
+    }
+    if (oldVersion < 82) {
+      final columns = await db.rawQuery('PRAGMA table_info($tableSuperstars)');
+      final existing = columns.map((row) => row['name'] as String).toSet();
+      if (!existing.contains(SuperstarsFields.photoUrl)) {
+        await db.execute('ALTER TABLE $tableSuperstars ADD COLUMN ${SuperstarsFields.photoUrl} TEXT');
+      }
+    }
+
     if (oldVersion < 78) {
       final columns = await db.rawQuery('PRAGMA table_info($tableMatchFormats)');
       final existing = columns.map((row) => row['name'] as String).toSet();
