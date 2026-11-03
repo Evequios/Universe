@@ -101,3 +101,26 @@ class AppFormSection extends StatelessWidget {
     );
   }
 }
+
+class AppDetailSection extends StatelessWidget {
+  final String title;
+  final Widget child;
+  final IconData? icon;
+  const AppDetailSection({super.key, required this.title, required this.child, this.icon});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: AppFormStyles.surface,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: AppFormStyles.border),
+    ),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [if (icon != null) ...[Icon(icon, color: AppFormStyles.primary, size: 18), const SizedBox(width: 8)],
+        Text(title.toUpperCase(), style: const TextStyle(color: AppFormStyles.primary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.3))]),
+      const SizedBox(height: 14), child,
+    ]),
+  );
+}

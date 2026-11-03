@@ -7,6 +7,9 @@ import 'package:wwe_universe/classes/match_participants.dart';
 import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/database/matches_database_helper.dart';
 import 'package:wwe_universe/database/shows_database_helper.dart';
+import 'package:wwe_universe/database/storyline_relations_database_helper.dart';
+import 'package:wwe_universe/database/storylines_database_helper.dart';
+import 'package:wwe_universe/pages/Storylines/storylines_detail_page.dart';
 import 'package:wwe_universe/pages/Matches/add_edit_matches_page.dart';
 
 class MatchesDetailPage extends StatefulWidget {
@@ -156,6 +159,30 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
           subtitle: show == null
               ? 'Le show associé n’est plus disponible'
               : 'Année ${show!.year} • Semaine ${show!.week}',
+        ),
+        const SizedBox(height: 24),
+        _buildSectionTitle('Storylines associées'),
+        const SizedBox(height: 10),
+        FutureBuilder<List<int>>(
+          future: StorylineRelationsDatabaseHelper.readStorylineIdsForMatch(value.id!),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+            final ids = snapshot.data ?? const <int>[];
+            if (ids.isEmpty) return const Text('Ce match ne fait partie d’aucune storyline.', style: TextStyle(color: secondaryText));
+            return Column(children: ids.map((id) => FutureBuilder(
+              future: StorylinesDatabaseHelper.readStoryline(id),
+              builder: (context, storylineSnapshot) {
+                if (!storylineSnapshot.hasData) return const SizedBox.shrink();
+                final storyline = storylineSnapshot.data!;
+                return Card(color: surface, child: ListTile(
+                  leading: const Icon(Icons.auto_stories_outlined, color: primary),
+                  title: Text(storyline.title, style: const TextStyle(color: Colors.white)),
+                  subtitle: Text('Ouvrir la storyline', style: const TextStyle(color: secondaryText)),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => StorylinesDetailPage(storylineId: id))),
+                ));
+              },
+            )).toList());
+          },
         ),
       ],
     );

@@ -1,3 +1,5 @@
+import 'package:wwe_universe/widget/news_profile_section.dart';
+import 'package:wwe_universe/widget/storyline_profile_section.dart';
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/match_record.dart';
@@ -77,6 +79,49 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
     }
   }
 
+  String _outcomeFor(MatchRecord match) {
+    if (match.resultStatus == MatchResultStatus.pending) return 'À venir';
+    if (match.resultStatus == MatchResultStatus.draw) return 'Nul';
+    if (match.resultStatus == MatchResultStatus.noContest) return 'No Contest';
+    if (match.resultStatus != MatchResultStatus.winner) return 'Inconnu';
+
+    final id = superstar?.id;
+    if (id == null) return 'Inconnu';
+
+    if (match.winnerSuperstarId != null) {
+      return match.winnerSuperstarId == id ? 'Victoire' : 'Défaite';
+    }
+
+    if (match.winnerSideOrder != null) {
+      final winningSide = match.sides.where(
+        (side) => side.sideOrder == match.winnerSideOrder,
+      );
+      if (winningSide.isNotEmpty) {
+        return winningSide.first.participants.any(
+          (participant) => participant.superstarId == id,
+        ) ? 'Victoire' : 'Défaite';
+      }
+    }
+
+    final winnerName = match.winnerName?.trim();
+    if (winnerName != null && winnerName.isNotEmpty) {
+      return match.allParticipants.any((participant) =>
+          participant.superstarId == id &&
+          participant.superstarName.toLowerCase() == winnerName.toLowerCase())
+          ? 'Victoire'
+          : 'Défaite';
+    }
+    return 'Inconnu';
+  }
+
+  int get _wins => listMatches.where((match) => _outcomeFor(match) == 'Victoire').length;
+  int get _losses => listMatches.where((match) => _outcomeFor(match) == 'Défaite').length;
+  int get _draws => listMatches.where((match) => _outcomeFor(match) == 'Nul').length;
+  int get _noContests => listMatches.where((match) => _outcomeFor(match) == 'No Contest').length;
+  int get _pending => listMatches.where((match) => _outcomeFor(match) == 'À venir').length;
+  int get _decided => _wins + _losses;
+  String get _winRate => _decided == 0 ? '—' : '${(_wins * 100 / _decided).toStringAsFixed(1)}%';
+
   String get initials {
     final name = superstar?.name.trim() ?? '';
     if (name.isEmpty) return '?';
@@ -143,6 +188,10 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
         children: [
           _buildProfileHeader(),
+          const SizedBox(height: 22),
+          _buildSectionTitle('CAREER STATISTICS'),
+          const SizedBox(height: 12),
+          _buildStatistics(),
           const SizedBox(height: 26),
           _buildSectionTitle('PROFILE INFORMATION'),
           const SizedBox(height: 12),
@@ -157,8 +206,53 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
             _buildEmptyMatches()
           else
             ...listMatches.map(_buildMatchCard),
+          const SizedBox(height: 28),
+          StorylineProfileSection(relationTable: 'storyline_superstars', relationColumn: 'superstar_id', entityId: widget.superstarId),
+          const SizedBox(height: 28),
+          NewsProfileSection(relationTable: 'news_superstars', relationColumn: 'superstar_id', entityId: widget.superstarId),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatistics() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: border),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: _statValue('MATCHES', '${listMatches.length}')),
+              Expanded(child: _statValue('WINS', '$_wins', valueColor: const Color(0xFF4CAF50))),
+              Expanded(child: _statValue('LOSSES', '$_losses', valueColor: primary)),
+              Expanded(child: _statValue('WIN RATE', _winRate)),
+            ],
+          ),
+          const Divider(color: border, height: 24),
+          Row(
+            children: [
+              Expanded(child: _statValue('DRAWS', '$_draws')),
+              Expanded(child: _statValue('NO CONTEST', '$_noContests')),
+              Expanded(child: _statValue('PENDING', '$_pending')),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statValue(String label, String value, {Color valueColor = Colors.white}) {
+    return Column(
+      children: [
+        Text(value, style: TextStyle(color: valueColor, fontSize: 19, fontWeight: FontWeight.w900)),
+        const SizedBox(height: 4),
+        Text(label, textAlign: TextAlign.center, style: const TextStyle(color: secondaryText, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+      ],
     );
   }
 
@@ -176,26 +270,24 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
       child: Column(
         children: [
           Container(
-            width: 88,
-            height: 88,
+            width: 112,
+            height: 112,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: const Color(0xFF35171D),
               borderRadius: BorderRadius.circular(25),
-              border: Border.all(
-                color: primary.withOpacity(0.55),
-                width: 1.5,
-              ),
+              border: Border.all(color: primary.withOpacity(0.55), width: 1.5),
+              image: superstar!.photoUrl != null && superstar!.photoUrl!.trim().isNotEmpty
+                  ? DecorationImage(
+                      image: NetworkImage(superstar!.photoUrl!.trim()),
+                      fit: BoxFit.cover,
+                      onError: (_, __) {},
+                    )
+                  : null,
             ),
-            child: Text(
-              initials,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 29,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
-              ),
-            ),
+            child: superstar!.photoUrl == null || superstar!.photoUrl!.trim().isEmpty
+                ? Text(initials, style: const TextStyle(color: Colors.white, fontSize: 29, fontWeight: FontWeight.w900, letterSpacing: 1))
+                : const SizedBox.shrink(),
           ),
           const SizedBox(height: 18),
           Text(
@@ -319,6 +411,12 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
             '${listMatches.length}',
             Icons.sports_mma_outlined,
           ),
+          const Divider(color: border, height: 24),
+          _informationRow(
+            'Win rate',
+            _winRate,
+            Icons.trending_up_outlined,
+          ),
         ],
       ),
     );
@@ -370,34 +468,13 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
       (participant) => participant.superstarId == currentSuperstarId,
     );
 
-    final wonAsIndividual =
-        match.resultStatus == MatchResultStatus.winner &&
-        match.winnerSuperstarId == currentSuperstarId;
-
-    final winningSide = match.sides.where(
-      (side) => side.sideOrder == match.winnerSideOrder,
-    );
-
-    final wonAsTeam =
-        match.resultStatus == MatchResultStatus.winner &&
-        winningSide.isNotEmpty &&
-        winningSide.first.participants.any(
-          (participant) => participant.superstarId == currentSuperstarId,
-        );
-
-    String resultLabel;
-
-    if (match.resultStatus == MatchResultStatus.pending) {
-      resultLabel = 'Pending';
-    } else if (match.resultStatus == MatchResultStatus.draw) {
-      resultLabel = 'Draw';
-    } else if (match.resultStatus == MatchResultStatus.noContest) {
-      resultLabel = 'No contest';
-    } else if (wonAsIndividual || wonAsTeam) {
-      resultLabel = 'Victory';
-    } else {
-      resultLabel = 'Defeat';
-    }
+    final outcome = _outcomeFor(match);
+    final won = outcome == 'Victoire';
+    final resultLabel = outcome == 'Victoire' ? 'Victory' :
+        outcome == 'Défaite' ? 'Defeat' :
+        outcome == 'Nul' ? 'Draw' :
+        outcome == 'No Contest' ? 'No contest' :
+        outcome == 'À venir' ? 'Pending' : 'Unknown';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -431,7 +508,7 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
               Text(
                 resultLabel.toUpperCase(),
                 style: TextStyle(
-                  color: wonAsIndividual || wonAsTeam
+                  color: won
                       ? Colors.amber
                       : secondaryText,
                   fontSize: 10,

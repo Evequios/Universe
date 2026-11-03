@@ -1,121 +1,144 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wwe_universe/classes/storylines.dart';
+import 'package:wwe_universe/classes/superstars.dart';
+import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/database/storylines_database_helper.dart';
-import 'package:wwe_universe/widget/storylines_form_widget.dart';
+import 'package:wwe_universe/database/storyline_participants_database_helper.dart';
+import 'package:wwe_universe/database/superstars_database_helper.dart';
+import 'package:wwe_universe/database/teams_database_helper.dart';
+import 'package:wwe_universe/widget/app_form_widgets.dart';
 
 class AddEditStorylinesPage extends StatefulWidget {
   final Storylines? storyline;
-
-  const AddEditStorylinesPage({
-    super.key,
-    this.storyline,
-  });
+  const AddEditStorylinesPage({super.key, this.storyline});
   @override
-  AddEditStorylinesPageState createState() => AddEditStorylinesPageState();
+  State<AddEditStorylinesPage> createState() => _AddEditStorylinesPageState();
 }
 
-class AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
+class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
   final _formKey = GlobalKey<FormState>();
-  late String title;
-  late String text;
-  late int yearStart;
-  late int yearEnd;
-  late int start;
-  late int end;
+  final _title = TextEditingController();
+  final _description = TextEditingController();
+  final _startYear = TextEditingController();
+  final _startWeek = TextEditingController();
+  final _endYear = TextEditingController();
+  final _endWeek = TextEditingController();
+  String _status = StorylineStatus.ongoing;
+  List<Superstars> _allSuperstars = [];
+  List<Teams> _allTeams = [];
+  Set<int> _selectedSuperstars = {};
+  Set<int> _selectedTeams = {};
+  bool _loading = true;
+  bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-
-    title = widget.storyline?.title ?? '';
-    text = widget.storyline?.text ?? '';
-    yearStart = widget.storyline?.yearStart ?? 0;
-    yearEnd = widget.storyline?.yearEnd ?? 0;
-    start = widget.storyline?.start?? 0;
-    end = widget.storyline?.end ?? 0;
+    final s = widget.storyline;
+    _title.text = s?.title ?? '';
+    _description.text = s?.text ?? '';
+    _startYear.text = s == null || s.yearStart == 0 ? '' : '${s.yearStart}';
+    _startWeek.text = s == null || s.start == 0 ? '' : '${s.start}';
+    _endYear.text = s == null || s.yearEnd == 0 ? '' : '${s.yearEnd}';
+    _endWeek.text = s == null || s.end == 0 ? '' : '${s.end}';
+    _status = s?.status ?? StorylineStatus.ongoing;
+    _load();
   }
 
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      actions: [buildButton()],
-    ),
-    body: Form(
-      key: _formKey,
-      child: StorylinesFormWidget(
-        title: title,
-        text: text,
-        yearStart : yearStart,
-        yearEnd : yearEnd,
-        start : start,
-        end : end,
-        onChangedTitle: (title) => setState(() => this.title = title!),
-        onChangedText: (text) => setState(() => this.text = text!),
-        onChangedYearStart: (yearStart) => setState(() => this.yearStart = int.parse(yearStart!)),
-        onChangedYearEnd: (yearEnd) => setState(() => this.yearEnd = int.parse(yearEnd!)),
-        onChangedStart: (start) => setState(() => this.start = int.parse(start!)),
-        onChangedEnd: (end) => setState(() => this.end = int.parse(end!)),
-      ),
-    ),
-  );
-
-  Widget buildButton() {
-    final isFormValid = title.isNotEmpty && text.isNotEmpty;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white, backgroundColor: isFormValid ? null : Colors.grey.shade700,
-        ),
-        onPressed: addOrUpdateUniverseStorylines,
-        child: const Text('Save'),
-      ),
-    );
-  }
-
-  void addOrUpdateUniverseStorylines() async {
-    final isValid = _formKey.currentState!.validate();
-
-    if (isValid) {
-      final isUpdating = widget.storyline != null;
-
-      if (isUpdating) {
-        await updateUniverseStorylines();
-      } else {
-        await addUniverseStorylines();
+  Future<void> _load() async {
+    try {
+      final superstars = await SuperstarsDatabaseHelper.readAllSuperstars();
+      final teams = await TeamsDatabaseHelper.readAllTeams();
+      if (widget.storyline?.id != null) {
+        final participants = await StorylineParticipantsDatabaseHelper.read(widget.storyline!.id!);
+        _selectedSuperstars = participants.superstars.map((e) => e.id!).toSet();
+        _selectedTeams = participants.teams.map((e) => e.id!).toSet();
       }
-    
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
-
+      if (!mounted) return;
+      setState(() { _allSuperstars = superstars; _allTeams = teams; _loading = false; });
+    } catch (e) {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
-  Future updateUniverseStorylines() async {
-    final storyline = widget.storyline!.copy(
-      title: title,
-      text: text,
-      yearStart : yearStart,
-      yearEnd: yearEnd,
-      start: start,
-      end: end
-    );
-
-    await StorylinesDatabaseHelper.updateStoryline(storyline);
+  @override
+  void dispose() {
+    _title.dispose(); _description.dispose(); _startYear.dispose(); _startWeek.dispose(); _endYear.dispose(); _endWeek.dispose();
+    super.dispose();
   }
 
-  Future addUniverseStorylines() async {
-    final storyline = Storylines(
-      title: title,
-      text: text, 
-      yearStart: yearStart,
-      yearEnd: yearEnd,
-      start: start, 
-      end: end
-    );
+  int? _number(TextEditingController c) => c.text.trim().isEmpty ? null : int.tryParse(c.text.trim());
 
-    await StorylinesDatabaseHelper.createStoryline(storyline);
+  String? _validateDate(TextEditingController year, TextEditingController week, String label, {bool required = false}) {
+    final y = _number(year); final w = _number(week);
+    if (required && (y == null || w == null)) return 'La date de début est obligatoire.';
+    if ((y == null) != (w == null)) return 'Renseigne l’année et la semaine ensemble.';
+    if (y != null && y < 1) return 'Année invalide.';
+    if (w != null && (w < 1 || w > 48)) return 'La semaine doit être comprise entre 1 et 48.';
+    return null;
   }
+
+  Future<void> _chooseParticipants<T>({required String title, required List<T> items, required Set<int> selected, required int? Function(T) idOf, required String Function(T) nameOf, required void Function(Set<int>) onChanged}) async {
+    final temp = Set<int>.from(selected);
+    await showDialog<void>(context: context, builder: (dialogContext) => StatefulBuilder(builder: (context, setDialogState) => AlertDialog(
+      title: Text(title),
+      content: SizedBox(width: double.maxFinite, child: items.isEmpty ? const Text('Aucun élément disponible.') : ListView(shrinkWrap: true, children: items.map((item) {
+        final id = idOf(item)!;
+        return CheckboxListTile(value: temp.contains(id), title: Text(nameOf(item)), dense: true, onChanged: (checked) => setDialogState(() { checked == true ? temp.add(id) : temp.remove(id); }));
+      }).toList())),
+      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Annuler')), FilledButton(onPressed: () { onChanged(temp); Navigator.pop(dialogContext); }, child: const Text('Valider'))],
+    )));
+  }
+
+  Future<void> _save() async {
+    if (_saving || !_formKey.currentState!.validate()) return;
+    final startYear = _number(_startYear)!; final startWeek = _number(_startWeek)!;
+    final endYear = _number(_endYear) ?? 0; final endWeek = _number(_endWeek) ?? 0;
+    if (endYear != 0 && (endYear < startYear || (endYear == startYear && endWeek < startWeek))) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('La date de fin doit être postérieure ou égale à la date de début.'))); return;
+    }
+    setState(() => _saving = true);
+    try {
+      final existing = widget.storyline;
+      final value = Storylines(id: existing?.id, title: _title.text.trim(), text: _description.text.trim(), yearStart: startYear, yearEnd: endYear, start: startWeek, end: endWeek, status: _status);
+      final saved = existing == null ? await StorylinesDatabaseHelper.createStoryline(value) : value;
+      if (existing != null) await StorylinesDatabaseHelper.updateStoryline(value);
+      await StorylineParticipantsDatabaseHelper.replace(storylineId: saved.id!, superstarIds: _selectedSuperstars.toList(), teamIds: _selectedTeams.toList());
+      if (mounted) Navigator.pop(context, true);
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible d’enregistrer la storyline : $e')));
+    } finally { if (mounted) setState(() => _saving = false); }
+  }
+
+  Widget _dateField(String label, TextEditingController year, TextEditingController week, {bool required = false}) => Row(children: [
+    Expanded(child: TextFormField(controller: year, keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly], decoration: AppFormStyles.inputDecoration(label: '$label – année'), validator: (_) => _validateDate(year, week, label, required: required))),
+    const SizedBox(width: 10),
+    Expanded(child: TextFormField(controller: week, keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly], decoration: AppFormStyles.inputDecoration(label: '$label – semaine'), validator: (_) => _validateDate(year, week, label, required: required))),
+  ]);
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: const Color(0xFF101010),
+    appBar: AppBar(title: Text(widget.storyline == null ? 'Nouvelle storyline' : 'Modifier la storyline'), actions: [TextButton(onPressed: _saving || _loading ? null : _save, child: _saving ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('ENREGISTRER'))]),
+    body: _loading ? const Center(child: CircularProgressIndicator()) : Form(key: _formKey, child: ListView(padding: const EdgeInsets.all(16), children: [
+      AppFormSection(title: 'Informations', children: [
+        TextFormField(controller: _title, decoration: AppFormStyles.inputDecoration(label: 'Titre'), validator: (v) => v == null || v.trim().isEmpty ? 'Le titre est obligatoire.' : null),
+        const SizedBox(height: 12),
+        TextFormField(controller: _description, minLines: 4, maxLines: 8, decoration: AppFormStyles.inputDecoration(label: 'Description / résumé'), validator: (v) => v == null || v.trim().isEmpty ? 'La description est obligatoire.' : null),
+        const SizedBox(height: 12),
+        DropdownButtonFormField<String>(value: _status, decoration: AppFormStyles.inputDecoration(label: 'Statut'), items: StorylineStatus.values.map((v) => DropdownMenuItem(value: v, child: Text(StorylineStatus.label(v)))).toList(), onChanged: (v) => setState(() => _status = v ?? _status)),
+      ]), const SizedBox(height: 16),
+      AppFormSection(title: 'Période WWE', children: [
+        _dateField('Début', _startYear, _startWeek, required: true), const SizedBox(height: 12),
+        _dateField('Fin (facultative)', _endYear, _endWeek),
+        const SizedBox(height: 8), const Text('Le calendrier WWE comporte 48 semaines. Laisser la fin vide pour une storyline sans date de clôture définie.', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 12)),
+      ]), const SizedBox(height: 16),
+      AppFormSection(title: 'Participants', children: [
+        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.person_outline), title: const Text('Superstars'), subtitle: Text('${_selectedSuperstars.length} sélectionnée(s)'), trailing: const Icon(Icons.chevron_right), onTap: () => _chooseParticipants<Superstars>(title: 'Superstars participantes', items: _allSuperstars, selected: _selectedSuperstars, idOf: (v) => v.id, nameOf: (v) => v.name, onChanged: (v) => setState(() => _selectedSuperstars = v))),
+        const Divider(height: 1),
+        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.groups_outlined), title: const Text('Équipes'), subtitle: Text('${_selectedTeams.length} sélectionnée(s)'), trailing: const Icon(Icons.chevron_right), onTap: () => _chooseParticipants<Teams>(title: 'Équipes participantes', items: _allTeams, selected: _selectedTeams, idOf: (v) => v.id, nameOf: (v) => v.name, onChanged: (v) => setState(() => _selectedTeams = v))),
+      ]),
+    ])),
+  );
 }

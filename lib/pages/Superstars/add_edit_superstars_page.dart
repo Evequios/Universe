@@ -32,6 +32,7 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
   int? selectedBrandId;
   String orientation = 'Face';
   int? division;
+  String photoUrl = '';
 
   bool isSaving = false;
 
@@ -45,6 +46,7 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
     selectedBrandId = widget.superstar?.brand?.id;
     orientation = widget.superstar?.orientation ?? 'Face';
     division = widget.superstar?.division;
+    photoUrl = widget.superstar?.photoUrl ?? '';
 
     if (widget.listBrands == null) {
       loadBrands();
@@ -129,6 +131,7 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
           name: name,
           selectedBrandId: selectedBrandId,
           orientation: orientation,
+          photoUrl: photoUrl,
           onChangedName: (value) {
             name = value ?? '';
           },
@@ -139,6 +142,9 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
             if (value != null) {
               setState(() => orientation = value);
             }
+          },
+          onChangedPhotoUrl: (value) {
+            photoUrl = value ?? '';
           },
         ),
       ),
@@ -161,6 +167,7 @@ class AddEditSuperstarsPageState extends State<AddEditSuperstarsPage> {
         // Division is not currently editable in the form.
         // Preserve its existing value when updating.
         division: division,
+        photoUrl: photoUrl.trim().isEmpty ? null : photoUrl.trim(),
       );
 
       if (widget.superstar == null) {

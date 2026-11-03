@@ -1,6 +1,10 @@
 import 'package:wwe_universe/classes/teams.dart';
+import 'package:wwe_universe/classes/match_record.dart';
+import 'package:wwe_universe/classes/match_sides.dart';
+import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/database/database.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
+import 'package:wwe_universe/database/matches_database_helper.dart';
 
 class TeamsDatabaseHelper {
 
@@ -95,6 +99,36 @@ class TeamsDatabaseHelper {
       where: '${TeamsFields.id} = ?',
       whereArgs: [team.id],
     );
+  }
+
+
+  /// Returns only matches where this team was explicitly assigned to a side.
+  /// The team is never inferred from its current roster.
+  static Future<List<MatchRecord>> readTeamMatches(int teamId) async {
+    final db = await DatabaseService.instance.database;
+    final rows = await db.rawQuery('''
+      SELECT DISTINCT
+        m.${MatchRecordFields.id},
+        s.${ShowFields.year},
+        s.${ShowFields.week},
+        s.${ShowFields.dayOfWeek},
+        m.${MatchRecordFields.matchOrder}
+      FROM $tableMatches m
+      INNER JOIN $tableMatchSides ms
+        ON ms.${MatchSidesFields.matchId} = m.${MatchRecordFields.id}
+      INNER JOIN $tableShows s
+        ON s.${ShowFields.id} = m.${MatchRecordFields.showId}
+      WHERE ms.${MatchSidesFields.teamId} = ?
+      ORDER BY s.${ShowFields.year} DESC,
+               s.${ShowFields.week} DESC,
+               s.${ShowFields.dayOfWeek} DESC,
+               m.${MatchRecordFields.matchOrder} DESC
+    ''', [teamId]);
+
+    return Future.wait(rows.map((row) {
+      final matchId = row[MatchRecordFields.id] as int;
+      return MatchesDatabaseHelper.readMatch(matchId);
+    }).toList());
   }
 
   static Future<int> deleteTeam(int id) async {

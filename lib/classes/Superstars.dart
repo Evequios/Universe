@@ -7,10 +7,11 @@ class SuperstarsFields{
     name = 'name', 
     brand = 'brand', 
     orientation = 'orientation', 
-    division = 'division';
+    division = 'division',
+    photoUrl = 'photoUrl';
   
   static const List<String> values = [
-    id, name, brand, orientation, division
+    id, name, brand, orientation, division, photoUrl
   ];
 }
 
@@ -20,13 +21,15 @@ class Superstars{
   final Brands? brand;
   final String orientation;
   final int? division;
+  final String? photoUrl;
 
   const Superstars({
     this.id,
     required this.name,
     this.brand,
     required this.orientation,
-    this.division
+    this.division,
+    this.photoUrl,
   });
 
   Superstars copy({
@@ -34,7 +37,8 @@ class Superstars{
     String? name,
     Brands? brand,
     String? orientation,
-    int? division
+    int? division,
+    String? photoUrl
   }) {
     return Superstars(
         id: id ?? this.id,
@@ -42,6 +46,7 @@ class Superstars{
         brand: brand ?? this.brand,
         orientation: orientation ?? this.orientation,
         division: division ?? this.division,
+        photoUrl: photoUrl ?? this.photoUrl,
       );
   }
 
@@ -58,6 +63,7 @@ class Superstars{
         SuperstarsFields.name : name,
         SuperstarsFields.brand: brand?.id,
         SuperstarsFields.orientation: orientation,
-        SuperstarsFields.division: division
+        SuperstarsFields.division: division,
+        SuperstarsFields.photoUrl: photoUrl
       };
 }

@@ -1,123 +1,101 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/news.dart';
+import 'package:wwe_universe/classes/storylines.dart';
+import 'package:wwe_universe/classes/superstars.dart';
+import 'package:wwe_universe/classes/teams.dart';
+import 'package:wwe_universe/classes/titles.dart';
+import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/database/news_database_helper.dart';
+import 'package:wwe_universe/database/news_associations_database_helper.dart';
+import 'package:wwe_universe/database/storylines_database_helper.dart';
+import 'package:wwe_universe/database/superstars_database_helper.dart';
+import 'package:wwe_universe/database/teams_database_helper.dart';
+import 'package:wwe_universe/database/titles_database_helper.dart';
+import 'package:wwe_universe/database/shows_database_helper.dart';
 import 'package:wwe_universe/pages/News/add_edit_news_page.dart';
+import 'package:wwe_universe/pages/Storylines/storylines_detail_page.dart';
+import 'package:wwe_universe/widget/app_form_widgets.dart';
 
 class NewsDetailPage extends StatefulWidget {
   final int newsId;
-
-  const NewsDetailPage({
-    super.key,
-    required this.newsId,
-  });
-
+  const NewsDetailPage({super.key, required this.newsId});
   @override
-  NewsDetailPageState createState() => NewsDetailPageState();
+  State<NewsDetailPage> createState() => _NewsDetailPageState();
 }
 
-class NewsDetailPageState extends State<NewsDetailPage> {
-  late News news;
-  bool isLoading = false;
+class _NewsDetailPageState extends State<NewsDetailPage> {
+  News? news;
+  Map<String, List<int>> associations = {};
+  Map<String, List<String>> associationNames = {};
+  Storylines? storyline;
+  bool loading = true;
 
   @override
-  void initState() {
-    super.initState();
+  void initState() { super.initState(); _load(); }
 
-    refreshNews();
-  }
-
-  Future refreshNews() async {
-    setState(() => isLoading = true);
-
-    news = await NewsDatabaseHelper.readNews(widget.newsId);
-
-    setState(() => isLoading = false);  
+  Future<void> _load() async {
+    if (mounted) setState(() => loading = true);
+    try {
+      final value = await NewsDatabaseHelper.readNews(widget.newsId);
+      final ids = await NewsAssociationsDatabaseHelper.read(widget.newsId);
+      final linkedStorylineId = await NewsDatabaseHelper.readLinkedStorylineId(widget.newsId);
+      final all = await Future.wait([
+        SuperstarsDatabaseHelper.readAllSuperstars(), TeamsDatabaseHelper.readAllTeams(),
+        TitlesDatabaseHelper.readAllTitles(), ShowsDatabaseHelper.readAllShows(),
+      ]);
+      final names = <String, List<String>>{
+        'superstars': (all[0] as List<Superstars>).where((e) => ids['superstars']!.contains(e.id)).map((e) => e.name).toList(),
+        'teams': (all[1] as List<Teams>).where((e) => ids['teams']!.contains(e.id)).map((e) => e.name).toList(),
+        'titles': (all[2] as List<Titles>).where((e) => ids['titles']!.contains(e.id)).map((e) => e.name).toList(),
+        'shows': (all[3] as List<Show>).where((e) => ids['shows']!.contains(e.id)).map((e) => '${e.name} • ${e.year} S${e.week}').toList(),
+      };
+      final story = linkedStorylineId == null ? null : await StorylinesDatabaseHelper.readStoryline(linkedStorylineId);
+      if (!mounted) return;
+      setState(() { news = value; associations = ids; associationNames = names; storyline = story; loading = false; });
+    } catch (e) {
+      if (mounted) { setState(() => loading = false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible de charger l’actualité : $e'))); }
+    }
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      actions: [editButton(), deleteButton()],
-    ),
-    body: isLoading
-      ? const Center(child: CircularProgressIndicator())
-      : Padding(
-        padding: const EdgeInsets.all(12),
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          children: [
-            Text(
-              news.title,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const SizedBox(height: 8),
-            Text(
-              news.text,
-              style: const TextStyle(color: Colors.black, fontSize: 18),
-            ),
-          ],
-        ),
-      ),
+    backgroundColor: const Color(0xFF101010),
+    appBar: AppBar(title: const Text('Détail de l’actualité'), actions: [
+      IconButton(tooltip: 'Modifier', icon: const Icon(Icons.edit_outlined), onPressed: news == null ? null : _edit),
+      IconButton(tooltip: 'Supprimer', icon: const Icon(Icons.delete_outline), onPressed: news == null ? null : _confirmDelete),
+    ]),
+    body: loading ? const Center(child: CircularProgressIndicator(color: AppFormStyles.primary))
+      : news == null ? const Center(child: Text('Actualité introuvable.'))
+      : ListView(padding: const EdgeInsets.all(16), children: [
+        Text(news!.title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
+        const SizedBox(height: 8),
+        Text('${news!.type}  •  ${news!.year ?? news!.createdTime.year}  •  S${news!.week ?? '—'}  •  J${news!.dayOfWeek ?? '—'}', style: const TextStyle(color: AppFormStyles.secondaryText)),
+        const SizedBox(height: 20),
+        AppDetailSection(title: 'Contenu', icon: Icons.article_outlined, child: SelectableText(news!.text, style: const TextStyle(color: Colors.white, height: 1.55, fontSize: 15))),
+        const SizedBox(height: 14),
+        AppDetailSection(title: 'Storyline', icon: Icons.auto_stories_outlined, child: storyline == null
+          ? const Text('Aucune storyline associée.', style: TextStyle(color: AppFormStyles.secondaryText))
+          : ListTile(contentPadding: EdgeInsets.zero, title: Text(storyline!.title, style: const TextStyle(color: Colors.white)), subtitle: const Text('Ouvrir la storyline', style: TextStyle(color: AppFormStyles.secondaryText)), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => StorylinesDetailPage(storylineId: storyline!.id!)))),),
+        const SizedBox(height: 14),
+        AppDetailSection(title: 'Entités associées', icon: Icons.link, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          _entityGroup('Superstars', associationNames['superstars'] ?? []),
+          _entityGroup('Équipes', associationNames['teams'] ?? []),
+          _entityGroup('Titres', associationNames['titles'] ?? []),
+          _entityGroup('Shows', associationNames['shows'] ?? []),
+        ])),
+      ]),
   );
 
-  Widget editButton() => IconButton(
-    icon: const Icon(Icons.edit_outlined),
-    onPressed: () async {
-      await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => AddEditNewsPage(news: news),)
-      );
+  Widget _entityGroup(String label, List<String> values) => Padding(padding: const EdgeInsets.only(bottom: 10), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Text(label, style: const TextStyle(color: AppFormStyles.secondaryText, fontWeight: FontWeight.bold)),
+    const SizedBox(height: 4), Text(values.isEmpty ? 'Aucun' : values.join(' • '), style: const TextStyle(color: Colors.white)),
+  ]));
 
-      refreshNews();
-    }
-  );
-
-  Widget deleteButton() => IconButton(
-    icon: const Icon(Icons.delete),
-    onPressed: () async {
-      showAlertDialog(context);
-    },
-  );
-
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: const Text("Cancel"),
-      onPressed:  () { 
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = TextButton(
-      child: const Text("Continue"),
-      onPressed:  () async {
-        await NewsDatabaseHelper.deleteNews(widget.newsId);
-        if(context.mounted){
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        }
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text("Confirmation"),
-      content: const Text("Are you sure you want to delete this news ?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
+  Future<void> _edit() async { await Navigator.push(context, MaterialPageRoute(builder: (_) => AddEditNewsPage(news: news))); await _load(); }
+  Future<void> _confirmDelete() async {
+    final confirmed = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('Supprimer cette actualité ?'), content: const Text('Ses associations seront supprimées, mais les storylines, matchs et autres entités resteront intactes.'),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')), FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer'))]));
+    if (confirmed == true) { await NewsDatabaseHelper.deleteNews(widget.newsId); if (mounted) Navigator.pop(context, true); }
   }
 }
