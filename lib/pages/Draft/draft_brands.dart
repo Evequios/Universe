@@ -52,18 +52,18 @@ class _DraftBrandsState extends State<DraftBrands> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Choisir les Brands'), centerTitle: false),
+    appBar: AppBar(title: const Text('Select Brands'), centerTitle: false),
     body: _loading ? const Center(child: CircularProgressIndicator())
-      : _error != null ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_error!), const SizedBox(height: 12), FilledButton(onPressed: _loadBrands, child: const Text('Réessayer'))]))
-      : _brands.isEmpty ? const Center(child: Text('Aucune Brand disponible.'))
+      : _error != null ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_error!), const SizedBox(height: 12), FilledButton(onPressed: _loadBrands, child: const Text('Retry'))]))
+      : _brands.isEmpty ? const Center(child: Text('No Brands available.'))
       : Column(children: [
           Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 8), child: Row(children: [
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('Brands participantes', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
-              Text('${widget.selectedSuperstars.length} Superstars à répartir', style: const TextStyle(color: Colors.white60)),
+              Text('${widget.selectedSuperstars.length} Superstars to assign', style: const TextStyle(color: Colors.white60)),
             ])),
-            TextButton(onPressed: () => setState(() => _selectedIds.addAll(_brands.where((b) => b.id != null).map((b) => b.id!))), child: const Text('Tout')),
-            TextButton(onPressed: () => setState(_selectedIds.clear), child: const Text('Aucun')),
+            TextButton(onPressed: () => setState(() => _selectedIds.addAll(_brands.where((b) => b.id != null).map((b) => b.id!))), child: const Text('All')),
+            TextButton(onPressed: () => setState(_selectedIds.clear), child: const Text('None')),
           ])),
           Expanded(child: ListView.builder(padding: const EdgeInsets.all(12), itemCount: _brands.length, itemBuilder: (_, i) {
             final brand = _brands[i];
@@ -78,7 +78,7 @@ class _DraftBrandsState extends State<DraftBrands> {
                 }
               }),
               title: _brandLogo(brand),
-              subtitle: Text(selected ? 'Incluse dans le tirage' : 'Non sélectionnée', style: const TextStyle(color: Colors.white54)),
+              subtitle: Text(selected ? 'Included in the draft' : 'Not selected', style: const TextStyle(color: Colors.white54)),
               controlAffinity: ListTileControlAffinity.trailing,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             ));
@@ -87,7 +87,7 @@ class _DraftBrandsState extends State<DraftBrands> {
     bottomNavigationBar: !_loading && _error == null && _brands.isNotEmpty ? SafeArea(child: Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
       child: FilledButton.icon(onPressed: _selectedIds.isEmpty ? null : _startDraft,
-        icon: const Icon(Icons.shuffle), label: Text('Lancer le Draft (${_selectedIds.length} Brands)')),
+        icon: const Icon(Icons.shuffle), label: Text('Start Draft (${_selectedIds.length} Brands)')),
     )) : null,
   );
 }

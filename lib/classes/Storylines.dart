@@ -26,11 +26,11 @@ class StorylineStatus {
 
   static String label(String value) {
     switch (value) {
-      case upcoming: return 'À venir';
-      case ongoing: return 'En cours';
-      case completed: return 'Terminée';
-      case cancelled: return 'Annulée';
-      default: return 'En cours';
+      case upcoming: return 'Upcoming';
+      case ongoing: return 'Ongoing';
+      case completed: return 'Completed';
+      case cancelled: return 'Cancelled';
+      default: return 'Ongoing';
     }
   }
 }

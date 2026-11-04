@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
+import 'package:wwe_universe/widget/entity_picker.dart';
 
 const List<String> listOrientations = [
   'Face',
@@ -77,39 +78,23 @@ class SuperstarsFormWidget extends StatelessWidget {
                   onChanged: onChangedName,
                 ),
                 const SizedBox(height: 18),
-                DropdownButtonFormField<int?>(
+                FormField<int?>(
                   initialValue: brandExists ? selectedBrandId : null,
-                  isExpanded: true,
-                  dropdownColor: AppFormStyles.surface,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: AppFormStyles.inputDecoration(
-                    label: 'Brand',
-                    hint: 'Select a brand',
-                    icon: Icons.branding_watermark_outlined,
-                  ),
-                  items: [
-                    const DropdownMenuItem<int?>(
-                      value: null,
-                      child: Text(
-                        'No brand',
-                        style: TextStyle(
-                          color: AppFormStyles.secondaryText,
-                        ),
-                      ),
-                    ),
-                    ...listBrands
-                        .where((brand) => brand.id != null)
-                        .map(
-                          (brand) => DropdownMenuItem<int?>(
-                            value: brand.id,
-                            child: Text(
-                              brand.name,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                  ],
-                  onChanged: onChangedBrand,
+                  builder: (state) {
+                    final selected = listBrands.where((b) => b.id == state.value).firstOrNull;
+                    return ListTile(contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.branding_watermark_outlined),
+                      title: const Text('Brand'),
+                      subtitle: Text(selected?.name ?? 'No Brand', style: const TextStyle(color: AppFormStyles.secondaryText)),
+                      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                        if (state.value != null) IconButton(onPressed: () { onChangedBrand(null); state.didChange(null); }, icon: const Icon(Icons.clear)),
+                        const Icon(Icons.search),
+                      ]),
+                      onTap: () async {
+                        final value = await pickOneEntity(context: context, available: listBrands, idOf: (v) => v.id, nameOf: (v) => v.name, selectedId: state.value, title: 'Select a Brand');
+                        if (value != null) { onChangedBrand(value.id); state.didChange(value.id); }
+                      });
+                  },
                 ),
               ],
             ),
@@ -187,3 +172,5 @@ class SuperstarsFormWidget extends StatelessWidget {
     );
   }
 }
+
+extension _BrandFirstOrNull<T> on Iterable<T> { T? get firstOrNull => isEmpty ? null : first; }

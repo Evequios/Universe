@@ -140,7 +140,7 @@ class SuperstarsDatabaseHelper {
       );
 
       // Supprime les équipes auxquelles elle appartient.
-      // Les camps historiques des combats sont conservés.
+      // Les sides historiques des combats sont conservés.
       await txn.delete(
         tableTeams,
         where: '${TeamsFields.member1} = ? '
@@ -179,7 +179,7 @@ class SuperstarsDatabaseHelper {
           whereArgs: [entry.key],
         );
         if (updated != 1) {
-          throw StateError('Superstar ${entry.key} introuvable pendant le Draft.');
+          throw StateError('Superstar ${entry.key} not found during the Draft.');
         }
       }
     });

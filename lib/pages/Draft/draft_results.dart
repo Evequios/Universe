@@ -43,21 +43,21 @@ class _DraftResultsState extends State<DraftResults> {
   Future<void> _confirm() async {
     if (_saving || _assignments.isEmpty) return;
     final confirmed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
-      title: const Text('Confirmer le Draft ?'),
-      content: Text('${_assignments.length} Superstar(s) vont être affectées à leur nouvelle Brand. Les équipes existantes conserveront leurs membres : leur Brand sera celle de leurs Superstars.'),
-      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Annuler')), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Confirmer'))],
+      title: const Text('Confirm Draft ?'),
+      content: Text('${_assignments.length} Superstar(s) will be assigned to their new Brand. Existing teams will keep their members; their Brand will follow their Superstars.'),
+      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Confirmer'))],
     ));
     if (confirmed != true || !mounted) return;
     setState(() => _saving = true);
     try {
       await SuperstarsDatabaseHelper.draft(_assignments);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Draft enregistré avec succès.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Draft saved successfully.')));
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const SuperstarsPage()), (route) => route.isFirst);
     } catch (e) {
       if (!mounted) return;
       setState(() => _saving = false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Échec de l’enregistrement : $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save failed: $e')));
     }
   }
 
@@ -76,8 +76,8 @@ class _DraftResultsState extends State<DraftResults> {
     final counts = <int, int>{for (final brand in widget.selectedBrands) if (brand.id != null) brand.id!: 0};
     for (final id in _assignments.values) { counts[id] = (counts[id] ?? 0) + 1; }
     return Scaffold(
-      appBar: AppBar(title: const Text('Résultat du Draft'), actions: [
-        IconButton(tooltip: 'Relancer le tirage', onPressed: _saving ? null : _reroll, icon: const Icon(Icons.shuffle)),
+      appBar: AppBar(title: const Text('Draft Results'), actions: [
+        IconButton(tooltip: 'Reroll Draft', onPressed: _saving ? null : _reroll, icon: const Icon(Icons.shuffle)),
       ]),
       body: Column(children: [
         Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 8), child: Wrap(spacing: 8, runSpacing: 8, children: [
@@ -98,7 +98,7 @@ class _DraftResultsState extends State<DraftResults> {
         const SizedBox(width: 12),
         Expanded(child: FilledButton.icon(onPressed: _saving ? null : _confirm,
           icon: _saving ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check),
-          label: Text(_saving ? 'Enregistrement…' : 'Confirmer le Draft'))),
+          label: Text(_saving ? 'Saving…' : 'Confirm Draft'))),
       ]))),
     );
   }

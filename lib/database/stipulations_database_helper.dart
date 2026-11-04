@@ -75,7 +75,7 @@ class StipulationsDatabaseHelper {
     Stipulations stipulation,
   ) async {
     if (stipulation.id == null) {
-      throw ArgumentError('Une stipulation doit avoir un identifiant.');
+      throw ArgumentError('A stipulation must have an ID.');
     }
 
     final db = await DatabaseService.instance.database;

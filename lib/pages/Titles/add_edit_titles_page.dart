@@ -283,7 +283,7 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
     return showDialog<Map<String, int>>(
       context: context,
       builder: (_) => const WweDateDialog(
-        title: 'Date de début du règne',
+        title: 'Reign start date',
       ),
     );
   }
@@ -345,7 +345,7 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Impossible d’enregistrer le titre : $error')),
+        SnackBar(content: Text('Unable to save title: $error')),
       );
     } finally {
       if (mounted) setState(() => isSaving = false);

@@ -203,7 +203,7 @@ class ShowsPageState extends State<ShowsPage>
           const SizedBox(width: 6),
           Expanded(
             child: Text(
-              'Last completed: ${reference.name} • Y${reference.year} W${reference.week} D${reference.dayOfWeek}',
+              'Last completed: ${reference.name} • Year ${reference.year} • Week ${reference.week} • Day ${reference.dayOfWeek}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(color: Colors.white70, fontSize: 11),

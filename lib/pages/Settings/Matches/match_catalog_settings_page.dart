@@ -16,13 +16,13 @@ class MatchCatalogSettingsPage extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Matchs'),
+          title: const Text('Matches'),
           bottom: const TabBar(
             isScrollable: true,
             tabs: [
               Tab(text: 'Types'),
               Tab(text: 'Formats'),
-              Tab(text: 'Compatibilités'),
+              Tab(text: 'Compatibility'),
             ],
           ),
         ),
@@ -90,19 +90,19 @@ class _MatchTypesTabState extends State<_MatchTypesTab> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Supprimer ce type ?'),
+        title: const Text('Delete this type?'),
         content: Text(
-          'Le type "${item.name}" sera supprimé du catalogue. '
-          'Les combats existants conserveront leur historique.',
+          'The type "${item.name}" will be removed from the catalog. '
+          'Existing matches will retain their history.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annuler'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Supprimer'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -127,7 +127,7 @@ class _MatchTypesTabState extends State<_MatchTypesTab> {
 
     return Scaffold(
       body: items.isEmpty
-          ? const Center(child: Text('Aucun type de combat'))
+          ? const Center(child: Text('No match types'))
           : ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: items.length,
@@ -142,7 +142,7 @@ class _MatchTypesTabState extends State<_MatchTypesTab> {
                     ),
                     subtitle: Text(
                       '${item.category}'
-                      '${item.isActive ? '' : ' • Inactif'}',
+                      '${item.isActive ? '' : ' • Inactive'}',
                     ),
                     leading: Icon(
                       item.isActive ? Icons.sports_mma : Icons.pause_circle,
@@ -158,17 +158,17 @@ class _MatchTypesTabState extends State<_MatchTypesTab> {
                       itemBuilder: (_) => [
                         const PopupMenuItem(
                           value: 'edit',
-                          child: Text('Modifier'),
+                          child: Text('Edit'),
                         ),
                         PopupMenuItem(
                           value: 'toggle',
                           child: Text(
-                            item.isActive ? 'Désactiver' : 'Activer',
+                            item.isActive ? 'Deactivate' : 'Activate',
                           ),
                         ),
                         const PopupMenuItem(
                           value: 'delete',
-                          child: Text('Supprimer'),
+                          child: Text('Delete'),
                         ),
                       ],
                     ),
@@ -220,7 +220,7 @@ class _MatchTypeDialogState extends State<_MatchTypeDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.item == null ? 'Nouveau type' : 'Modifier le type'),
+      title: Text(widget.item == null ? 'New Type' : 'Edit Type'),
       content: Form(
         key: formKey,
         child: SingleChildScrollView(
@@ -229,10 +229,10 @@ class _MatchTypeDialogState extends State<_MatchTypeDialog> {
             children: [
               TextFormField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Nom'),
+                decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) =>
                     value == null || value.trim().isEmpty
-                        ? 'Le nom est obligatoire'
+                        ? 'The name is required'
                         : null,
               ),
               TextFormField(
@@ -243,7 +243,7 @@ class _MatchTypeDialogState extends State<_MatchTypeDialog> {
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: category,
-                decoration: const InputDecoration(labelText: 'Catégorie'),
+                decoration: const InputDecoration(labelText: 'Category'),
                 items: const [
                   DropdownMenuItem(
                     value: 'standard',
@@ -251,11 +251,11 @@ class _MatchTypeDialogState extends State<_MatchTypeDialog> {
                   ),
                   DropdownMenuItem(
                     value: 'special',
-                    child: Text('Spécial'),
+                    child: Text('Special'),
                   ),
                   DropdownMenuItem(
                     value: 'tournament',
-                    child: Text('Tournoi'),
+                    child: Text('Tournament'),
                   ),
                 ],
                 onChanged: (value) {
@@ -275,7 +275,7 @@ class _MatchTypeDialogState extends State<_MatchTypeDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annuler'),
+          child: const Text('Cancel'),
         ),
         FilledButton(
           onPressed: () {
@@ -294,7 +294,7 @@ class _MatchTypeDialogState extends State<_MatchTypeDialog> {
               ),
             );
           },
-          child: const Text('Enregistrer'),
+          child: const Text('Save'),
         ),
       ],
     );
@@ -353,19 +353,19 @@ class _MatchFormatsTabState extends State<_MatchFormatsTab> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Supprimer ce format ?'),
+        title: const Text('Delete this format?'),
         content: Text(
-          'Le format "${item.name}" sera retiré du catalogue. '
-          'Les combats existants conserveront leur historique.',
+          'The format "${item.name}" will be removed from the catalog. '
+          'Existing matches will retain their history.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annuler'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Supprimer'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -392,7 +392,7 @@ class _MatchFormatsTabState extends State<_MatchFormatsTab> {
 
     return Scaffold(
       body: items.isEmpty
-          ? const Center(child: Text('Aucun format de combat'))
+          ? const Center(child: Text('No match formats'))
           : ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: items.length,
@@ -400,9 +400,9 @@ class _MatchFormatsTabState extends State<_MatchFormatsTab> {
                 final item = items[index];
 
                 final details = item.isSpecial
-                    ? '${item.participantCount} participants • Spécial'
+                    ? '${item.participantCount} participants • Special'
                     : '${item.participantCount} participants • '
-                        '${item.sideCount} camps';
+                        '${item.sideCount} sides';
 
                 return Card(
                   child: ListTile(
@@ -411,7 +411,7 @@ class _MatchFormatsTabState extends State<_MatchFormatsTab> {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
-                      '$details${item.isActive ? '' : ' • Inactif'}',
+                      '$details${item.isActive ? '' : ' • Inactive'}',
                     ),
                     trailing: PopupMenuButton<String>(
                       onSelected: (value) {
@@ -424,17 +424,17 @@ class _MatchFormatsTabState extends State<_MatchFormatsTab> {
                       itemBuilder: (_) => [
                         const PopupMenuItem(
                           value: 'edit',
-                          child: Text('Modifier'),
+                          child: Text('Edit'),
                         ),
                         PopupMenuItem(
                           value: 'toggle',
                           child: Text(
-                            item.isActive ? 'Désactiver' : 'Activer',
+                            item.isActive ? 'Deactivate' : 'Activate',
                           ),
                         ),
                         const PopupMenuItem(
                           value: 'delete',
-                          child: Text('Supprimer'),
+                          child: Text('Delete'),
                         ),
                       ],
                     ),
@@ -509,7 +509,7 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.item == null ? 'Nouveau format' : 'Modifier le format'),
+      title: Text(widget.item == null ? 'New Format' : 'Edit Format'),
       content: Form(
         key: formKey,
         child: SingleChildScrollView(
@@ -518,10 +518,10 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
             children: [
               TextFormField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Nom'),
+                decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) =>
                     value == null || value.trim().isEmpty
-                        ? 'Le nom est obligatoire'
+                        ? 'The name is required'
                         : null,
               ),
               TextFormField(
@@ -532,11 +532,11 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: category,
-                decoration: const InputDecoration(labelText: 'Catégorie'),
+                decoration: const InputDecoration(labelText: 'Category'),
                 items: [
                   const DropdownMenuItem(
                     value: 'individual',
-                    child: Text('Individuel'),
+                    child: Text('Singles'),
                   ),
                   const DropdownMenuItem(
                     value: 'tag',
@@ -544,7 +544,7 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
                   ),
                   const DropdownMenuItem(
                     value: 'special',
-                    child: Text('Spécial'),
+                    child: Text('Special'),
                   ),
                   if (!['individual', 'tag', 'special'].contains(category))
                     DropdownMenuItem(
@@ -560,7 +560,7 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
               ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Format spécial sans camps'),
+                title: const Text('Special format without sides'),
                 value: special,
                 onChanged: (value) {
                   setState(() {
@@ -583,7 +583,7 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
                 controller: participantCountController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'Nombre total de participants',
+                  labelText: 'Total participant count',
                 ),
                 validator: _positiveIntegerValidator,
               ),
@@ -592,19 +592,19 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
                   controller: sideCountController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                    labelText: 'Nombre de camps',
+                    labelText: 'Number of sides',
                   ),
                   validator: _positiveIntegerValidator,
                 ),
                 TextFormField(
                   controller: participantsPerSideController,
                   decoration: const InputDecoration(
-                    labelText: 'Participants par camp',
-                    hintText: 'Exemple : 1, 1 ou 2, 2',
+                    labelText: 'Participants per side',
+                    hintText: 'Example: 1, 1 or 2, 2',
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Répartition obligatoire';
+                      return 'Allocation is required';
                     }
 
                     final values = value.split(',');
@@ -613,12 +613,12 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
                         .toList();
 
                     if (parsed.any((e) => e == null || e <= 0)) {
-                      return 'Utilise des nombres positifs séparés par des virgules';
+                      return 'Use positive numbers separated by commas';
                     }
 
                     if (parsed.length !=
                         int.tryParse(sideCountController.text)) {
-                      return 'Le nombre de valeurs doit correspondre aux camps';
+                      return 'The number of values must match the number of sides';
                     }
 
                     final total = parsed.fold<int>(
@@ -628,7 +628,7 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
 
                     if (total !=
                         int.tryParse(participantCountController.text)) {
-                      return 'La somme doit correspondre au total des participants';
+                      return 'The sum must match the total number of participants';
                     }
 
                     return null;
@@ -648,11 +648,11 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annuler'),
+          child: const Text('Cancel'),
         ),
         FilledButton(
           onPressed: save,
-          child: const Text('Enregistrer'),
+          child: const Text('Save'),
         ),
       ],
     );
@@ -661,7 +661,7 @@ class _MatchFormatDialogState extends State<_MatchFormatDialog> {
   String? _positiveIntegerValidator(String? value) {
     final number = int.tryParse(value ?? '');
     if (number == null || number <= 0) {
-      return 'Saisis un nombre positif';
+      return 'Enter a positive number';
     }
     return null;
   }
@@ -746,8 +746,8 @@ class _MatchCompatibilityTabState extends State<_MatchCompatibilityTab> {
       return Center(
         child: Text(
           types.isEmpty
-              ? 'Crée d’abord un type de combat.'
-              : 'Crée d’abord un format de combat.',
+              ? 'Create a match type first.'
+              : 'Create a match format first.',
         ),
       );
     }
@@ -837,7 +837,7 @@ class _MatchTypeCompatibilityTileState
         ),
         subtitle: Text(
           '${selectedIds.length} format(s) compatible'
-          '${widget.type.isActive ? '' : ' • Type inactif'}',
+          '${widget.type.isActive ? '' : ' • Inactive type'}',
         ),
         children: [
           if (loading)
@@ -852,7 +852,7 @@ class _MatchTypeCompatibilityTileState
               return CheckboxListTile(
                 dense: true,
                 title: Text(format.name),
-                subtitle: format.isActive ? null : const Text('Format inactif'),
+                subtitle: format.isActive ? null : const Text('Inactive format'),
                 value: selectedIds.contains(format.id),
                 onChanged: saving
                     ? null

@@ -58,7 +58,7 @@ class MatchFormatsDatabaseHelper {
 
   static Future<int> updateFormat(MatchFormats format) async {
     if (format.id == null) {
-      throw ArgumentError('Un format doit avoir un identifiant.');
+      throw ArgumentError('A format must have an ID.');
     }
 
     final db = await DatabaseService.instance.database;

@@ -14,7 +14,7 @@ class WweDateDialog extends StatefulWidget {
   const WweDateDialog({
     super.key,
     required this.title,
-    this.confirmLabel = 'Valider',
+    this.confirmLabel = 'SELECT DATE',
     this.initialDay = 1,
     this.initialYear,
     this.initialWeek,

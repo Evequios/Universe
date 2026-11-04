@@ -34,6 +34,7 @@ class _SelectSuperstarsPageState extends State<SelectSuperstarsPage> {
   final Set<int> _selected = {};
   int? _brandFilter;
   bool _loading = true;
+  String? _loadError;
 
   @override
   void initState() {
@@ -50,16 +51,21 @@ class _SelectSuperstarsPageState extends State<SelectSuperstarsPage> {
   }
 
   Future<void> _load() async {
-    final values = await Future.wait([
-      SuperstarsDatabaseHelper.readAllSuperstars(),
-      BrandsDatabaseHelper.readAllBrands(),
-    ]);
-    if (!mounted) return;
-    setState(() {
-      _all = (values[0] as List).cast<Superstars>();
-      _brands = (values[1] as List).cast<Brands>();
-      _loading = false;
-    });
+    try {
+      final values = await Future.wait([
+        SuperstarsDatabaseHelper.readAllSuperstars(),
+        BrandsDatabaseHelper.readAllBrands(),
+      ]);
+      if (!mounted) return;
+      setState(() {
+        _all = (values[0] as List).cast<Superstars>();
+        _brands = (values[1] as List).cast<Brands>();
+        _loading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() { _loadError = error.toString(); _loading = false; });
+    }
   }
 
   List<Superstars> get _visible {
@@ -102,7 +108,18 @@ class _SelectSuperstarsPageState extends State<SelectSuperstarsPage> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : Column(children: [
+          : _loadError != null
+              ? Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  const Icon(Icons.error_outline, size: 42, color: Colors.redAccent),
+                  const SizedBox(height: 12), const Text('Unable to load Superstars'),
+                  const SizedBox(height: 6), Text(_loadError!, textAlign: TextAlign.center),
+                  const SizedBox(height: 12), FilledButton(onPressed: () { setState(() { _loading = true; _loadError = null; }); _load(); }, child: const Text('RETRY')),
+                ])))
+              : Column(children: [
+              Padding(padding: const EdgeInsets.fromLTRB(16, 4, 16, 0), child: Row(children: [
+                Text('${visible.length} Superstars', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppFormStyles.secondaryText)),
+                const Spacer(), Text('${_selected.length} selected', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppFormStyles.primary, fontWeight: FontWeight.bold)),
+              ])),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                 child: TextField(
@@ -138,7 +155,7 @@ class _SelectSuperstarsPageState extends State<SelectSuperstarsPage> {
               const SizedBox(height: 8),
               Expanded(
                 child: visible.isEmpty
-                    ? const Center(child: Text('No Superstars found'))
+                    ? const Center(child: Text('No Superstars match your search or filters.'))
                     : ListView.builder(
                         itemCount: visible.length,
                         itemBuilder: (context, index) {
@@ -146,14 +163,21 @@ class _SelectSuperstarsPageState extends State<SelectSuperstarsPage> {
                           final id = superstar.id!;
                           final selected = _selected.contains(id);
                           final atLimit = widget.maximumSelection != null && _selected.length >= widget.maximumSelection!;
-                          return CheckboxListTile(
-                            value: selected,
-                            onChanged: !selected && atLimit ? null : (value) => _toggle(superstar, value),
-                            secondary: SuperstarAvatar(superstar: superstar, size: 48, radius: 14),
-                            title: Text(superstar.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                            subtitle: Text(superstar.brand?.name ?? 'No Brand', style: const TextStyle(color: AppFormStyles.secondaryText)),
-                            activeColor: AppFormStyles.primary,
-                          );
+                          return Padding(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3), child: Material(
+                            color: selected ? AppFormStyles.primary.withOpacity(.13) : AppFormStyles.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            child: CheckboxListTile(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              value: selected,
+                              onChanged: !selected && atLimit ? null : (value) => _toggle(superstar, value),
+                              secondary: SuperstarAvatar(superstar: superstar, size: 50, radius: 14),
+                              title: Text(superstar.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                              subtitle: Text([superstar.brand?.name ?? 'No Brand', superstar.orientation].join(' • '), style: const TextStyle(color: AppFormStyles.secondaryText)),
+                              activeColor: AppFormStyles.primary,
+                              controlAffinity: ListTileControlAffinity.trailing,
+                              dense: false,
+                            ),
+                          ));
                         },
                       ),
               ),

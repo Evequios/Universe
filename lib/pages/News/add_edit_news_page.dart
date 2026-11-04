@@ -83,8 +83,8 @@ class AddEditNewsPageState extends State<AddEditNewsPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xFF101010),
-    appBar: AppBar(title: Text(widget.news == null ? 'Nouvelle actualité' : 'Modifier l’actualité'),
-      actions: [TextButton(onPressed: loading || saving ? null : _save, child: const Text('Enregistrer'))]),
+    appBar: AppBar(title: Text(widget.news == null ? 'New News Item' : 'Edit News Item'),
+      actions: [TextButton(onPressed: loading || saving ? null : _save, child: const Text('Save'))]),
     body: loading ? const Center(child: CircularProgressIndicator()) : Form(key: _formKey,
       child: NewsFormWidget(title: title, text: text, type: type, year: year, week: week,
         dayOfWeek: dayOfWeek, storylineId: storylineId, storylines: storylines,
@@ -115,7 +115,7 @@ class AddEditNewsPageState extends State<AddEditNewsPage> {
       await NewsAssociationsDatabaseHelper.replace(newsId: saved.id!, ids: selectedEntities.map((k, v) => MapEntry(k, v.toList())));
       if (mounted) Navigator.of(context).pop();
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de l’enregistrement : $error')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unable to save: $error')));
     } finally {
       if (mounted) setState(() => saving = false);
     }

@@ -45,7 +45,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 93,
+      version: 94,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -497,6 +497,24 @@ class DatabaseService {
 
     await _createLot22Tables(db);
     await _seedWwe26Catalog(db);
+    await _createLot31Indexes(db);
+  }
+
+  Future<void> _createLot31Indexes(DatabaseExecutor db) async {
+    // Indexes for the most common relationship and timeline lookups.
+    // IF NOT EXISTS makes the migration safe for databases with partial history.
+    final statements = <String>[
+      'CREATE INDEX IF NOT EXISTS idx_matches_title ON $tableMatches (${MatchRecordFields.titleId})',
+      'CREATE INDEX IF NOT EXISTS idx_storyline_events_match ON $tableStorylineEvents (${StorylineEventFields.matchId})',
+      'CREATE INDEX IF NOT EXISTS idx_storyline_events_news ON $tableStorylineEvents (${StorylineEventFields.newsId})',
+      'CREATE INDEX IF NOT EXISTS idx_storyline_superstars_superstar ON storyline_superstars (superstar_id)',
+      'CREATE INDEX IF NOT EXISTS idx_storyline_teams_team ON storyline_teams (team_id)',
+      'CREATE INDEX IF NOT EXISTS idx_title_events_timeline ON $tableTitleReignEvents (${TitleReignEventFields.titleId}, ${TitleReignEventFields.year}, ${TitleReignEventFields.week}, ${TitleReignEventFields.dayOfWeek}, ${TitleReignEventFields.matchOrder})',
+      'CREATE INDEX IF NOT EXISTS idx_reigns_title_end ON $tableReigns (${ReignsFields.titleId}, ${ReignsFields.yearEnd}, ${ReignsFields.weekEnd})',
+    ];
+    for (final statement in statements) {
+      await db.execute(statement);
+    }
   }
 
   Future<void> _createLot22Tables(DatabaseExecutor db) async {
@@ -907,6 +925,9 @@ class DatabaseService {
         ORDER BY CASE WHEN e.${TitleReignEventFields.dayOfWeek} BETWEEN 1 AND 7 THEN 0 ELSE 1 END, e.${TitleReignEventFields.dayOfWeek}, e.${TitleReignEventFields.matchOrder}, e.${TitleReignEventFields.id} LIMIT 1
       ) WHERE ${ReignsFields.yearEnd} IS NOT NULL''');
     }
+
+    // Run after legacy table migrations so every indexed table exists.
+    if (oldVersion < 94) await _createLot31Indexes(db);
   }
 
 
@@ -925,7 +946,7 @@ class DatabaseService {
       brandIds[name] = refreshed.isNotEmpty ? refreshed.first[BrandsFields.id] as int : id;
     }
 
-    // Nom, brand. Les personnages historiques/DLC non rattachés à une brand
+    // Name, brand. Les personnages historiques/DLC non rattachés à une brand
     // actuelle restent sans brand afin de ne pas inventer d'affiliation.
     const raw = <String>[
       'AJ Styles','AJ Styles ’16','AJ Lee','AJ Lee ’15','Akam','Akira Tozawa','Alba Fyre','Aleister Black','Alexa Bliss','Alexa Bliss ’25','Alicia Taylor','Alundra Blayze','Alundra Blayze ’94','Andre Chase','André the Giant','Angel','Angelo Dawkins','Apollo Crews','Asuka','Austin Theory','Ava','Axiom','B-Fab','Bayley','Becky Lynch','Berto','Bianca Belair','Big E','Blake Monroe','Bron Breakker','Bronson Reed','Brooks Jensen','Brutus Creed','Carmelo Hayes','Candice LeRae','Chad Gable','Channing Lorenzo','Charlie Dempsey','Charlotte Flair','Chelsea Green','Chris Sabin','CM Punk','Cody Rhodes','Cruz Del Toro','Damian Priest','Dexter Lumis','Dominik Mysterio','Dominik Mysterio (Masked)','Dragon Lee','Drew McIntyre','Drew McIntyre ’10','El Grande Americano','Elton Prince','Erick Rowan','Erik','Ethan Page','Fallon Henley','Finn Bálor','Giulia','Grayson Waller','Gunther','Hank Walker','Ilja Dragunov','Ivar','Ivy Nile','Iyo Sky','Izzi Dame','Jacob Fatu','Jacy Jayne','Jade Cargill','Jaida Parker','Jazmyn Nyx','JC Mateo','JD McDonagh','Je’Von Evans','Jey Uso','Jimmy Uso','Joaquin Wilde','Joe Gacy','Johnny Gargano','Jordynne Grace','Josh Briggs','Julius Creed','Kairi Sane','Karmen Petrovic','Kelani Jordan','Kiana James','Kit Wilson','Kofi Kingston','LA Knight','Lash Legend','Lexis King','Liv Morgan','Logan Paul','Lola Vice','Ludwig Kaiser','Lyra Valkyria','Maxxine Dupri','Michin','Montez Ford','Myles Borne','Naomi','Natalya','Nathan Frazer','Nia Jax','Nick Aldis','Nikki Bella','Nikki Cross','Nikkita Lyons','Noam Dar','Oba Femi','Omos','Otis','Penta','Pete Dunne','Piper Niven','R-Truth','Raquel Rodriguez','Randy Orton','Randy Orton ’11','Randy Orton ’14','Rey Fenix','Rey Mysterio','Rey Mysterio ’08','Rhea Ripley','Ricky Saints','Ridge Holland','Roman Reigns','Roxanne Perez','Rusev','Sami Zayn','Santos Escobar','Seth Rollins','Seth Rollins ’15','Seth Rollins ’25','Seth Rollins WM41','Shawn Spears','Sheamus','Shinsuke Nakamura','Sol Ruca','Solo Sikoa','Stephanie Vaquer','Talla Tonga','Tama Tonga','Tank Ledger','Tatum Paxley','Tavion Heights','The Miz','The Miz ’17','Thea Hail','Tiffany Stratton','Tommaso Ciampa','Tony D’Angelo','Trick Williams','Tyler Bate','Tyler Breeze','Wendy Choo','Wren Sinclair','Xavier Woods','Yoshiki Inamura','Zaria','Zelina Vega','Zoey Stark',
@@ -977,7 +998,7 @@ class DatabaseService {
       });
     }
 
-    // Équipes dont les deux membres figurent dans le roster ci-dessus.
+    // Tag Teams dont les deux membres figurent dans le roster ci-dessus.
     const teams = <String, List<String>>{
       'The Usos':['Jey Uso','Jimmy Uso'],
       'The New Day':['Kofi Kingston','Xavier Woods','Big E'],

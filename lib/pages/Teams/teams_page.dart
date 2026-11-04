@@ -27,6 +27,21 @@ class TeamsPageState extends State<TeamsPage>
   String? loadError;
 
   int requestId = 0;
+  String sortOrder = 'name';
+
+  List<Teams> get visibleTeams {
+    final rows = [...teamsList];
+    rows.sort((a, b) {
+      if (sortOrder == 'members') {
+        final countA = getMembers(a).length;
+        final countB = getMembers(b).length;
+        final byCount = countB.compareTo(countA);
+        if (byCount != 0) return byCount;
+      }
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    });
+    return rows;
+  }
 
   static const Color background = Color(0xFF101010);
   static const Color surface = Color(0xFF1B1B1B);
@@ -283,9 +298,22 @@ class TeamsPageState extends State<TeamsPage>
           if (teamsList.isEmpty)
             _buildEmptyState()
           else ...[
-            _buildSectionTitle(),
+            Row(children: [
+              Expanded(child: _buildSectionTitle()),
+              const SizedBox(width: 10),
+              DropdownButton<String>(
+                value: sortOrder,
+                isDense: true,
+                underline: const SizedBox.shrink(),
+                items: const [
+                  DropdownMenuItem(value: 'name', child: Text('Name A → Z')),
+                  DropdownMenuItem(value: 'members', child: Text('Effectif')),
+                ],
+                onChanged: (value) => setState(() => sortOrder = value ?? 'name'),
+              ),
+            ]),
             const SizedBox(height: 12),
-            ...teamsList.map(_buildTeamCard),
+            ...visibleTeams.map(_buildTeamCard),
           ],
         ],
       ),
@@ -331,7 +359,7 @@ class TeamsPageState extends State<TeamsPage>
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '${teamsList.length} ${teamsList.length == 1 ? 'TEAM' : 'TEAMS'}',
+                  '${visibleTeams.length} ${visibleTeams.length == 1 ? 'TEAM' : 'TEAMS'}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 23,
@@ -365,7 +393,7 @@ class TeamsPageState extends State<TeamsPage>
           ),
         ),
         Text(
-          '${teamsList.length} RESULTS',
+          '${visibleTeams.length} RESULTS',
           style: const TextStyle(
             color: secondaryText,
             fontSize: 10,

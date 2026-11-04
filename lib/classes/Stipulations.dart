@@ -19,7 +19,7 @@ class Stipulations {
   // Champ conservé temporairement pour la compatibilité.
   final String type;
 
-  // Nom de la stipulation.
+  // Name de la stipulation.
   final String stipulation;
 
   const Stipulations({
