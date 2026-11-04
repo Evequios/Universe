@@ -20,7 +20,7 @@ class MatchesDatabaseHelper {
   
   static Future<void> _validateMatch(MatchRecord match) async {
     if (!MatchResultStatus.values.contains(match.resultStatus)) {
-      throw ArgumentError('Statut de résultat invalide.');
+      throw ArgumentError('Invalid result status.');
     }
 
     final usesSides = match.snapshotUsesSides;
@@ -30,52 +30,52 @@ class MatchesDatabaseHelper {
     final allParticipants = _participantsOf(match);
 
     if (allParticipants.isEmpty) {
-      throw ArgumentError('Un combat doit contenir au moins un participant.');
+      throw ArgumentError('A match must contain at least one participant.');
     }
 
     if (usesSides) {
       if (match.specialParticipants.isNotEmpty) {
         throw ArgumentError(
-          'Les participants doivent être associés à un camp pour ce format.',
+          'Participants must be assigned to a side for this format.',
         );
       }
 
       if (match.sides.length != sideCount) {
         throw ArgumentError(
-          'Ce format nécessite exactement $sideCount camps.',
+          'This format requires exactly $sideCount sides.',
         );
       }
 
       final sideOrders = match.sides.map((side) => side.sideOrder).toSet();
 
       if (sideOrders.length != match.sides.length) {
-        throw ArgumentError('Deux camps ne peuvent pas avoir le même ordre.');
+        throw ArgumentError('Two sides cannot have the same order.');
       }
 
       for (final side in match.sides) {
         if (side.sideOrder < 0 || side.sideOrder >= sideCount) {
-          throw ArgumentError('Ordre de camp invalide.');
+          throw ArgumentError('Invalid side order.');
         }
 
         if (side.name.trim().isEmpty) {
-          throw ArgumentError('Chaque camp doit avoir un nom.');
+          throw ArgumentError('Each side must have a name.');
         }
 
         if (side.participants.isEmpty) {
           throw ArgumentError(
-            'Chaque camp doit contenir au moins un participant.',
+            'Each side must contain at least one participant.',
           );
         }
 
         if (side.sideOrder >= participantsPerSide.length) {
-          throw ArgumentError('Répartition des participants invalide.');
+          throw ArgumentError('Invalid participant allocation.');
         }
 
         final expected = participantsPerSide[side.sideOrder];
 
         if (side.participants.length != expected) {
           throw ArgumentError(
-            'Le camp ${side.sideOrder + 1} doit contenir $expected participant(s).',
+            'Side ${side.sideOrder + 1} must contain $expected participant(s).',
           );
         }
 
@@ -83,26 +83,26 @@ class MatchesDatabaseHelper {
 
         if (positions.length != side.participants.length) {
           throw ArgumentError(
-            'Deux participants ne peuvent pas avoir la même position dans un camp.',
+            'Two participants cannot have the same position on a side.',
           );
         }
       }
 
       if (allParticipants.length != participantCount) {
         throw ArgumentError(
-          'Ce format nécessite exactement $participantCount participants.',
+          'This format requires exactly $participantCount participants.',
         );
       }
     } else {
       if (match.sides.isNotEmpty) {
         throw ArgumentError(
-          'Ce format spécial ne doit pas comporter de camps.',
+          'This special format cannot have sides.',
         );
       }
 
       if (allParticipants.length != participantCount) {
         throw ArgumentError(
-          'Ce format nécessite exactement $participantCount participants.',
+          'This format requires exactly $participantCount participants.',
         );
       }
     }
@@ -112,7 +112,7 @@ class MatchesDatabaseHelper {
     for (final participant in allParticipants) {
       if (participant.superstarName.trim().isEmpty) {
         throw ArgumentError(
-          'Chaque participant doit avoir un nom historique.',
+          'Each participant must have a historical name.',
         );
       }
 
@@ -120,7 +120,7 @@ class MatchesDatabaseHelper {
 
       if (superstarId != null && !superstarIds.add(superstarId)) {
         throw ArgumentError(
-          'Une Superstar ne peut pas participer plusieurs fois au même combat.',
+          'A Superstar cannot participate more than once in the same match.',
         );
       }
     }
@@ -133,17 +133,17 @@ class MatchesDatabaseHelper {
 
       if (hasSideWinner) {
         if (!usesSides) {
-          throw ArgumentError('Un format sans camps ne peut pas avoir de camp gagnant.');
+          throw ArgumentError('A format without sides cannot have a winning side.');
         }
         final winningSides = match.sides.where(
           (side) => side.sideOrder == match.winnerSideOrder,
         );
         if (winningSides.isEmpty) {
-          throw ArgumentError('Le camp gagnant est introuvable.');
+          throw ArgumentError('The winning side could not be found.');
         }
         eligibleParticipants = winningSides.first.participants;
       } else if (!hasIndividualWinner) {
-        throw ArgumentError('Une victoire doit désigner un camp ou un vainqueur individuel.');
+        throw ArgumentError('A win must identify a winning side or an individual winner.');
       }
 
       if (hasIndividualWinner) {
@@ -156,16 +156,16 @@ class MatchesDatabaseHelper {
           return participant.superstarName == winnerName;
         });
         if (!isEligible) {
-          throw ArgumentError('Le dernier tombé ou soumis doit appartenir au camp gagnant.');
+          throw ArgumentError('The final pinned or submitted participant must belong to the winning side.');
         }
       } else if (match.winnerSuperstarId != null) {
-        throw ArgumentError('Un identifiant de vainqueur individuel est incohérent.');
+        throw ArgumentError('The individual winner ID is inconsistent.');
       }
     } else if (match.winnerSideOrder != null ||
         match.winnerSuperstarId != null ||
         (match.winnerName != null && match.winnerName!.trim().isNotEmpty)) {
       throw ArgumentError(
-        'Un match nul, en attente ou No Contest ne peut pas avoir de vainqueur.',
+        'A draw, pending match or No Contest cannot have a winner.',
       );
     }
   }
@@ -298,7 +298,7 @@ class MatchesDatabaseHelper {
     final db = await DatabaseService.instance.database;
     final rows = await db.query(tableMatches,
       where: '${MatchRecordFields.id} = ?', whereArgs: [id], limit: 1);
-    if (rows.isEmpty) throw Exception('Combat $id introuvable.');
+    if (rows.isEmpty) throw Exception('Match $id not found.');
     return _fromMap(rows.first);
   }
 
@@ -323,7 +323,7 @@ class MatchesDatabaseHelper {
   }
 
   static Future<int> updateMatches(MatchRecord match) async {
-    if (match.id == null) throw ArgumentError('Impossible de modifier un combat sans identifiant.');
+    if (match.id == null) throw ArgumentError('Cannot update a match without an ID.');
     await _validateMatch(match);
     final db = await DatabaseService.instance.database;
     await db.transaction((txn) async {
@@ -332,7 +332,7 @@ class MatchesDatabaseHelper {
         where: '${MatchRecordFields.id} = ?', whereArgs: [match.id]);
       await txn.delete(tableMatchSides,
         where: '${MatchSidesFields.matchId} = ?', whereArgs: [match.id]);
-      // Les participants sans camp ne sont pas supprimés par la cascade des camps.
+      // Les participants sans camp ne sont pas supprimés par la cascade des sides.
       await txn.delete(tableMatchParticipants,
         where: '${MatchParticipantsFields.matchId} = ?', whereArgs: [match.id]);
       await _insertStructure(txn, match, match.id!);
@@ -364,24 +364,47 @@ class MatchesDatabaseHelper {
   }
 
   static Future<void> reorderMatches(int showId, List<int> orderedMatchIds) async {
+    if (orderedMatchIds.toSet().length != orderedMatchIds.length) {
+      throw ArgumentError('A match can appear only once in the order.');
+    }
+    if (orderedMatchIds.isEmpty) return;
+
     final db = await DatabaseService.instance.database;
     await db.transaction((txn) async {
+      final placeholders = List.filled(orderedMatchIds.length, '?').join(', ');
+      // Restrict the operation to matches that actually belong to this show.
+      // One lookup replaces the previous per-match title-event query.
+      final rows = await txn.rawQuery('''
+        SELECT m.${MatchRecordFields.id} AS matchId,
+               e.${TitleReignEventFields.titleId} AS titleId
+        FROM $tableMatches m
+        LEFT JOIN $tableTitleReignEvents e
+          ON e.${TitleReignEventFields.matchId} = m.${MatchRecordFields.id}
+        WHERE m.${MatchRecordFields.showId} = ?
+          AND m.${MatchRecordFields.id} IN ($placeholders)
+      ''', [showId, ...orderedMatchIds]);
+      final validMatchIds = rows.map((row) => row['matchId'] as int).toSet();
+      final eventTitles = <int, int>{};
+      for (final row in rows) {
+        final matchId = row['matchId'] as int;
+        final titleId = row['titleId'] as int?;
+        if (titleId != null) eventTitles[matchId] = titleId;
+      }
+
       final affectedTitles = <int>{};
       for (var index = 0; index < orderedMatchIds.length; index++) {
         final matchId = orderedMatchIds[index];
-        await txn.update(tableMatches, {MatchRecordFields.matchOrder: index},
+        if (!validMatchIds.contains(matchId)) continue;
+        await txn.update(tableMatches,
+          {MatchRecordFields.matchOrder: index},
           where: '${MatchRecordFields.id} = ? AND ${MatchRecordFields.showId} = ?',
           whereArgs: [matchId, showId]);
-        final event = await txn.query(tableTitleReignEvents,
-          columns: [TitleReignEventFields.titleId],
-          where: '${TitleReignEventFields.matchId} = ?', whereArgs: [matchId], limit: 1);
-        if (event.isNotEmpty) {
-          final titleId = event.first[TitleReignEventFields.titleId] as int;
-          await txn.update(tableTitleReignEvents,
-            {TitleReignEventFields.matchOrder: index},
-            where: '${TitleReignEventFields.matchId} = ?', whereArgs: [matchId]);
-          affectedTitles.add(titleId);
-        }
+        final titleId = eventTitles[matchId];
+        if (titleId == null) continue;
+        await txn.update(tableTitleReignEvents,
+          {TitleReignEventFields.matchOrder: index},
+          where: '${TitleReignEventFields.matchId} = ?', whereArgs: [matchId]);
+        affectedTitles.add(titleId);
       }
       for (final titleId in affectedTitles) {
         await ReignsDatabaseHelper.rebuildAfterMatchDeletion(txn, titleId);

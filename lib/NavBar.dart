@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/pages/Brands/brands_page.dart';
 import 'package:wwe_universe/pages/Draft/draft_page.dart';
+import 'package:wwe_universe/pages/random_events_page.dart';
 import 'package:wwe_universe/pages/News/news_page.dart';
 import 'package:wwe_universe/pages/dashboard_page.dart';
 import 'package:wwe_universe/pages/Settings/settings_page.dart';
@@ -110,6 +111,7 @@ class Navbar extends StatelessWidget {
                   destination(icon: Icons.diversity_3_rounded, label: 'Teams', page: const TeamsPage()),
                   sectionLabel('Tools'),
                   destination(icon: Icons.swap_horiz_rounded, label: 'Draft', page: const DraftPage()),
+                  destination(icon: Icons.casino_rounded, label: 'Random Events', page: const RandomEventsPage()),
                 ],
               ),
             ),

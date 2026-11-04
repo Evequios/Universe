@@ -72,7 +72,7 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
       setState(() => isLoading = false);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Impossible de charger le combat : $error')),
+        SnackBar(content: Text('Unable to load match: $error')),
       );
     }
   }
@@ -82,15 +82,15 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
-        title: const Text('Détail du combat'),
+        title: const Text('Match Details'),
         actions: [
           IconButton(
-            tooltip: 'Modifier',
+            tooltip: 'Edit',
             icon: const Icon(Icons.edit_outlined),
             onPressed: isLoading || match == null ? null : editMatch,
           ),
           IconButton(
-            tooltip: 'Supprimer',
+            tooltip: 'Delete',
             icon: const Icon(Icons.delete_outline),
             onPressed: isLoading || match == null ? null : confirmDelete,
           ),
@@ -101,7 +101,7 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
           : match == null
               ? const Center(
                   child: Text(
-                    'Combat introuvable.',
+                    'Match not found.',
                     style: TextStyle(color: Colors.white),
                   ),
                 )
@@ -157,24 +157,24 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
           ),
         ],
         const SizedBox(height: 24),
-        _buildSectionTitle('Informations'),
+        _buildSectionTitle('Information'),
         const SizedBox(height: 10),
         _buildInfoCard(
           icon: Icons.event_outlined,
-          title: show?.name ?? 'Show indisponible',
+          title: show?.name ?? 'Show unavailable',
           subtitle: show == null
-              ? 'Le show associé n’est plus disponible'
-              : 'Année ${show!.year} • Semaine ${show!.week}',
+              ? 'The linked Show is no longer available'
+              : 'Year ${show!.year} • Week ${show!.week}',
         ),
         const SizedBox(height: 24),
-        _buildSectionTitle('Storylines associées'),
+        _buildSectionTitle('Related Storylines'),
         const SizedBox(height: 10),
         FutureBuilder<List<int>>(
           future: StorylineRelationsDatabaseHelper.readStorylineIdsForMatch(value.id!),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
             final ids = snapshot.data ?? const <int>[];
-            if (ids.isEmpty) return const Text('Ce match ne fait partie d’aucune storyline.', style: TextStyle(color: secondaryText));
+            if (ids.isEmpty) return const Text('This match is not linked to any storyline.', style: TextStyle(color: secondaryText));
             return Column(children: ids.map((id) => FutureBuilder(
               future: StorylinesDatabaseHelper.readStoryline(id),
               builder: (context, storylineSnapshot) {
@@ -183,7 +183,7 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
                 return Card(color: surface, child: ListTile(
                   leading: const Icon(Icons.auto_stories_outlined, color: primary),
                   title: Text(storyline.title, style: const TextStyle(color: Colors.white)),
-                  subtitle: Text('Ouvrir la storyline', style: const TextStyle(color: secondaryText)),
+                  subtitle: Text('Open Storyline', style: const TextStyle(color: secondaryText)),
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => StorylinesDetailPage(storylineId: id))),
                 ));
               },
@@ -207,37 +207,37 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
             );
 
         if (winningSide != null) {
-          title = 'Vainqueur : ${winningSide.name}';
-          subtitle = 'Victoire du camp';
+          title = 'Winner: ${winningSide.name}';
+          subtitle = 'Side win';
         } else {
           final winner = _findWinner(value);
           final winnerName = winner?.superstarName ?? value.winnerName;
 
           title = winnerName == null || winnerName.isEmpty
-              ? 'Vainqueur individuel'
-              : 'Vainqueur : $winnerName';
+              ? 'Individual Winner'
+              : 'Winner: $winnerName';
 
-          subtitle = 'Victoire individuelle';
+          subtitle = 'Individual win';
         }
 
         icon = Icons.emoji_events_outlined;
         break;
 
       case MatchResultStatus.draw:
-        title = 'Match nul';
-        subtitle = 'Aucun vainqueur';
+        title = 'Draw';
+        subtitle = 'No winner';
         icon = Icons.handshake_outlined;
         break;
 
       case MatchResultStatus.noContest:
-        title = 'Sans résultat';
-        subtitle = 'Combat déclaré sans résultat';
+        title = 'No Contest';
+        subtitle = 'Match declared a No Contest';
         icon = Icons.block_outlined;
         break;
 
       default:
-        title = 'À déterminer';
-        subtitle = 'Le résultat du combat n’a pas encore été renseigné';
+        title = 'To Be Determined';
+        subtitle = 'The match result has not been entered yet';
         icon = Icons.hourglass_empty;
     }
 
@@ -526,19 +526,19 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Supprimer le combat'),
+        title: const Text('Delete Match'),
         content: const Text(
-          'Voulez-vous vraiment supprimer ce combat ? Cette action est définitive.',
+          'Are you sure you want to delete this match? This action cannot be undone.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Annuler'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text(
-              'Supprimer',
+              'Delete',
               style: TextStyle(color: primary),
             ),
           ),

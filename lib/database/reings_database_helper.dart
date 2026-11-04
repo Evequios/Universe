@@ -25,19 +25,19 @@ class ReignsDatabaseHelper {
     int? teamId,
     String? teamName,
   }) async {
-    if (week < 1 || week > 48) throw ArgumentError('La semaine doit être comprise entre 1 et 48.');
-    if (dayOfWeek < 1 || dayOfWeek > 7) throw ArgumentError('Le jour doit être compris entre 1 et 7.');
+    if (week < 1 || week > 48) throw ArgumentError('The week must be between 1 and 48.');
+    if (dayOfWeek < 1 || dayOfWeek > 7) throw ArgumentError('The day must be between 1 and 7.');
     final db = await DatabaseService.instance.database;
     await db.transaction((txn) async {
       final titleRows = await txn.query(tableTitles,
         columns: [TitlesFields.tag], where: '${TitlesFields.id} = ?', whereArgs: [titleId], limit: 1);
-      if (titleRows.isEmpty) throw StateError('Ce titre est introuvable.');
+      if (titleRows.isEmpty) throw StateError('Title not found.');
       final isTag = titleRows.first[TitlesFields.tag] == 1;
       if (isTag && (holder2Id == null || holder2Name == null || holder2Name.isEmpty)) {
-        throw ArgumentError('Un titre par équipe nécessite deux champions.');
+        throw ArgumentError('A tag team title requires two champions.');
       }
       if (!isTag && holder2Id != null) {
-        throw ArgumentError('Un titre individuel ne peut avoir qu’un champion.');
+        throw ArgumentError('A singles title can have only one champion.');
       }
       await txn.insert(tableTitleReignEvents, {
         TitleReignEventFields.titleId: titleId,
@@ -64,10 +64,10 @@ class ReignsDatabaseHelper {
     required int dayOfWeek,
   }) async {
     if (reign.startMatchId != null) {
-      throw StateError('Ce règne est lié à un match : modifie plutôt ce match.');
+      throw StateError('This reign is linked to a match. Update the match instead.');
     }
     if (week < 1 || week > 48 || dayOfWeek < 1 || dayOfWeek > 7) {
-      throw ArgumentError('Date WWE invalide.');
+      throw ArgumentError('Invalid WWE date.');
     }
     final db = await DatabaseService.instance.database;
     await db.transaction((txn) async {
@@ -76,7 +76,7 @@ class ReignsDatabaseHelper {
         where: '${TitleReignEventFields.titleId} = ? AND ${TitleReignEventFields.eventType} = ? AND ${TitleReignEventFields.matchId} IS NULL AND ${TitleReignEventFields.year} = ? AND ${TitleReignEventFields.week} = ? AND ${TitleReignEventFields.dayOfWeek} = ? AND ${TitleReignEventFields.holder1Id} = ?',
         whereArgs: [reign.titleId, eventChange, reign.yearStart, reign.weekStart, reign.dayStart, reign.holder1Id],
         limit: 1);
-      if (rows.isEmpty) throw StateError('Événement de règne manuel introuvable.');
+      if (rows.isEmpty) throw StateError('Manual reign event not found.');
       await txn.update(tableTitleReignEvents, {
         TitleReignEventFields.year: year,
         TitleReignEventFields.week: week,
@@ -103,19 +103,19 @@ class ReignsDatabaseHelper {
   }
 
   static Future<void> vacateTitle({required int titleId, required int year, required int week, required int dayOfWeek}) async {
-    if (week < 1 || week > 48) throw ArgumentError('La semaine doit être comprise entre 1 et 48.');
-    if (dayOfWeek < 1 || dayOfWeek > 7) throw ArgumentError('Le jour doit être compris entre 1 et 7.');
+    if (week < 1 || week > 48) throw ArgumentError('The week must be between 1 and 48.');
+    if (dayOfWeek < 1 || dayOfWeek > 7) throw ArgumentError('The day must be between 1 and 7.');
     final db = await DatabaseService.instance.database;
     await db.transaction((txn) async {
       final current = await txn.query(tableReigns,
         where: '${ReignsFields.titleId} = ? AND ${ReignsFields.yearEnd} IS NULL',
         whereArgs: [titleId], limit: 1);
-      if (current.isEmpty) throw StateError('Ce titre est déjà vacant.');
+      if (current.isEmpty) throw StateError('This title is already vacant.');
       final startYear = current.first[ReignsFields.yearStart] as int;
       final startWeek = current.first[ReignsFields.weekStart] as int;
       final startDay = current.first[ReignsFields.dayStart] as int? ?? 1;
       if (year < startYear || (year == startYear && (week < startWeek || (week == startWeek && dayOfWeek < startDay)))) {
-        throw ArgumentError('La date de vacance ne peut pas précéder le début du règne.');
+        throw ArgumentError('The vacancy date cannot be before the start of the reign.');
       }
       await txn.insert(tableTitleReignEvents, {
         TitleReignEventFields.titleId: titleId,
@@ -145,12 +145,12 @@ class ReignsDatabaseHelper {
     if (match.titleChange && titleId != null && match.resultStatus == MatchResultStatus.winner) {
       final winner = _winnerParticipants(match);
       final title = await txn.query(tableTitles, columns: [TitlesFields.tag, TitlesFields.holder1, TitlesFields.holder2], where: '${TitlesFields.id} = ?', whereArgs: [titleId], limit: 1);
-      if (title.isEmpty) throw StateError('Le titre associé au combat est introuvable.');
+      if (title.isEmpty) throw StateError('The title linked to the match could not be found.');
       final isTag = title.first['tag'] == 1;
       if (winner.isEmpty || (isTag && winner.length != 2) || (!isTag && winner.length != 1)) {
         throw ArgumentError(isTag
-          ? 'Un changement de titre par équipe nécessite exactement deux vainqueurs.'
-          : 'Un changement de titre individuel nécessite un seul vainqueur.');
+          ? 'A tag team title change requires exactly two winners.'
+          : 'A singles title change requires exactly one winner.');
       }
       final winningSide = _winningTeam(match);
       String? winningTeamName;

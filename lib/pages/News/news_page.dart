@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/navbar.dart';
 import 'package:wwe_universe/classes/news.dart';
 import 'package:wwe_universe/database/news_database_helper.dart';
-import 'package:wwe_universe/pages/news/add_edit_news_page.dart';
-import 'package:wwe_universe/pages/news/news_detail_page.dart';
+import 'package:wwe_universe/pages/News/add_edit_news_page.dart';
+import 'package:wwe_universe/pages/News/news_detail_page.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -14,7 +14,7 @@ class NewsPage extends StatefulWidget {
 class _NewsPageState extends State<NewsPage> with AutomaticKeepAliveClientMixin {
   List<News> _all = [];
   bool _loading = true, _searching = false;
-  String _query = '', _category = 'Toutes', _sort = 'newest';
+  String _query = '', _category = 'All', _sort = 'newest';
   final _searchController = TextEditingController();
   @override bool get wantKeepAlive => true;
 
@@ -28,14 +28,14 @@ class _NewsPageState extends State<NewsPage> with AutomaticKeepAliveClientMixin 
       if (mounted) setState(() { _all = rows; _loading = false; });
     } catch (e) {
       if (mounted) setState(() => _loading = false);
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible de charger les actualités : $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unable to load news: $e')));
     }
   }
 
-  List<String> get _categories => ['Toutes', ..._all.map((n) => n.type).where((v) => v.trim().isNotEmpty).toSet().toList()..sort()];
+  List<String> get _categories => ['All', ..._all.map((n) => n.type).where((v) => v.trim().isNotEmpty).toSet().toList()..sort()];
   List<News> get _visible {
     final q = _query.trim().toLowerCase();
-    final rows = _all.where((n) => (_category == 'Toutes' || n.type == _category) &&
+    final rows = _all.where((n) => (_category == 'All' || n.type == _category) &&
       (q.isEmpty || n.title.toLowerCase().contains(q) || n.text.toLowerCase().contains(q))).toList();
     int compareDate(News a, News b) {
       final ay = a.year ?? -1, by = b.year ?? -1;
@@ -54,10 +54,10 @@ class _NewsPageState extends State<NewsPage> with AutomaticKeepAliveClientMixin 
     return Scaffold(
       drawer: const Navbar(),
       appBar: AppBar(centerTitle: true,
-        title: _searching ? TextField(controller: _searchController, autofocus: true, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(hintText: 'Rechercher une actualité…', border: InputBorder.none), onChanged: (v) => setState(() => _query = v)) : const Text('News'),
+        title: _searching ? TextField(controller: _searchController, autofocus: true, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(hintText: 'Search news…', border: InputBorder.none), onChanged: (v) => setState(() => _query = v)) : const Text('News'),
         actions: [IconButton(icon: Icon(_searching ? Icons.close : Icons.search), onPressed: () { setState(() { _searching = !_searching; if (!_searching) { _query = ''; _searchController.clear(); } }); _refresh(); })]),
       body: Column(children: [
-        Padding(padding: const EdgeInsets.fromLTRB(12, 8, 12, 0), child: Row(children: [const Text('Trier :'), const SizedBox(width: 8), Expanded(child: DropdownButton<String>(isExpanded: true, value: _sort, items: const [DropdownMenuItem(value: 'newest', child: Text('Plus récentes')), DropdownMenuItem(value: 'oldest', child: Text('Plus anciennes'))], onChanged: (v) => setState(() => _sort = v ?? 'newest')))])),
+        Padding(padding: const EdgeInsets.fromLTRB(12, 8, 12, 0), child: Row(children: [const Text('Sort:'), const SizedBox(width: 8), Expanded(child: DropdownButton<String>(isExpanded: true, value: _sort, items: const [DropdownMenuItem(value: 'newest', child: Text('Newest')), DropdownMenuItem(value: 'oldest', child: Text('Oldest'))], onChanged: (v) => setState(() => _sort = v ?? 'newest')))])),
         if (categories.length > 1)
           SizedBox(
             height: 48,
@@ -76,9 +76,9 @@ class _NewsPageState extends State<NewsPage> with AutomaticKeepAliveClientMixin 
               }).toList(),
             ),
           ),
-        Expanded(child: _loading ? const Center(child: CircularProgressIndicator()) : _visible.isEmpty ? const Center(child: Text('Aucune actualité pour ces critères.')) : RefreshIndicator(onRefresh: _refresh, child: ListView.builder(padding: const EdgeInsets.all(8), itemCount: _visible.length, itemBuilder: (context, index) {
+        Expanded(child: _loading ? const Center(child: CircularProgressIndicator()) : _visible.isEmpty ? const Center(child: Text('No news match these criteria.')) : RefreshIndicator(onRefresh: _refresh, child: ListView.builder(padding: const EdgeInsets.all(8), itemCount: _visible.length, itemBuilder: (context, index) {
           final news = _visible[index];
-          final date = news.year == null ? 'Date WWE non renseignée' : '${news.year} · S${news.week ?? '?'} · J${news.dayOfWeek ?? '?'}';
+          final date = news.year == null ? 'WWE date not set' : '${news.year} · Week ${news.week ?? '?'} · Day ${news.dayOfWeek ?? '?'}';
           return Card(shape: RoundedRectangleBorder(side: const BorderSide(color: Color(0xFF30303A)), borderRadius: BorderRadius.circular(16)), child: ListTile(
             onTap: () async { await Navigator.of(context).push(MaterialPageRoute(builder: (_) => NewsDetailPage(newsId: news.id!))); _refresh(); },
             title: Text(news.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),

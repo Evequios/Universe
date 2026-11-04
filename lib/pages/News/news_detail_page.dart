@@ -49,7 +49,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
         'superstars': (all[0] as List<Superstars>).where((e) => ids['superstars']!.contains(e.id)).map((e) => e.name).toList(),
         'teams': (all[1] as List<Teams>).where((e) => ids['teams']!.contains(e.id)).map((e) => e.name).toList(),
         'titles': (all[2] as List<Titles>).where((e) => ids['titles']!.contains(e.id)).map((e) => e.name).toList(),
-        'shows': (all[3] as List<Show>).where((e) => ids['shows']!.contains(e.id)).map((e) => '${e.name} • ${e.year} S${e.week}').toList(),
+        'shows': (all[3] as List<Show>).where((e) => ids['shows']!.contains(e.id)).map((e) => '${e.name} • Year ${e.year} • Week ${e.week}').toList(),
       };
       final story = linkedStorylineId == null ? null : await StorylinesDatabaseHelper.readStoryline(linkedStorylineId);
       if (!mounted) return;
@@ -71,18 +71,18 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       : ListView(padding: const EdgeInsets.all(16), children: [
         Text(news!.title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
         const SizedBox(height: 8),
-        Text('${news!.type}  •  WWE Year ${news!.year ?? '—'}  •  S${news!.week ?? '—'}  •  J${news!.dayOfWeek ?? '—'}', style: const TextStyle(color: AppFormStyles.secondaryText)),
+        Text('${news!.type}  •  WWE Year ${news!.year ?? '—'}  •  Week ${news!.week ?? '—'}  •  Day ${news!.dayOfWeek ?? '—'}', style: const TextStyle(color: AppFormStyles.secondaryText)),
         const SizedBox(height: 20),
         AppDetailSection(title: 'Content', icon: Icons.article_outlined, child: SelectableText(news!.text, style: const TextStyle(color: Colors.white, height: 1.55, fontSize: 15))),
         const SizedBox(height: 14),
         AppDetailSection(title: 'Storyline', icon: Icons.auto_stories_outlined, child: storyline == null
-          ? const Text('Aucune storyline associée.', style: TextStyle(color: AppFormStyles.secondaryText))
-          : ListTile(contentPadding: EdgeInsets.zero, title: Text(storyline!.title, style: const TextStyle(color: Colors.white)), subtitle: const Text('Ouvrir la storyline', style: TextStyle(color: AppFormStyles.secondaryText)), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => StorylinesDetailPage(storylineId: storyline!.id!)))),),
+          ? const Text('No related storylines.', style: TextStyle(color: AppFormStyles.secondaryText))
+          : ListTile(contentPadding: EdgeInsets.zero, title: Text(storyline!.title, style: const TextStyle(color: Colors.white)), subtitle: const Text('Open Storyline', style: TextStyle(color: AppFormStyles.secondaryText)), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => StorylinesDetailPage(storylineId: storyline!.id!)))),),
         const SizedBox(height: 14),
         AppDetailSection(title: 'Related Entities', icon: Icons.link, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           _superstarLinks(),
-          _entityGroup('Équipes', associationNames['teams'] ?? []),
-          _entityGroup('Titres', associationNames['titles'] ?? []),
+          _entityGroup('Tag Teams', associationNames['teams'] ?? []),
+          _entityGroup('Titles', associationNames['titles'] ?? []),
           _entityGroup('Shows', associationNames['shows'] ?? []),
         ])),
       ]),
@@ -108,14 +108,14 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget _entityGroup(String label, List<String> values) => Padding(padding: const EdgeInsets.only(bottom: 10), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Text(label, style: const TextStyle(color: AppFormStyles.secondaryText, fontWeight: FontWeight.bold)),
-    const SizedBox(height: 4), Text(values.isEmpty ? 'Aucun' : values.join(' • '), style: const TextStyle(color: Colors.white)),
+    const SizedBox(height: 4), Text(values.isEmpty ? 'None' : values.join(' • '), style: const TextStyle(color: Colors.white)),
   ]));
 
   Future<void> _edit() async { await Navigator.push(context, MaterialPageRoute(builder: (_) => AddEditNewsPage(news: news))); await _load(); }
   Future<void> _confirmDelete() async {
     final confirmed = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
-      title: const Text('Delete cette actualité ?'), content: const Text('Ses associations seront supprimées, mais les storylines, matchs et autres entités resteront intactes.'),
-      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')), FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete'))]));
+      title: const Text('Delete this news item?'), content: const Text('Its associations will be deleted, but storylines, matches and other entities will remain unchanged.'),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete'))]));
     if (confirmed == true) { await NewsDatabaseHelper.deleteNews(widget.newsId); if (mounted) Navigator.pop(context, true); }
   }
 }

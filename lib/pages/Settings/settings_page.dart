@@ -36,7 +36,7 @@ class SettingsPageState extends State<SettingsPage> {
           },
         ),
         _buildSettingsCard(
-          title: 'Matchs',
+          title: 'Matches',
           onTap: () {
             Navigator.push(
               context,

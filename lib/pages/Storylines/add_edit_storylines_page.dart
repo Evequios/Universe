@@ -8,6 +8,7 @@ import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/teams_database_helper.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
 import 'package:wwe_universe/widget/superstar_picker.dart';
+import 'package:wwe_universe/widget/entity_picker.dart';
 import 'package:wwe_universe/widget/wwe_date_dialog.dart';
 
 class AddEditStorylinesPage extends StatefulWidget {
@@ -77,24 +78,20 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
 
   String? _validateDate(TextEditingController year, TextEditingController week, TextEditingController day, String label, {bool required = false}) {
     final y = _number(year); final w = _number(week); final d = _number(day);
-    if (required && (y == null || w == null || d == null)) return 'La date de début est obligatoire.';
-    if ((y == null) != (w == null) || (y == null) != (d == null)) return 'Renseigne l’année, la semaine et le jour ensemble.';
-    if (y != null && y < 1) return 'Année invalide.';
-    if (w != null && (w < 1 || w > 48)) return 'La semaine doit être comprise entre 1 et 48.';
-    if (d != null && (d < 1 || d > 7)) return 'Le jour doit être compris entre 1 et 7.';
+    if (required && (y == null || w == null || d == null)) return 'The start date is required.';
+    if ((y == null) != (w == null) || (y == null) != (d == null)) return 'Enter the year, week and day together.';
+    if (y != null && y < 1) return 'Invalid year.';
+    if (w != null && (w < 1 || w > 48)) return 'The week must be between 1 and 48.';
+    if (d != null && (d < 1 || d > 7)) return 'The day must be between 1 and 7.';
     return null;
   }
 
-  Future<void> _chooseParticipants<T>({required String title, required List<T> items, required Set<int> selected, required int? Function(T) idOf, required String Function(T) nameOf, required void Function(Set<int>) onChanged}) async {
-    final temp = Set<int>.from(selected);
-    await showDialog<void>(context: context, builder: (dialogContext) => StatefulBuilder(builder: (context, setDialogState) => AlertDialog(
-      title: Text(title),
-      content: SizedBox(width: double.maxFinite, child: items.isEmpty ? const Text('Aucun élément disponible.') : ListView(shrinkWrap: true, children: items.map((item) {
-        final id = idOf(item)!;
-        return CheckboxListTile(value: temp.contains(id), title: Text(nameOf(item)), dense: true, onChanged: (checked) => setDialogState(() { checked == true ? temp.add(id) : temp.remove(id); }));
-      }).toList())),
-      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Annuler')), FilledButton(onPressed: () { onChanged(temp); Navigator.pop(dialogContext); }, child: const Text('Valider'))],
-    )));
+  Future<void> _chooseParticipants<T>({required String title, required List<T> items,
+    required Set<int> selected, required int? Function(T) idOf,
+    required String Function(T) nameOf, required ValueChanged<Set<int>> onChanged}) async {
+    final picked = await pickEntities<T>(context: context, available: items,
+      idOf: idOf, nameOf: nameOf, selectedIds: selected, title: title, multiSelect: true);
+    onChanged(picked.map((item) => idOf(item)!).toSet());
   }
 
   Future<void> _save() async {
@@ -104,7 +101,7 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
     final endYear = _number(_endYear) ?? 0; final endWeek = _number(_endWeek) ?? 0;
     final endDay = _number(_endDay) ?? 1;
     if (endYear != 0 && (endYear < startYear || (endYear == startYear && (endWeek < startWeek || (endWeek == startWeek && endDay < startDay))))) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('La date de fin doit être postérieure ou égale à la date de début.'))); return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('The end date must be on or after the start date.'))); return;
     }
     setState(() => _saving = true);
     try {
@@ -115,7 +112,7 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
       await StorylineParticipantsDatabaseHelper.replace(storylineId: saved.id!, superstarIds: _selectedSuperstars.toList(), teamIds: _selectedTeams.toList());
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible d’enregistrer la storyline : $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unable to save storyline: $e')));
     } finally { if (mounted) setState(() => _saving = false); }
   }
 
@@ -128,8 +125,8 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
     final selected = await showDialog<Map<String, int>>(
       context: context,
       builder: (_) => WweDateDialog(
-        title: 'Date WWE – $label',
-        confirmLabel: 'Valider',
+        title: 'WWE Date – $label',
+        confirmLabel: 'Confirm',
         initialYear: _number(year),
         initialWeek: _number(week),
         initialDay: _number(day) ?? 1,
@@ -162,11 +159,11 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
             title: Text(label),
             subtitle: Text(hasDate
                 ? 'WWE Year ${year.text} • Week ${week.text} • Day ${day.text}'
-                : 'Sélectionner une date dans le calendrier WWE'),
+                : 'Select a date in the WWE calendar'),
             trailing: Row(mainAxisSize: MainAxisSize.min, children: [
               if (hasDate && !required)
                 IconButton(
-                  tooltip: 'Effacer la date',
+                  tooltip: 'Clear date',
                   icon: const Icon(Icons.clear),
                   onPressed: () => setState(() { year.clear(); week.clear(); day.clear(); field.didChange(false); }),
                 ),
@@ -194,21 +191,21 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
     appBar: AppBar(title: Text(widget.storyline == null ? 'New Storyline' : 'Edit Storyline'), actions: [TextButton(onPressed: _saving || _loading ? null : _save, child: _saving ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('SAVE'))]),
     body: _loading ? const Center(child: CircularProgressIndicator()) : Form(key: _formKey, child: ListView(padding: const EdgeInsets.all(16), children: [
       AppFormSection(title: 'Information', children: [
-        TextFormField(controller: _title, decoration: AppFormStyles.inputDecoration(label: 'Title'), validator: (v) => v == null || v.trim().isEmpty ? 'Le titre est obligatoire.' : null),
+        TextFormField(controller: _title, decoration: AppFormStyles.inputDecoration(label: 'Title'), validator: (v) => v == null || v.trim().isEmpty ? 'The title is required.' : null),
         const SizedBox(height: 12),
-        TextFormField(controller: _description, minLines: 4, maxLines: 8, decoration: AppFormStyles.inputDecoration(label: 'Description / Summary'), validator: (v) => v == null || v.trim().isEmpty ? 'La description est obligatoire.' : null),
+        TextFormField(controller: _description, minLines: 4, maxLines: 8, decoration: AppFormStyles.inputDecoration(label: 'Description / Summary'), validator: (v) => v == null || v.trim().isEmpty ? 'The description is required.' : null),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(value: _status, decoration: AppFormStyles.inputDecoration(label: 'Status'), items: StorylineStatus.values.map((v) => DropdownMenuItem(value: v, child: Text(StorylineStatus.label(v)))).toList(), onChanged: (v) => setState(() => _status = v ?? _status)),
       ]), const SizedBox(height: 16),
       AppFormSection(title: 'WWE Timeline', children: [
         _dateField('Start', _startYear, _startWeek, _startDay, required: true), const SizedBox(height: 12),
         _dateField('End (optional)', _endYear, _endWeek, _endDay),
-        const SizedBox(height: 8), const Text('Le calendrier WWE comporte 48 semaines. Laisser la fin vide pour une storyline sans date de clôture définie.', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 12)),
+        const SizedBox(height: 8), const Text('The WWE calendar has 48 weeks. Leave the end date empty for an ongoing storyline.', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 12)),
       ]), const SizedBox(height: 16),
       AppFormSection(title: 'Participants', children: [
-        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.person_outline), title: const Text('Superstars'), subtitle: Text('${_selectedSuperstars.length} sélectionnée(s)'), trailing: const Icon(Icons.chevron_right), onTap: () async { final picked = await pickSuperstars(context: context, available: _allSuperstars, selectedIds: _selectedSuperstars, title: 'Select Storyline Superstars'); setState(() => _selectedSuperstars = picked.map((e) => e.id!).toSet()); }),
+        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.person_outline), title: const Text('Superstars'), subtitle: Text('${_selectedSuperstars.length} selected'), trailing: const Icon(Icons.chevron_right), onTap: () async { final picked = await pickSuperstars(context: context, available: _allSuperstars, selectedIds: _selectedSuperstars, title: 'Select Storyline Superstars'); setState(() => _selectedSuperstars = picked.map((e) => e.id!).toSet()); }),
         const Divider(height: 1),
-        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.groups_outlined), title: const Text('Teams'), subtitle: Text('${_selectedTeams.length} sélectionnée(s)'), trailing: const Icon(Icons.chevron_right), onTap: () => _chooseParticipants<Teams>(title: 'Teams participantes', items: _allTeams, selected: _selectedTeams, idOf: (v) => v.id, nameOf: (v) => v.name, onChanged: (v) => setState(() => _selectedTeams = v))),
+        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.groups_outlined), title: const Text('Teams'), subtitle: Text('${_selectedTeams.length} selected'), trailing: const Icon(Icons.chevron_right), onTap: () => _chooseParticipants<Teams>(title: 'Participating Teams', items: _allTeams, selected: _selectedTeams, idOf: (v) => v.id, nameOf: (v) => v.name, onChanged: (v) => setState(() => _selectedTeams = v))),
       ]),
     ])),
   );

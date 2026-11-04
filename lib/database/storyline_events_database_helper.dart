@@ -18,7 +18,7 @@ class StorylineEventsDatabaseHelper {
   }
 
   static Future<int> update(StorylineEvent event) async {
-    if (event.id == null) throw ArgumentError('L’événement doit posséder un identifiant.');
+    if (event.id == null) throw ArgumentError('The event must have an ID.');
     final db = await DatabaseService.instance.database;
     return db.update(tableStorylineEvents, event.toJson(), where: '${StorylineEventFields.id} = ?', whereArgs: [event.id]);
   }

@@ -21,7 +21,7 @@ class StorylineEventType {
   static String label(String value) {
     switch (value) {
       case match: return 'Match';
-      case news: return 'Actualité';
+      case news: return 'News';
       default: return 'Segment';
     }
   }

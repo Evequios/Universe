@@ -22,6 +22,20 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
   Icon customIcon = const Icon(Icons.search);
   Widget customSearchBar = const Text('Superstars');
   String searchString = '';
+  int _searchRequestId = 0;
+  String _sortOrder = 'name';
+
+  List<Superstars> get _visibleSuperstars {
+    final rows = [...superstarsList];
+    rows.sort((a, b) {
+      if (_sortOrder == 'brand') {
+        final byBrand = (a.brand?.name ?? '').toLowerCase().compareTo((b.brand?.name ?? '').toLowerCase());
+        if (byBrand != 0) return byBrand;
+      }
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    });
+    return rows;
+  }
 
   @override
   bool get wantKeepAlive => true;
@@ -33,21 +47,39 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
     refreshSuperstars();
   }
 
-  Future refreshSuperstars() async {
-    setState(() => isLoading = true);
-
-    superstarsList = (await SuperstarsDatabaseHelper.readAllSuperstarsSearch(searchString)).cast<Superstars>();
-    brandsList = await BrandsDatabaseHelper.readAllBrands();
-
-    setState(() => isLoading = false);
+  Future<void> refreshSuperstars() async {
+    final requestId = ++_searchRequestId;
+    if (mounted) setState(() => isLoading = true);
+    try {
+      final results = await Future.wait([
+        SuperstarsDatabaseHelper.readAllSuperstarsSearch(searchString),
+        BrandsDatabaseHelper.readAllBrands(),
+      ]);
+      if (!mounted || requestId != _searchRequestId) return;
+      setState(() {
+        superstarsList = results[0] as List<Superstars>;
+        brandsList = results[1] as List<Brands>;
+        isLoading = false;
+      });
+    } catch (error) {
+      if (!mounted || requestId != _searchRequestId) return;
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unable to load Superstars: $error')));
+    }
   }
 
-  void setSuperstarsList(String search) async {
-    setState(() => isLoading = true);
-
-    superstarsList = (await SuperstarsDatabaseHelper.readAllSuperstarsSearch(search)).cast<Superstars>();
-  
-    setState(() => isLoading = false); 
+  Future<void> setSuperstarsList(String search) async {
+    final requestId = ++_searchRequestId;
+    if (mounted) setState(() => isLoading = true);
+    try {
+      final results = await SuperstarsDatabaseHelper.readAllSuperstarsSearch(search);
+      if (!mounted || requestId != _searchRequestId) return;
+      setState(() { superstarsList = results.cast<Superstars>(); isLoading = false; });
+    } catch (error) {
+      if (!mounted || requestId != _searchRequestId) return;
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unable to search Superstars: $error')));
+    }
   }
 
   @override
@@ -99,15 +131,28 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
       ],
       centerTitle: true,
     ),
-    body: Center(
-      child: isLoading
-        ? const CircularProgressIndicator()
+    body: isLoading
+        ? const Center(child: CircularProgressIndicator())
         : superstarsList.isEmpty
-          ? const Text(
-            'No created superstars'
-          )
-        : buildUniverseSuperstars(),
-    ),
+            ? const Center(child: Text('No created superstars'))
+            : Column(children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+                  child: Row(children: [
+                    const Text('Sort by: ', style: TextStyle(color: Colors.white70)),
+                    DropdownButton<String>(
+                      value: _sortOrder,
+                      isDense: true,
+                      items: const [
+                        DropdownMenuItem(value: 'name', child: Text('Name A → Z')),
+                        DropdownMenuItem(value: 'brand', child: Text('Brand then name')),
+                      ],
+                      onChanged: (value) => setState(() => _sortOrder = value ?? 'name'),
+                    ),
+                  ]),
+                ),
+                Expanded(child: buildUniverseSuperstars()),
+              ]),
     floatingActionButton: FloatingActionButton(
       backgroundColor: Theme.of(context).colorScheme.primary,
       child: const Icon(Icons.add),
@@ -124,9 +169,9 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
   
   Widget buildUniverseSuperstars() => ListView.builder(
     padding: const EdgeInsets.fromLTRB(12, 8, 12, 100),
-    itemCount: superstarsList.length,
+    itemCount: _visibleSuperstars.length,
     itemBuilder: (context, index) {
-      final superstar = superstarsList[index];
+      final superstar = _visibleSuperstars[index];
       final brandName = superstar.brand?.name ?? '';
       final normalizedBrand = brandName.toLowerCase();
 

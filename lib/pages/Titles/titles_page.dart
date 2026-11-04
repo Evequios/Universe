@@ -28,6 +28,30 @@ class TitlesPageState extends State<TitlesPage>
   bool isSearchVisible = false;
   String searchString = '';
   String? loadError;
+  String _typeFilter = 'all';
+  String _championFilter = 'all';
+  String _sortOrder = 'name';
+
+  List<Titles> get _visibleTitles {
+    final rows = titlesList.where((title) {
+      final isTag = title.tag == 1;
+      final hasChampion = title.holder1 != null || title.holder2 != null;
+      return (_typeFilter == 'all' || (_typeFilter == 'tag' && isTag) || (_typeFilter == 'singles' && !isTag)) &&
+          (_championFilter == 'all' || (_championFilter == 'active' && hasChampion) || (_championFilter == 'vacant' && !hasChampion));
+    }).toList();
+    rows.sort((a, b) {
+      if (_sortOrder == 'brand') {
+        final brandCompare = (a.brand?.name ?? '').compareTo(b.brand?.name ?? '');
+        if (brandCompare != 0) return brandCompare;
+      }
+      if (_sortOrder == 'champion') {
+        final championCompare = (a.holder1?.name ?? '').compareTo(b.holder1?.name ?? '');
+        if (championCompare != 0) return championCompare;
+      }
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    });
+    return rows;
+  }
 
   final TextEditingController searchController = TextEditingController();
 
@@ -230,17 +254,50 @@ class TitlesPageState extends State<TitlesPage>
       );
     }
 
+    final visibleTitles = _visibleTitles;
+    if (visibleTitles.isEmpty) {
+      return _buildMessage(icon: Icons.filter_list_off, message: 'No title matches these filters.');
+    }
     return RefreshIndicator(
       onRefresh: refreshTitles,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 100),
-        itemCount: titlesList.length,
-        itemBuilder: (context, index) {
-          return _buildTitleCard(titlesList[index]);
-        },
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 100),
+        children: [
+          Wrap(spacing: 7, runSpacing: 4, children: [
+            _filterChip('All', _typeFilter == 'all', () => setState(() => _typeFilter = 'all')),
+            _filterChip('Solo', _typeFilter == 'singles', () => setState(() => _typeFilter = 'singles')),
+            _filterChip('Tag Team', _typeFilter == 'tag', () => setState(() => _typeFilter = 'tag')),
+          ]),
+          const SizedBox(height: 4),
+          Wrap(spacing: 7, runSpacing: 4, children: [
+            _filterChip('All statuses', _championFilter == 'all', () => setState(() => _championFilter = 'all')),
+            _filterChip('Avec champion', _championFilter == 'active', () => setState(() => _championFilter = 'active')),
+            _filterChip('Vacant', _championFilter == 'vacant', () => setState(() => _championFilter = 'vacant')),
+          ]),
+          Align(alignment: Alignment.centerRight, child: DropdownButton<String>(
+            value: _sortOrder,
+            isDense: true,
+            items: const [
+              DropdownMenuItem(value: 'name', child: Text('Name A → Z')),
+              DropdownMenuItem(value: 'brand', child: Text('Brand puis nom')),
+              DropdownMenuItem(value: 'champion', child: Text('Champion puis nom')),
+            ],
+            onChanged: (value) => setState(() => _sortOrder = value ?? 'name'),
+          )),
+          Text('${visibleTitles.length} title(s)', style: const TextStyle(color: Color(0xFF888888), fontSize: 12)),
+          const SizedBox(height: 8),
+          ...visibleTitles.map(_buildTitleCard),
+        ],
       ),
     );
   }
+
+  Widget _filterChip(String label, bool selected, VoidCallback onTap) => ChoiceChip(
+    label: Text(label), selected: selected, onSelected: (_) => onTap(),
+    selectedColor: const Color(0xFF5A171A),
+    labelStyle: TextStyle(color: selected ? Colors.white : const Color(0xFFBBBBBB), fontSize: 12),
+    side: const BorderSide(color: Color(0xFF383838)),
+  );
 
   Widget _buildMessage({
     required IconData icon,

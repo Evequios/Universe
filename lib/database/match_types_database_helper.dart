@@ -28,7 +28,7 @@ class MatchTypesDatabaseHelper {
   }
 
   static Future<int> update(MatchTypes value) async {
-    if (value.id == null) throw ArgumentError('Type sans identifiant.');
+    if (value.id == null) throw ArgumentError('Match type has no ID.');
     final db = await DatabaseService.instance.database;
     final values = value.toJson()..remove(MatchTypesFields.id);
     return db.update(tableMatchTypes, values,

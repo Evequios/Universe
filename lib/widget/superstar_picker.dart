@@ -13,6 +13,7 @@ Future<List<Superstars>> pickSuperstars({
   final ids = await Navigator.of(context).push<List<int>>(
     MaterialPageRoute(builder: (_) => SelectSuperstarsPage(
       initiallySelected: selectedIds,
+      allowedIds: available.where((s) => s.id != null).map((s) => s.id!).toSet(),
       maximumSelection: maximumSelection,
       title: title,
     )),

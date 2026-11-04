@@ -6,6 +6,7 @@ import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
 import 'package:wwe_universe/widget/superstar_picker.dart';
 import 'package:wwe_universe/widget/superstar_avatar.dart';
+import 'package:wwe_universe/widget/entity_picker.dart';
 
 class TitlesFormWidget extends StatelessWidget {
   final List<Superstars> listSuperstars;
@@ -58,7 +59,7 @@ class TitlesFormWidget extends StatelessWidget {
               children: [
                 buildName(),
                 const SizedBox(height: 16),
-                buildBrand(),
+                buildBrand(context),
                 const SizedBox(height: 16),
                 buildTag(),
               ],
@@ -73,6 +74,8 @@ class TitlesFormWidget extends StatelessWidget {
                 if (tag == 1) ...[
                   const SizedBox(height: 16),
                   buildHolder2(context),
+                  const SizedBox(height: 16),
+                  buildChampionTeam(context),
                 ],
               ],
             ),
@@ -106,37 +109,19 @@ class TitlesFormWidget extends StatelessWidget {
   }
 
   
-  Widget buildBrand() {
-    final selectedBrand = _findBrandInList(brand);
-
-    return DropdownButtonFormField<Brands?>(
-      initialValue: selectedBrand,
-      isExpanded: true,
-      dropdownColor: AppFormStyles.surface,
-      style: const TextStyle(color: Colors.white),
-      decoration: AppFormStyles.inputDecoration(
-        label: 'Brand (optional)',
-        icon: Icons.branding_watermark_outlined,
-      ),
-      items: [
-        const DropdownMenuItem<Brands?>(
-          value: null,
-          child: Text('None'),
-        ),
-        ...listBrands.map(
-          (item) => DropdownMenuItem<Brands?>(
-            value: item,
-            child: Text(
-              item.name,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ),
-      ],
-      onChanged: onChangedBrand,
-    );
-  }
-
+  Widget buildBrand(BuildContext context) => FormField<Brands?>(
+    initialValue: _findBrandInList(brand),
+    builder: (state) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      ListTile(contentPadding: EdgeInsets.zero,
+        leading: const Icon(Icons.branding_watermark_outlined, color: AppFormStyles.primary),
+        title: const Text('Brand (optional)'), subtitle: Text(state.value?.name ?? 'No Brand', style: const TextStyle(color: AppFormStyles.secondaryText)),
+        trailing: Row(mainAxisSize: MainAxisSize.min, children: [if (state.value != null) IconButton(onPressed: () { onChangedBrand(null); state.didChange(null); }, icon: const Icon(Icons.clear)), const Icon(Icons.search)],),
+        onTap: () async {
+          final value = await pickOneEntity<Brands>(context: context, available: listBrands, idOf: (v) => v.id, nameOf: (v) => v.name, selectedId: state.value?.id, title: 'Select a Brand');
+          if (value != null) { onChangedBrand(value); state.didChange(value); }
+        }),
+    ]),
+  );
 
   Widget buildTag() {
     return DropdownButtonFormField<int>(
@@ -170,23 +155,17 @@ class TitlesFormWidget extends StatelessWidget {
     context, label: 'Second champion', selected: holder2, onChanged: onChangedHolder2,
   );
 
-  Widget buildChampionTeam() => DropdownButtonFormField<Teams?>(
-    value: championTeam,
-    isExpanded: true,
-    dropdownColor: AppFormStyles.surface,
-    style: const TextStyle(color: Colors.white),
-    decoration: AppFormStyles.inputDecoration(
-      label: 'Champion Team (optional)',
-      icon: Icons.groups_outlined,
-    ),
-    items: [
-      const DropdownMenuItem<Teams?>(value: null, child: Text('No Team linked')),
-      ...listTeams.map((team) => DropdownMenuItem<Teams?>(
-        value: team,
-        child: Text(team.name, overflow: TextOverflow.ellipsis),
-      )),
-    ],
-    onChanged: onChangedChampionTeam,
+  Widget buildChampionTeam(BuildContext context) => FormField<Teams?>(
+    initialValue: championTeam,
+    builder: (state) => ListTile(contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.groups_outlined, color: AppFormStyles.primary),
+      title: const Text('Champion Team (optional)'),
+      subtitle: Text(state.value?.name ?? 'No Team linked', style: const TextStyle(color: AppFormStyles.secondaryText)),
+      trailing: Row(mainAxisSize: MainAxisSize.min, children: [if (state.value != null) IconButton(onPressed: () { onChangedChampionTeam(null); state.didChange(null); }, icon: const Icon(Icons.clear)), const Icon(Icons.search)]),
+      onTap: () async {
+        final value = await pickOneEntity<Teams>(context: context, available: listTeams, idOf: (v) => v.id, nameOf: (v) => v.name, selectedId: state.value?.id, title: 'Select a Team');
+        if (value != null) { onChangedChampionTeam(value); state.didChange(value); }
+      }),
   );
 
   Widget _superstarField(BuildContext context, {required String label, required Superstars? selected, required ValueChanged<Superstars?> onChanged}) => FormField<Superstars>(

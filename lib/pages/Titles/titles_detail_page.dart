@@ -44,41 +44,55 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
   }
 
   Future<void> refreshTitle() async {
-    setState(() => isLoading = true);
+    if (mounted) setState(() => isLoading = true);
+    try {
+      final results = await Future.wait([
+        TitlesDatabaseHelper.readTitle(widget.titleId),
+        ReignsDatabaseHelper.readReigns(widget.titleId),
+        TeamsDatabaseHelper.readAllTeams(),
+      ]);
+      final loadedTitle = results[0] as Titles;
+      final loadedReigns = results[1] as List<Reigns>;
+      final loadedTeams = results[2] as List<Teams>;
 
-    title = await TitlesDatabaseHelper.readTitle(widget.titleId);
-    reigns = await ReignsDatabaseHelper.readReigns(widget.titleId);
-    final teams = await TeamsDatabaseHelper.readAllTeams();
-    _teamsById
-      ..clear()
-      ..addEntries(teams.where((team) => team.id != null).map((team) => MapEntry(team.id!, team)));
+      final holderIds = <int>{
+        if (loadedTitle.holder1?.id != null) loadedTitle.holder1!.id!,
+        if (loadedTitle.holder2?.id != null) loadedTitle.holder2!.id!,
+      };
+      final holderResults = await Future.wait(
+        holderIds.map(SuperstarsDatabaseHelper.readSuperstar),
+      );
+      final holdersById = <int, Superstars>{};
+      var index = 0;
+      for (final id in holderIds) {
+        holdersById[id] = holderResults[index++];
+      }
 
-    if (title.holder1 != null) {
-      h1 = await SuperstarsDatabaseHelper.readSuperstar(title.holder1!.id!);
-    } else {
-      h1 = const Superstars(
-        name: 'nom',
-        brand: null,
-        orientation: 'orientation',
-        division: null,
+      if (!mounted) return;
+      setState(() {
+        title = loadedTitle;
+        reigns = loadedReigns;
+        _teamsById
+          ..clear()
+          ..addEntries(loadedTeams.where((team) => team.id != null)
+              .map((team) => MapEntry(team.id!, team)));
+        h1 = loadedTitle.holder1?.id == null
+            ? const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null)
+            : holdersById[loadedTitle.holder1!.id!]!;
+        h2 = loadedTitle.holder2?.id == null
+            ? const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null)
+            : holdersById[loadedTitle.holder2!.id!]!;
+        isLoading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to load title details: $error')),
       );
     }
-
-    if (title.holder2 != null) {
-      h2 = await SuperstarsDatabaseHelper.readSuperstar(title.holder2!.id!);
-    } else {
-      h2 = const Superstars(
-        name: 'nom',
-        brand: null,
-        orientation: 'orientation',
-        division: null,
-      );
-    }
-
-    if (!mounted) return;
-    setState(() => isLoading = false);
   }
-  
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -222,8 +236,17 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFF383838)),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(holders, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: reign.holder1Id == null ? null : () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => SuperstarsDetailPage(superstarId: reign.holder1Id!)),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(child: Text(holders, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))),
+          if (reign.holder1Id != null) const Icon(Icons.chevron_right, color: Color(0xFF888888), size: 18),
+        ]),
         const SizedBox(height: 6),
         Text('$start → $end', style: const TextStyle(color: Color(0xFFAAAAAA))),
         if (reign.teamName != null)
@@ -240,7 +263,7 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
           )),
         if (reign.endReason == 'vacated')
           const Padding(padding: EdgeInsets.only(top: 5), child: Text('Title vacated', style: TextStyle(color: Colors.orangeAccent, fontSize: 12))),
-      ]),
+      ])),
     );
   }
 
@@ -274,20 +297,20 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
   Future<void> _vacateTitle() async {
     if (title.holder1 == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ce titre est déjà vacant.')),
+        const SnackBar(content: Text('This title is already vacant.')),
       );
       return;
     }
     if (reigns.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Aucun règne n’est encore enregistré pour ce titre.')),
+        const SnackBar(content: Text('No reigns have been recorded for this title yet.')),
       );
       return;
     }
     final date = await showDialog<Map<String, int>>(
       context: context,
       builder: (_) => const WweDateDialog(
-        title: 'Déclarer le titre vacant',
+        title: 'Vacate Title',
         confirmLabel: 'Confirmer',
         initialDay: 1,
       ),
@@ -301,7 +324,7 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
       await ReignsDatabaseHelper.vacateTitle(titleId: widget.titleId, year: year, week: week, dayOfWeek: day);
       await refreshTitle();
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible de libérer le titre : $error')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unable to vacate title: $error')));
     }
   }
 

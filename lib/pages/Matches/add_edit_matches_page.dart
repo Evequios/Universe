@@ -17,6 +17,7 @@ import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/teams_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
+import 'package:wwe_universe/widget/entity_picker.dart';
 import 'package:wwe_universe/pages/Superstars/select_superstars_page.dart';
 
 class AddEditMatchesPage extends StatefulWidget {
@@ -165,7 +166,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
     } catch (error) {
       if (!mounted) return;
       setState(() => loading = false);
-      _showMessage('Impossible de charger les données : $error');
+      _showMessage('Unable to load data: $error');
     }
   }
 
@@ -179,14 +180,14 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
           context: context,
           builder: (dialogContext) => AlertDialog(
             backgroundColor: AppFormStyles.surface,
-            title: const Text('Modifier la structure ?', style: TextStyle(color: Colors.white)),
+            title: const Text('Edit match structure?', style: TextStyle(color: Colors.white)),
             content: const Text(
-              'Changer le type ou le format va réinitialiser les camps et les participants déjà sélectionnés. Continuer ?',
+              'Changing the match type or format will reset the selected sides and participants. Continue?',
               style: TextStyle(color: AppFormStyles.secondaryText),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Annuler')),
-              TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Continuer')),
+              TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Continue')),
             ],
           ),
         ) ??
@@ -207,7 +208,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
     if (format.usesSides) {
       for (var i = 0; i < format.sideCount; i++) {
         sides.add(_SideDraft(
-          name: format.category == 'individual' ? 'Participant ${i + 1}' : 'Camp ${i + 1}',
+          name: format.category == 'individual' ? 'Participant ${i + 1}' : 'Side ${i + 1}',
         ));
       }
     }
@@ -226,7 +227,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         _clearStructure();
       });
     } catch (error) {
-      _showMessage('Impossible de charger les formats compatibles : $error');
+      _showMessage('Unable to load compatible formats: $error');
     }
   }
 
@@ -346,36 +347,36 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
     final format = selectedFormat;
     final type = selectedType;
     if (type == null) {
-      _showMessage('Sélectionne un type de combat.');
+      _showMessage('Select a match type.');
       return;
     }
     if (format == null) {
-      _showMessage('Sélectionne un format compatible.');
+      _showMessage('Select a compatible format.');
       return;
     }
 
     if (format.usesSides) {
       if (sides.length != format.sideCount) {
-        _showMessage('Ce format nécessite ${format.sideCount} camps.');
+        _showMessage('This format requires ${format.sideCount} sides.');
         return;
       }
       for (var i = 0; i < sides.length; i++) {
         if (sides[i].participants.length != _expectedForSide(i)) {
-          _showMessage('Le camp ${i + 1} doit contenir ${_expectedForSide(i)} participant(s).');
+          _showMessage('Side ${i + 1} must contain ${_expectedForSide(i)} participant(s).');
           return;
         }
         if (sides[i].name.trim().isEmpty) {
-          _showMessage('Chaque camp doit avoir un nom.');
+          _showMessage('Each side must have a name.');
           return;
         }
       }
     } else if (specialParticipants.length != format.participantCount) {
-      _showMessage('Ce format nécessite exactement ${format.participantCount} participants.');
+      _showMessage('This format requires exactly ${format.participantCount} participants.');
       return;
     }
 
     if (allDraftParticipants.isEmpty) {
-      _showMessage('Ajoute au moins un participant.');
+      _showMessage('Add at least one participant.');
       return;
     }
 
@@ -384,18 +385,18 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
       final hasSideWinner = winnerSideOrder != null;
       final hasIndividualWinner = winnerName != null && winnerName!.trim().isNotEmpty;
       if (sideWinnerAllowed && !hasSideWinner) {
-        _showMessage('Sélectionne le camp gagnant.');
+        _showMessage('Select the winning side.');
         return;
       }
       if (!sideWinnerAllowed && !hasIndividualWinner) {
-        _showMessage('Sélectionne le vainqueur individuel.');
+        _showMessage('Select the individual winner.');
         return;
       }
       if (hasIndividualWinner) {
         final winningSide = winnerSideOrder == null ? null : sides.firstWhere((side) => sides.indexOf(side) == winnerSideOrder);
         final eligible = winningSide == null ? allDraftParticipants : winningSide.participants;
         if (!eligible.any((p) => winnerSuperstarId != null ? p.superstarId == winnerSuperstarId && p.name == winnerName : p.name == winnerName)) {
-          _showMessage('Le vainqueur individuel doit appartenir au camp gagnant.');
+          _showMessage('The individual winner must belong to the winning side.');
           return;
         }
       }
@@ -458,7 +459,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
       }
       if (mounted) Navigator.pop(context, true);
     } catch (error) {
-      _showMessage('Impossible d’enregistrer le combat : $error');
+      _showMessage('Unable to save match: $error');
     } finally {
       if (mounted) setState(() => saving = false);
     }
@@ -493,7 +494,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
 
   Widget _buildGeneralSection() => AppFormSection(title: 'MATCH INFORMATION', children: [
         _dropdown<MatchTypes>(
-          label: 'Type de combat', value: selectedType, items: types, itemLabel: (e) => e.name,
+          label: 'Match Type', value: selectedType, items: types, itemLabel: (e) => e.name,
           onChanged: _onTypeChanged,
         ),
         const SizedBox(height: 14),
@@ -503,30 +504,42 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         ),
         if (selectedType != null && formats.isEmpty) ...[
           const SizedBox(height: 8),
-          const Text('Aucun format compatible n’est configuré pour ce type.', style: TextStyle(color: Colors.orangeAccent, fontSize: 12)),
+          const Text('No compatible format is configured for this type.', style: TextStyle(color: Colors.orangeAccent, fontSize: 12)),
         ],
         const SizedBox(height: 14),
-        _dropdown<Titles>(
-          label: 'Championnat (facultatif)', value: selectedTitle, items: titles, itemLabel: (e) => e.name,
-          allowNull: true, onChanged: (value) => setState(() { selectedTitle = value; if (value == null) titleChange = false; }),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.emoji_events_outlined, color: AppFormStyles.primary),
+          title: const Text('Title (optional)'),
+          subtitle: Text(selectedTitle?.name ?? 'No Title selected', style: const TextStyle(color: AppFormStyles.secondaryText)),
+          trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+            if (selectedTitle != null) IconButton(onPressed: () => setState(() { selectedTitle = null; titleChange = false; }), icon: const Icon(Icons.clear)),
+            const Icon(Icons.search),
+          ]),
+          onTap: () async {
+            final value = await pickOneEntity<Titles>(context: context, available: titles,
+              idOf: (item) => item.id, nameOf: (item) => item.name,
+              selectedId: selectedTitle?.id, title: 'Select a Title');
+            if (value != null && mounted) setState(() => selectedTitle = value);
+          },
         ),
       ]);
 
   Widget _buildParticipantsSection() {
     final format = selectedFormat;
-    return AppFormSection(title: 'PARTICIPANTS & CAMPS', children: [
+    return AppFormSection(title: 'PARTICIPANTS & SIDES', children: [
       if (format == null)
-        const Text('Choisis d’abord un format pour définir la structure du combat.', style: TextStyle(color: AppFormStyles.secondaryText))
+        const Text('Choose a format first to define the match structure.', style: TextStyle(color: AppFormStyles.secondaryText))
       else if (format.usesSides) ...[
         Text(
-          '${format.sideCount} camp(s) • ${format.participantCount} participant(s) au total',
+          '${format.sideCount} side(s) • ${format.participantCount} participants in total',
           style: const TextStyle(color: AppFormStyles.secondaryText, fontSize: 12),
         ),
         const SizedBox(height: 12),
         ...List.generate(sides.length, _buildSideCard),
       ] else ...[
         Text(
-          'Format spécial • ${format.participantCount} participants • aucun camp',
+          'Special format • ${format.participantCount} participants • no sides',
           style: const TextStyle(color: AppFormStyles.secondaryText, fontSize: 12),
         ),
         const SizedBox(height: 12),
@@ -555,7 +568,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         OutlinedButton.icon(
           onPressed: () => _editSpecialParticipants(),
           icon: const Icon(Icons.person_add_alt_1),
-          label: Text('CHOISIR LES PARTICIPANTS (${specialParticipants.length}/${format.participantCount})'),
+          label: Text('SELECT PARTICIPANTS (${specialParticipants.length}/${format.participantCount})'),
           style: OutlinedButton.styleFrom(foregroundColor: Colors.white, side: const BorderSide(color: AppFormStyles.border)),
         ),
       ],
@@ -570,37 +583,49 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: AppFormStyles.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppFormStyles.border)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(isIndividualFormat ? 'PARTICIPANT ${index + 1}' : 'CAMP ${index + 1}', style: const TextStyle(color: AppFormStyles.primary, fontWeight: FontWeight.w900, letterSpacing: 1)),
+        Text(isIndividualFormat ? 'PARTICIPANT ${index + 1}' : 'SIDE ${index + 1}', style: const TextStyle(color: AppFormStyles.primary, fontWeight: FontWeight.w900, letterSpacing: 1)),
         if (!isIndividualFormat) ...[
           const SizedBox(height: 12),
           TextFormField(
             initialValue: side.name,
             style: const TextStyle(color: Colors.white),
-            decoration: AppFormStyles.inputDecoration(label: 'Nom du camp', hint: 'Ex. The Bloodline'),
+            decoration: AppFormStyles.inputDecoration(label: 'Side name', hint: 'Ex. The Bloodline'),
             onChanged: (value) => side.name = value,
-            validator: (value) => value == null || value.trim().isEmpty ? 'Nom obligatoire' : null,
+            validator: (value) => value == null || value.trim().isEmpty ? 'Name is required' : null,
           ),
           const SizedBox(height: 12),
-          _dropdown<Teams>(
-            label: 'Équipe officielle associée (facultatif)',
-            value: teams.where((e) => e.id == side.teamId).firstOrNull,
-            items: teams, itemLabel: (e) => e.name, allowNull: true,
-            onChanged: (team) => setState(() {
-              side.teamId = team?.id;
-              if (team != null) {
-                side.name = team.name;
-                final allowed = _teamMemberIds(team.id)!;
-                side.participants.removeWhere((p) => p.superstarId != null && !allowed.contains(p.superstarId));
-                _resetWinnerIfInvalid();
-              }
-            }),
-          ),
+          Builder(builder: (context) {
+            final selectedTeam = teams.where((e) => e.id == side.teamId).firstOrNull;
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.groups_outlined, color: AppFormStyles.primary),
+              title: const Text('Official Tag Team (optional)'),
+              subtitle: Text(selectedTeam?.name ?? 'No Team linked', style: const TextStyle(color: AppFormStyles.secondaryText)),
+              trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                if (selectedTeam != null) IconButton(onPressed: () => setState(() { side.teamId = null; }), icon: const Icon(Icons.clear)),
+                const Icon(Icons.search),
+              ]),
+              onTap: () async {
+                final team = await pickOneEntity<Teams>(context: context, available: teams,
+                  idOf: (item) => item.id, nameOf: (item) => item.name,
+                  selectedId: side.teamId, title: 'Select a Team');
+                if (team == null || !mounted) return;
+                setState(() {
+                  side.teamId = team.id;
+                  side.name = team.name;
+                  final allowed = _teamMemberIds(team.id)!;
+                  side.participants.removeWhere((p) => p.superstarId != null && !allowed.contains(p.superstarId));
+                  _resetWinnerIfInvalid();
+                });
+              },
+            );
+          }),
         ],
         const SizedBox(height: 10),
         Text('Participants (${side.participants.length}/$expected)', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
         if (side.participants.isEmpty)
-          const Text('Aucun participant sélectionné.', style: TextStyle(color: AppFormStyles.secondaryText))
+          const Text('No participant selected.', style: TextStyle(color: AppFormStyles.secondaryText))
         else
           ReorderableListView.builder(
             shrinkWrap: true,
@@ -626,7 +651,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         OutlinedButton.icon(
           onPressed: side.participants.length >= expected ? null : () => _editSideParticipants(index),
           icon: const Icon(Icons.person_add_alt_1),
-          label: const Text('CHOISIR LES SUPERSTARS'),
+          label: const Text('SELECT SUPERSTARS'),
           style: OutlinedButton.styleFrom(foregroundColor: Colors.white, side: const BorderSide(color: AppFormStyles.border)),
         ),
       ]),
@@ -638,7 +663,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         contentPadding: EdgeInsets.zero,
         leading: const Icon(Icons.person, color: AppFormStyles.primary),
         title: Text(participant.name, style: const TextStyle(color: Colors.white)),
-        subtitle: participant.superstarId == null ? const Text('Participant historique', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 11)) : null,
+        subtitle: participant.superstarId == null ? const Text('Historical participant', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 11)) : null,
         trailing: IconButton(onPressed: onRemove, icon: const Icon(Icons.close, color: Colors.redAccent)),
       );
 
@@ -667,13 +692,13 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
           ],
           itemLabel: (value) {
             if (value == MatchResultStatus.pending) {
-              return 'En attente';
+              return 'Pending';
             }
             if (value == MatchResultStatus.winner) {
-              return 'Vainqueur désigné';
+              return 'Winner selected';
             }
             if (value == MatchResultStatus.draw) {
-              return 'Égalité';
+              return 'Draw';
             }
             if (value == MatchResultStatus.noContest) {
               return 'No Contest';
@@ -694,8 +719,8 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
           const SizedBox(height: 10),
           SwitchListTile.adaptive(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Changement de champion', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-            subtitle: const Text('Le vainqueur devient le nouveau champion.', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 12)),
+            title: const Text('Title Change', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+            subtitle: const Text('The winner becomes the new champion.', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 12)),
             value: titleChange,
             activeColor: AppFormStyles.primary,
             onChanged: (value) => setState(() => titleChange = value),
@@ -705,7 +730,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
           const SizedBox(height: 14),
           if (canChooseSideWinner)
             _dropdown<int>(
-              label: 'Camp gagnant',
+              label: 'Winning Side',
               value: winnerSideOrder,
               items: List.generate(sides.length, (i) => i),
               itemLabel: (i) => sides[i].name,
@@ -721,7 +746,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
           if (canChooseSideWinner)
             const SizedBox(height: 14),
           _dropdown<_ParticipantDraft>(
-            label: canChooseSideWinner ? 'Dernier tombé / soumis (facultatif)' : 'Vainqueur individuel',
+            label: canChooseSideWinner ? 'Final pin / submission (optional)' : 'Individual winner',
             value: winnerParticipant,
             items: winnerSideOrder == null ? allDraftParticipants : sides[winnerSideOrder!].participants,
             itemLabel: (p) => p.name,
@@ -743,7 +768,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         child: ElevatedButton.icon(
           onPressed: saving ? null : _save,
           icon: saving ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.save_outlined),
-          label: Text(saving ? 'ENREGISTREMENT...' : isEditing ? 'ENREGISTRER' : 'CRÉER LE COMBAT', style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+          label: Text(saving ? 'SAVING...' : isEditing ? 'SAVE' : 'CREATE MATCH', style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
           style: ElevatedButton.styleFrom(backgroundColor: AppFormStyles.primary, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
         ),
       );
@@ -773,7 +798,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
           DropdownMenuItem<T>(
             value: null,
             child: const Text(
-              'Aucun',
+              'None',
               style: TextStyle(
                 color: AppFormStyles.secondaryText,
               ),

@@ -27,7 +27,7 @@ class StorylineProfileSection extends StatelessWidget {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(title, style: const TextStyle(color: Color(0xFFD71920), fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.4)),
         const SizedBox(height: 12),
-        if (ids.isEmpty) Container(width: double.infinity, padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: const Color(0xFF1B1B1B), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFF303030))), child: const Text('Aucune storyline associée.', style: TextStyle(color: Color(0xFFAAAAAA)))),
+        if (ids.isEmpty) Container(width: double.infinity, padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: const Color(0xFF1B1B1B), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFF303030))), child: const Text('No related storylines.', style: TextStyle(color: Color(0xFFAAAAAA)))),
         ...ids.map((id) => FutureBuilder(future: StorylinesDatabaseHelper.readStoryline(id), builder: (context, item) {
           if (!item.hasData) return const SizedBox.shrink();
           final value = item.data!;

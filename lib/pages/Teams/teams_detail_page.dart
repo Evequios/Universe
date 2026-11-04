@@ -10,6 +10,7 @@ import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/teams_database_helper.dart';
 import 'package:wwe_universe/pages/Teams/add_edit_teams_page.dart';
 import 'package:wwe_universe/pages/Matches/matches_detail_page.dart';
+import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
 import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class TeamsDetailPage extends StatefulWidget {
@@ -52,10 +53,14 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
     });
 
     try {
-      superstarList = await SuperstarsDatabaseHelper.readAllSuperstars();
-      team = await TeamsDatabaseHelper.readTeam(widget.teamId);
-      teamMatches = await TeamsDatabaseHelper.readTeamMatches(widget.teamId);
-
+      final results = await Future.wait([
+        SuperstarsDatabaseHelper.readAllSuperstars(),
+        TeamsDatabaseHelper.readTeam(widget.teamId),
+        TeamsDatabaseHelper.readTeamMatches(widget.teamId),
+      ]);
+      superstarList = results[0] as List<Superstars>;
+      team = results[1] as Teams;
+      teamMatches = results[2] as List<MatchRecord>;
       hasTeam = true;
     } catch (e) {
       loadError = e.toString();
@@ -102,21 +107,21 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
   }
 
   String _teamMatchOutcome(MatchRecord match) {
-    if (match.resultStatus == MatchResultStatus.pending) return 'À venir';
-    if (match.resultStatus == MatchResultStatus.draw) return 'Nul';
+    if (match.resultStatus == MatchResultStatus.pending) return 'Upcoming';
+    if (match.resultStatus == MatchResultStatus.draw) return 'Draw';
     if (match.resultStatus == MatchResultStatus.noContest) return 'No Contest';
     final side = _teamSide(match);
-    if (side == null) return 'Inconnu';
-    return _isTeamWinner(match, side) ? 'Victoire' : 'Défaite';
+    if (side == null) return 'Unknown';
+    return _isTeamWinner(match, side) ? 'Win' : 'Loss';
   }
 
-  int get _wins => teamMatches.where((m) => _teamMatchOutcome(m) == 'Victoire').length;
-  int get _losses => teamMatches.where((m) => _teamMatchOutcome(m) == 'Défaite').length;
-  int get _draws => teamMatches.where((m) => _teamMatchOutcome(m) == 'Nul').length;
+  int get _wins => teamMatches.where((m) => _teamMatchOutcome(m) == 'Win').length;
+  int get _losses => teamMatches.where((m) => _teamMatchOutcome(m) == 'Loss').length;
+  int get _draws => teamMatches.where((m) => _teamMatchOutcome(m) == 'Draw').length;
   int get _noContests => teamMatches.where((m) => _teamMatchOutcome(m) == 'No Contest').length;
   int get _decidedMatches => _wins + _losses;
   int get _playedMatches => _wins + _losses + _draws + _noContests;
-  int get _pendingMatches => teamMatches.where((m) => _teamMatchOutcome(m) == 'À venir').length;
+  int get _pendingMatches => teamMatches.where((m) => _teamMatchOutcome(m) == 'Upcoming').length;
   String get _winRate => _decidedMatches == 0
       ? '—'
       : '${(_wins * 100 / _decidedMatches).toStringAsFixed(1)}%';
@@ -127,7 +132,7 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
         .map((side) => side.name)
         .where((name) => name.trim().isNotEmpty)
         .toList();
-    return names.isEmpty ? 'Adversaires non renseignés' : names.join(' • ');
+    return names.isEmpty ? 'Opponents not specified' : names.join(' • ');
   }
 
   Widget _buildStatCard(String label, String value, IconData icon) {
@@ -162,8 +167,8 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
     if (side == null) return const SizedBox.shrink();
 
     final outcome = _teamMatchOutcome(match);
-    final isWin = outcome == 'Victoire';
-    final isLoss = outcome == 'Défaite';
+    final isWin = outcome == 'Win';
+    final isLoss = outcome == 'Loss';
     final resultColor = isWin ? const Color(0xFF4CAF50) : isLoss ? primary : secondaryText;
     final show = match.show;
     final date = 'Year ${show.year} • Week ${show.week} • Day ${show.dayOfWeek}';
@@ -303,7 +308,7 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
-              child: const Text('Aucun match enregistré pour cette équipe. Associe cette équipe à un camp lors de la création d’un match pour alimenter son historique.', style: TextStyle(color: secondaryText, height: 1.5)),
+              child: const Text('No matches recorded for this team. Assign this team to a side when creating a match to build its history.', style: TextStyle(color: secondaryText, height: 1.5)),
             )
           else
             ...teamMatches.map(_buildMatchCard),
@@ -415,7 +420,12 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: border),
       ),
-      child: Row(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: superstar.id == null ? null : () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => SuperstarsDetailPage(superstarId: superstar.id!)),
+        ),
+        child: Row(
         children: [
           SuperstarAvatar(superstar: superstar, size: 54, radius: 13),
           const SizedBox(width: 14),
@@ -454,13 +464,9 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(
-            Icons.check_circle,
-            color: primary,
-            size: 20,
-          ),
+          const Icon(Icons.chevron_right, color: secondaryText, size: 20),
         ],
-      ),
+      )),
     );
   }
 

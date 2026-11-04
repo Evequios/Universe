@@ -36,6 +36,7 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
 
   bool isLoading = true;
   String? loadError;
+  late Future<List<List<int>>> _relationshipsFuture;
 
   static const Color background = Color(0xFF101010);
   static const Color surface = Color(0xFF1B1B1B);
@@ -46,7 +47,16 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
   @override
   void initState() {
     super.initState();
+    _relationshipsFuture = _loadRelationships();
     refreshSuperstar();
+  }
+
+  Future<List<List<int>>> _loadRelationships() {
+    return Future.wait<List<int>>([
+      SuperstarRelationshipsDatabaseHelper.readRelatedIds(widget.superstarId, 'manager'),
+      SuperstarRelationshipsDatabaseHelper.readRelatedIds(widget.superstarId, 'ally'),
+      SuperstarRelationshipsDatabaseHelper.readRelatedIds(widget.superstarId, 'rival'),
+    ]);
   }
 
   Future<void> refreshSuperstar() async {
@@ -56,15 +66,21 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
     });
 
     try {
-      final loadedSuperstar =
-          await SuperstarsDatabaseHelper.readSuperstar(widget.superstarId);
+      // These datasets are independent; load them together to avoid a long
+      // chain of sequential SQLite reads when opening the profile.
+      final results = await Future.wait<dynamic>([
+        SuperstarsDatabaseHelper.readSuperstar(widget.superstarId),
+        BrandsDatabaseHelper.readAllBrands(),
+        SuperstarsDatabaseHelper.readAllSuperstars(),
+        MatchesDatabaseHelper.readAllMatchesSuperstar(widget.superstarId),
+        TitlesDatabaseHelper.readTitlesForSuperstar(widget.superstarId),
+      ]);
 
-      final brands = await BrandsDatabaseHelper.readAllBrands();
-      final superstars = await SuperstarsDatabaseHelper.readAllSuperstars();
-      final matches = await MatchesDatabaseHelper.readAllMatchesSuperstar(
-        widget.superstarId,
-      );
-      final titles = await TitlesDatabaseHelper.readTitlesForSuperstar(widget.superstarId);
+      final loadedSuperstar = results[0] as Superstars;
+      final brands = results[1] as List<Brands>;
+      final superstars = results[2] as List<Superstars>;
+      final matches = results[3] as List<MatchRecord>;
+      final titles = results[4] as List<Titles>;
 
       if (!mounted) return;
 
@@ -74,6 +90,7 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
         listSuperstars = superstars;
         listMatches = matches;
         listTitles = titles;
+        _relationshipsFuture = _loadRelationships();
         isLoading = false;
       });
     } catch (e) {
@@ -89,13 +106,13 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
   }
 
   String _outcomeFor(MatchRecord match) {
-    if (match.resultStatus == MatchResultStatus.pending) return 'À venir';
-    if (match.resultStatus == MatchResultStatus.draw) return 'Nul';
+    if (match.resultStatus == MatchResultStatus.pending) return 'Upcoming';
+    if (match.resultStatus == MatchResultStatus.draw) return 'Draw';
     if (match.resultStatus == MatchResultStatus.noContest) return 'No Contest';
-    if (match.resultStatus != MatchResultStatus.winner) return 'Inconnu';
+    if (match.resultStatus != MatchResultStatus.winner) return 'Unknown';
 
     final id = superstar?.id;
-    if (id == null) return 'Inconnu';
+    if (id == null) return 'Unknown';
 
     // Le résultat est attribué à tout le camp gagnant ; le dernier tombé
     // ou soumis ne sert qu'à identifier le finisher.
@@ -106,12 +123,12 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
       if (winningSide.isNotEmpty) {
         return winningSide.first.participants.any(
           (participant) => participant.superstarId == id,
-        ) ? 'Victoire' : 'Défaite';
+        ) ? 'Win' : 'Loss';
       }
     }
 
     if (match.winnerSuperstarId != null) {
-      return match.winnerSuperstarId == id ? 'Victoire' : 'Défaite';
+      return match.winnerSuperstarId == id ? 'Win' : 'Loss';
     }
 
     final winnerName = match.winnerName?.trim();
@@ -119,17 +136,17 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
       return match.allParticipants.any((participant) =>
           participant.superstarId == id &&
           participant.superstarName.toLowerCase() == winnerName.toLowerCase())
-          ? 'Victoire'
-          : 'Défaite';
+          ? 'Win'
+          : 'Loss';
     }
-    return 'Inconnu';
+    return 'Unknown';
   }
 
-  int get _wins => listMatches.where((match) => _outcomeFor(match) == 'Victoire').length;
-  int get _losses => listMatches.where((match) => _outcomeFor(match) == 'Défaite').length;
-  int get _draws => listMatches.where((match) => _outcomeFor(match) == 'Nul').length;
+  int get _wins => listMatches.where((match) => _outcomeFor(match) == 'Win').length;
+  int get _losses => listMatches.where((match) => _outcomeFor(match) == 'Loss').length;
+  int get _draws => listMatches.where((match) => _outcomeFor(match) == 'Draw').length;
   int get _noContests => listMatches.where((match) => _outcomeFor(match) == 'No Contest').length;
-  int get _pending => listMatches.where((match) => _outcomeFor(match) == 'À venir').length;
+  int get _pending => listMatches.where((match) => _outcomeFor(match) == 'Upcoming').length;
   int get _decided => _wins + _losses;
   String get _winRate => _decided == 0 ? '—' : '${(_wins * 100 / _decided).toStringAsFixed(1)}%';
 
@@ -237,12 +254,51 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
 
   Widget _buildRelationshipsCard() {
     return FutureBuilder<List<List<int>>>(
-      future: Future.wait([
-        SuperstarRelationshipsDatabaseHelper.readRelatedIds(widget.superstarId, 'manager'),
-        SuperstarRelationshipsDatabaseHelper.readRelatedIds(widget.superstarId, 'ally'),
-        SuperstarRelationshipsDatabaseHelper.readRelatedIds(widget.superstarId, 'rival'),
-      ]),
+      future: _relationshipsFuture,
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: surface,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: border),
+            ),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Unable to load relationships.',
+                    style: TextStyle(color: secondaryText, fontSize: 12),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => setState(
+                    () => _relationshipsFuture = _loadRelationships(),
+                  ),
+                  child: const Text('RETRY'),
+                ),
+              ],
+            ),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: surface,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: border),
+            ),
+            child: const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: primary),
+              ),
+            ),
+          );
+        }
         final ids = snapshot.data ?? const <List<int>>[[], [], []];
         String names(List<int> values) {
           final found = listSuperstars.where((s) => values.contains(s.id)).map((s) => s.name).toList();
@@ -252,7 +308,7 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(15), border: Border.all(color: border)),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [const Expanded(child: Text('RELATIONSHIPS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1))), TextButton.icon(onPressed: () async { final changed = await Navigator.push(context, MaterialPageRoute(builder: (_) => SuperstarRelationshipsPage(superstar: superstar!))); if (changed == true) setState(() {}); }, icon: const Icon(Icons.edit_outlined, size: 16), label: const Text('EDIT'), style: TextButton.styleFrom(foregroundColor: primary))]),
+            Row(children: [const Expanded(child: Text('RELATIONSHIPS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1))), TextButton.icon(onPressed: () async { final changed = await Navigator.push(context, MaterialPageRoute(builder: (_) => SuperstarRelationshipsPage(superstar: superstar!))); if (changed == true && mounted) { setState(() => _relationshipsFuture = _loadRelationships()); } }, icon: const Icon(Icons.edit_outlined, size: 16), label: const Text('EDIT'), style: TextButton.styleFrom(foregroundColor: primary))]),
             const SizedBox(height: 8),
             _relationshipLine('MANAGERS', names(ids[0])),
             _relationshipLine('ALLIES', names(ids[1])),
@@ -322,25 +378,12 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
       ),
       child: Column(
         children: [
-          Container(
-            width: 112,
-            height: 112,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: const Color(0xFF35171D),
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: primary.withOpacity(0.55), width: 1.5),
-              image: superstar!.photoUrl != null && superstar!.photoUrl!.trim().isNotEmpty
-                  ? DecorationImage(
-                      image: NetworkImage(superstar!.photoUrl!.trim()),
-                      fit: BoxFit.cover,
-                      onError: (_, __) {},
-                    )
-                  : null,
-            ),
-            child: superstar!.photoUrl == null || superstar!.photoUrl!.trim().isEmpty
-                ? Text(initials, style: const TextStyle(color: Colors.white, fontSize: 29, fontWeight: FontWeight.w900, letterSpacing: 1))
-                : const SizedBox.shrink(),
+          SuperstarAvatar(
+            superstar: superstar!,
+            size: 112,
+            radius: 25,
+            backgroundColor: const Color(0xFF35171D),
+            borderColor: primary.withOpacity(0.55),
           ),
           const SizedBox(height: 18),
           Text(
@@ -525,12 +568,12 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
     );
 
     final outcome = _outcomeFor(match);
-    final won = outcome == 'Victoire';
-    final resultLabel = outcome == 'Victoire' ? 'Victory' :
-        outcome == 'Défaite' ? 'Defeat' :
-        outcome == 'Nul' ? 'Draw' :
+    final won = outcome == 'Win';
+    final resultLabel = outcome == 'Win' ? 'Victory' :
+        outcome == 'Loss' ? 'Defeat' :
+        outcome == 'Draw' ? 'Draw' :
         outcome == 'No Contest' ? 'No contest' :
-        outcome == 'À venir' ? 'Pending' : 'Unknown';
+        outcome == 'Upcoming' ? 'Pending' : 'Unknown';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
