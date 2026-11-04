@@ -87,6 +87,14 @@ class ShowsDetailPageState extends State<ShowsDetailPage> {
         title: Text(show?.name ?? 'Show details'),
         actions: [
           IconButton(
+            tooltip: show?.isCompleted == true ? 'Reopen show' : 'Mark show as completed',
+            icon: Icon(show?.isCompleted == true
+                ? Icons.replay_outlined
+                : Icons.check_circle_outline),
+            color: show?.isCompleted == true ? Colors.orangeAccent : Colors.green,
+            onPressed: isLoading || show == null ? null : toggleShowCompletion,
+          ),
+          IconButton(
             tooltip: 'Edit show',
             icon: const Icon(Icons.edit_outlined),
             onPressed: isLoading || show == null ? null : editButton,
@@ -214,6 +222,10 @@ class ShowsDetailPageState extends State<ShowsDetailPage> {
             spacing: 8,
             runSpacing: 8,
             children: [
+              _buildInfoChip(
+                currentShow.isCompleted ? 'Completed' : 'In progress',
+                currentShow.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+              ),
               _buildInfoChip('Year ${currentShow.year}', Icons.calendar_today),
               _buildInfoChip('Week ${currentShow.week}', Icons.date_range),
               _buildInfoChip(
@@ -533,6 +545,40 @@ class ShowsDetailPageState extends State<ShowsDetailPage> {
     if (mounted) {
       await refreshMatches();
     }
+  }
+
+  Future<void> toggleShowCompletion() async {
+    final currentShow = show;
+    if (currentShow == null || currentShow.id == null) return;
+
+    final markCompleted = !currentShow.isCompleted;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(markCompleted ? 'Finish this show?' : 'Reopen this show?'),
+        content: Text(markCompleted
+            ? 'Mark "${currentShow.name}" as completed? It will become the new calendar reference if it is the latest completed show.'
+            : 'Reopen "${currentShow.name}"? It will no longer count as a completed show.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(markCompleted ? 'Complete show' : 'Reopen show'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    await ShowsDatabaseHelper.setShowCompleted(
+      showId: currentShow.id!,
+      isCompleted: markCompleted,
+    );
+    await refreshMatches();
   }
 
   Future<void> editButton() async {

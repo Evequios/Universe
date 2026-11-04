@@ -41,7 +41,8 @@ class AddEditNewsPageState extends State<AddEditNewsPage> {
     title = news?.title ?? '';
     text = news?.text ?? '';
     type = news?.type ?? 'Announcement';
-    year = news?.year ?? DateTime.now().year;
+    // News dates use the in-app WWE calendar, never the Gregorian year.
+    year = news?.year ?? 1;
     week = news?.week ?? 1;
     dayOfWeek = news?.dayOfWeek ?? 1;
     _loadOptions();
@@ -56,6 +57,26 @@ class AddEditNewsPageState extends State<AddEditNewsPage> {
     final linked = widget.news?.id == null ? null : await NewsDatabaseHelper.readLinkedStorylineId(widget.news!.id!);
     final associations = widget.news?.id == null ? null : await NewsAssociationsDatabaseHelper.read(widget.news!.id!);
     if (!mounted) return;
+    if (widget.news == null && loadedShows.isNotEmpty) {
+      loadedShows.sort((a, b) {
+        final ak = a.year * 336 + (a.week - 1) * 7 + a.dayOfWeek;
+        final bk = b.year * 336 + (b.week - 1) * 7 + b.dayOfWeek;
+        return ak.compareTo(bk);
+      });
+      final completed = loadedShows.where((show) => show.isCompleted).toList();
+      final lastCompletedKey = completed.isEmpty
+          ? null
+          : completed.map((show) => show.year * 336 + (show.week - 1) * 7 + show.dayOfWeek).reduce((a, b) => a > b ? a : b);
+      final upcoming = loadedShows.where((show) {
+        final key = show.year * 336 + (show.week - 1) * 7 + show.dayOfWeek;
+        return !show.isCompleted && (lastCompletedKey == null || key > lastCompletedKey);
+      }).toList();
+      final remaining = loadedShows.where((show) => !show.isCompleted).toList();
+      final reference = upcoming.isNotEmpty
+          ? upcoming.first
+          : remaining.isNotEmpty ? remaining.first : loadedShows.last;
+      year = reference.year; week = reference.week; dayOfWeek = reference.dayOfWeek;
+    }
     setState(() { storylines = values; superstars = loadedSuperstars; teams = loadedTeams; titles = loadedTitles; shows = loadedShows; storylineId = linked; if (associations != null) selectedEntities = associations.map((k, v) => MapEntry(k, v.toSet())); loading = false; });
   }
 
@@ -70,8 +91,8 @@ class AddEditNewsPageState extends State<AddEditNewsPage> {
         superstars: superstars, teams: teams, titles: titles, shows: shows,
         selectedEntities: selectedEntities, onChangedEntities: (v) => setState(() => selectedEntities = v),
         onChangedTitle: (v) => title = v, onChangedText: (v) => text = v,
-        onChangedType: (v) => type = v ?? 'Other', onChangedYear: (v) => setState(() => year = v),
-        onChangedWeek: (v) => setState(() => week = v), onChangedDay: (v) => setState(() => dayOfWeek = v),
+        onChangedType: (v) => type = v ?? 'Other',
+        onChangedDate: (date) => setState(() { year = date['year']!; week = date['week']!; dayOfWeek = date['day']!; }),
         onChangedStoryline: (v) => setState(() => storylineId = v))),
   );
 

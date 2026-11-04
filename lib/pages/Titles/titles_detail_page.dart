@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/titles.dart';
 import 'package:wwe_universe/classes/reigns.dart';
+import 'package:wwe_universe/classes/teams.dart';
+import 'package:wwe_universe/database/teams_database_helper.dart';
+import 'package:wwe_universe/pages/Teams/teams_detail_page.dart';
 import 'package:wwe_universe/database/reings_database_helper.dart';
 import 'package:wwe_universe/widget/wwe_date_dialog.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
@@ -30,6 +33,7 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
   Superstars h2 = const Superstars(name: 'nom', brand: null, orientation: 'orientation', division: null);
   bool isLoading = false;
   List<Reigns> reigns = [];
+  final Map<int, Teams> _teamsById = {};
   
 
   @override
@@ -44,6 +48,10 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
 
     title = await TitlesDatabaseHelper.readTitle(widget.titleId);
     reigns = await ReignsDatabaseHelper.readReigns(widget.titleId);
+    final teams = await TeamsDatabaseHelper.readAllTeams();
+    _teamsById
+      ..clear()
+      ..addEntries(teams.where((team) => team.id != null).map((team) => MapEntry(team.id!, team)));
 
     if (title.holder1 != null) {
       h1 = await SuperstarsDatabaseHelper.readSuperstar(title.holder1!.id!);
@@ -161,6 +169,10 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
                   _buildChampionCard(h2)
                 else
                   _buildEmptyChampionCard(),
+                if (reigns.isNotEmpty && reigns.first.isCurrent && reigns.first.teamId != null) ...[
+                  const SizedBox(height: 10),
+                  _buildTeamChampionCard(reigns.first),
+                ],
               ],
               const SizedBox(height: 28),
               const Text(
@@ -180,11 +192,25 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
   );
 
 
+  Widget _buildTeamChampionCard(Reigns reign) {
+    final team = _teamsById[reign.teamId];
+    return Card(
+      color: const Color(0xFF222222),
+      child: ListTile(
+        leading: const CircleAvatar(backgroundColor: Color(0xFF351719), child: Icon(Icons.groups, color: Color(0xFFD71920))),
+        title: Text(team?.name ?? reign.teamName ?? 'Champion Team', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        subtitle: const Text('Linked tag team', style: TextStyle(color: Color(0xFFAAAAAA))),
+        trailing: const Icon(Icons.chevron_right, color: Color(0xFF888888)),
+        onTap: team?.id == null ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => TeamsDetailPage(teamId: team!.id!))),
+      ),
+    );
+  }
+
   Widget _buildReignCard(Reigns reign) {
-    final start = 'Year ${reign.yearStart} • Week ${reign.weekStart}';
+    final start = 'Year ${reign.yearStart} • Week ${reign.weekStart} • Day ${reign.dayStart}';
     final end = reign.isCurrent
         ? 'Current reign'
-        : 'Year ${reign.yearEnd} • Week ${reign.weekEnd}';
+        : 'Year ${reign.yearEnd} • Week ${reign.weekEnd} • Day ${reign.dayEnd ?? 1}';
     final holders = reign.holder2Name == null
         ? reign.holder1Name
         : '${reign.holder1Name} & ${reign.holder2Name}';
@@ -200,10 +226,49 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
         Text(holders, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 6),
         Text('$start → $end', style: const TextStyle(color: Color(0xFFAAAAAA))),
+        if (reign.teamName != null)
+          Padding(padding: const EdgeInsets.only(top: 6), child: Row(children: [
+            const Icon(Icons.groups_outlined, size: 15, color: Color(0xFFD71920)),
+            const SizedBox(width: 6),
+            Text(reign.teamName!, style: const TextStyle(color: Color(0xFFCCCCCC), fontSize: 12)),
+          ])),
+        if (reign.startMatchId == null)
+          Align(alignment: Alignment.centerRight, child: TextButton.icon(
+            onPressed: () => _editReignDate(reign),
+            icon: const Icon(Icons.edit_calendar_outlined, size: 16),
+            label: const Text('Edit reign date'),
+          )),
         if (reign.endReason == 'vacated')
           const Padding(padding: EdgeInsets.only(top: 5), child: Text('Title vacated', style: TextStyle(color: Colors.orangeAccent, fontSize: 12))),
       ]),
     );
+  }
+
+  Future<void> _editReignDate(Reigns reign) async {
+    final date = await showDialog<Map<String, int>>(
+      context: context,
+      builder: (_) => WweDateDialog(
+        title: 'Edit reign start date',
+        confirmLabel: 'Save',
+        initialYear: reign.yearStart,
+        initialWeek: reign.weekStart,
+        initialDay: reign.dayStart,
+      ),
+    );
+    if (date == null || !mounted) return;
+    try {
+      await ReignsDatabaseHelper.updateManualReignDate(
+        reign: reign,
+        year: date['year']!,
+        week: date['week']!,
+        dayOfWeek: date['day']!,
+      );
+      await refreshTitle();
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to edit reign: $error')),
+      );
+    }
   }
 
   Future<void> _vacateTitle() async {

@@ -75,6 +75,20 @@ class ShowsDatabaseHelper {
     });
   }
 
+
+  static Future<int> setShowCompleted({
+    required int showId,
+    required bool isCompleted,
+  }) async {
+    final db = await DatabaseService.instance.database;
+    return db.update(
+      tableShows,
+      {ShowFields.isCompleted: isCompleted ? 1 : 0},
+      where: '${ShowFields.id} = ?',
+      whereArgs: [showId],
+    );
+  }
+
   static Future<int> deleteShow(int id) async {
     final db = await DatabaseService.instance.database;
     return db.transaction((txn) async {

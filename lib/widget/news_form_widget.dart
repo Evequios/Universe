@@ -6,6 +6,7 @@ import 'package:wwe_universe/classes/titles.dart';
 import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
 import 'package:wwe_universe/widget/superstar_picker.dart';
+import 'package:wwe_universe/widget/wwe_date_dialog.dart';
 
 const List<String> listCategories = <String>['Announcement', 'Injury', 'Return', 'Other'];
 
@@ -23,7 +24,7 @@ class NewsFormWidget extends StatelessWidget {
   final ValueChanged<String> onChangedTitle;
   final ValueChanged<String> onChangedText;
   final ValueChanged<String?> onChangedType;
-  final ValueChanged<int> onChangedYear, onChangedWeek, onChangedDay;
+  final ValueChanged<Map<String, int>> onChangedDate;
   final ValueChanged<int?> onChangedStoryline;
 
   const NewsFormWidget({super.key, required this.title, required this.text,
@@ -32,8 +33,7 @@ class NewsFormWidget extends StatelessWidget {
     required this.superstars, required this.teams, required this.titles, required this.shows,
     required this.selectedEntities, required this.onChangedEntities,
     required this.onChangedTitle, required this.onChangedText,
-    required this.onChangedType, required this.onChangedYear,
-    required this.onChangedWeek, required this.onChangedDay,
+    required this.onChangedType, required this.onChangedDate,
     required this.onChangedStoryline});
 
   Future<void> _choose<T>({required BuildContext context, required String label,
@@ -100,6 +100,19 @@ class NewsFormWidget extends StatelessWidget {
     onChangedEntities(next);
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final date = await showDialog<Map<String, int>>(
+      context: context,
+      builder: (_) => WweDateDialog(
+        title: 'Select news date',
+        initialYear: year,
+        initialWeek: week,
+        initialDay: dayOfWeek,
+      ),
+    );
+    if (date != null) onChangedDate(date);
+  }
+
   Widget _associationTile(BuildContext context, String key, String label, IconData icon,
       List<int> ids, Future<void> Function() onTap) => ListTile(
     contentPadding: EdgeInsets.zero, leading: Icon(icon, color: AppFormStyles.primary),
@@ -123,24 +136,14 @@ class NewsFormWidget extends StatelessWidget {
           decoration: AppFormStyles.inputDecoration(label: 'Content', icon: Icons.notes_outlined),
           validator: (v) => v == null || v.trim().isEmpty ? 'Le contenu est obligatoire' : null, onChanged: onChangedText),
       ]), const SizedBox(height: 16),
-      AppFormSection(title: 'WWE Date', children: [
-        Row(children: [
-          Expanded(flex: 2, child: DropdownButtonFormField<int>(isExpanded: true, value: year,
-            decoration: AppFormStyles.inputDecoration(label: 'Year'),
-            items: List.generate(31, (i) => year - 15 + i).map((v) => DropdownMenuItem(value: v, child: Text('$v'))).toList(),
-            onChanged: (v) { if (v != null) onChangedYear(v); })),
-          const SizedBox(width: 8),
-          Expanded(child: DropdownButtonFormField<int>(isExpanded: true, value: week,
-            decoration: AppFormStyles.inputDecoration(label: 'Week'),
-            items: List.generate(48, (i) => i + 1).map((v) => DropdownMenuItem(value: v, child: Text('$v'))).toList(),
-            onChanged: (v) { if (v != null) onChangedWeek(v); })),
-          const SizedBox(width: 8),
-          Expanded(child: DropdownButtonFormField<int>(isExpanded: true, value: dayOfWeek,
-            decoration: AppFormStyles.inputDecoration(label: 'Jour'),
-            items: const [DropdownMenuItem(value: 1, child: Text('Lun.')), DropdownMenuItem(value: 2, child: Text('Mar.')), DropdownMenuItem(value: 3, child: Text('Mer.')), DropdownMenuItem(value: 4, child: Text('Jeu.')), DropdownMenuItem(value: 5, child: Text('Ven.')), DropdownMenuItem(value: 6, child: Text('Sam.')), DropdownMenuItem(value: 7, child: Text('Dim.'))],
-            onChanged: (v) { if (v != null) onChangedDay(v); })),
-        ]),
-      ]), const SizedBox(height: 16),
+      AppFormSection(title: 'WWE Date', child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: const Icon(Icons.calendar_month, color: AppFormStyles.primary),
+        title: Text('WWE Year $year • Week $week • Day $dayOfWeek'),
+        subtitle: const Text('Tap to select a date in the WWE calendar'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => _selectDate(context),
+      )), const SizedBox(height: 16),
       AppFormSection(title: 'Storyline', child: DropdownButtonFormField<int?>(isExpanded: true, value: storylineId,
         decoration: AppFormStyles.inputDecoration(label: 'Related Storyline (optional)'),
         items: [const DropdownMenuItem<int?>(value: null, child: Text('No Storyline')), ...storylines.map((s) => DropdownMenuItem<int?>(value: s.id, child: Text(s.title, overflow: TextOverflow.ellipsis)))], onChanged: onChangedStoryline)),

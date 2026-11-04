@@ -4,6 +4,7 @@ import 'package:wwe_universe/classes/match_sides.dart';
 import 'package:wwe_universe/classes/match_participants.dart';
 import 'package:wwe_universe/classes/reigns.dart';
 import 'package:wwe_universe/classes/titles.dart';
+import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/database/database.dart';
 
 class ReignsDatabaseHelper {
@@ -21,6 +22,8 @@ class ReignsDatabaseHelper {
     required String holder1Name,
     int? holder2Id,
     String? holder2Name,
+    int? teamId,
+    String? teamName,
   }) async {
     if (week < 1 || week > 48) throw ArgumentError('La semaine doit être comprise entre 1 et 48.');
     if (dayOfWeek < 1 || dayOfWeek > 7) throw ArgumentError('Le jour doit être compris entre 1 et 7.');
@@ -47,8 +50,39 @@ class ReignsDatabaseHelper {
         TitleReignEventFields.holder1Name: holder1Name,
         TitleReignEventFields.holder2Id: isTag ? holder2Id : null,
         TitleReignEventFields.holder2Name: isTag ? holder2Name : null,
+        TitleReignEventFields.teamId: isTag ? teamId : null,
+        TitleReignEventFields.teamName: isTag ? teamName : null,
       });
       await _rebuildTitle(txn, titleId);
+    });
+  }
+
+  static Future<void> updateManualReignDate({
+    required Reigns reign,
+    required int year,
+    required int week,
+    required int dayOfWeek,
+  }) async {
+    if (reign.startMatchId != null) {
+      throw StateError('Ce règne est lié à un match : modifie plutôt ce match.');
+    }
+    if (week < 1 || week > 48 || dayOfWeek < 1 || dayOfWeek > 7) {
+      throw ArgumentError('Date WWE invalide.');
+    }
+    final db = await DatabaseService.instance.database;
+    await db.transaction((txn) async {
+      final rows = await txn.query(tableTitleReignEvents,
+        columns: [TitleReignEventFields.id],
+        where: '${TitleReignEventFields.titleId} = ? AND ${TitleReignEventFields.eventType} = ? AND ${TitleReignEventFields.matchId} IS NULL AND ${TitleReignEventFields.year} = ? AND ${TitleReignEventFields.week} = ? AND ${TitleReignEventFields.dayOfWeek} = ? AND ${TitleReignEventFields.holder1Id} = ?',
+        whereArgs: [reign.titleId, eventChange, reign.yearStart, reign.weekStart, reign.dayStart, reign.holder1Id],
+        limit: 1);
+      if (rows.isEmpty) throw StateError('Événement de règne manuel introuvable.');
+      await txn.update(tableTitleReignEvents, {
+        TitleReignEventFields.year: year,
+        TitleReignEventFields.week: week,
+        TitleReignEventFields.dayOfWeek: dayOfWeek,
+      }, where: '${TitleReignEventFields.id} = ?', whereArgs: [rows.first[TitleReignEventFields.id]]);
+      await _rebuildTitle(txn, reign.titleId);
     });
   }
 
@@ -79,7 +113,8 @@ class ReignsDatabaseHelper {
       if (current.isEmpty) throw StateError('Ce titre est déjà vacant.');
       final startYear = current.first[ReignsFields.yearStart] as int;
       final startWeek = current.first[ReignsFields.weekStart] as int;
-      if (year < startYear || (year == startYear && week < startWeek)) {
+      final startDay = current.first[ReignsFields.dayStart] as int? ?? 1;
+      if (year < startYear || (year == startYear && (week < startWeek || (week == startWeek && dayOfWeek < startDay)))) {
         throw ArgumentError('La date de vacance ne peut pas précéder le début du règne.');
       }
       await txn.insert(tableTitleReignEvents, {
@@ -117,6 +152,14 @@ class ReignsDatabaseHelper {
           ? 'Un changement de titre par équipe nécessite exactement deux vainqueurs.'
           : 'Un changement de titre individuel nécessite un seul vainqueur.');
       }
+      final winningSide = _winningTeam(match);
+      String? winningTeamName;
+      if (winningSide?.teamId != null) {
+        final teamRows = await txn.query(tableTeams,
+          columns: [TeamsFields.name],
+          where: '${TeamsFields.id} = ?', whereArgs: [winningSide!.teamId], limit: 1);
+        if (teamRows.isNotEmpty) winningTeamName = teamRows.first[TeamsFields.name] as String;
+      }
       await txn.insert(tableTitleReignEvents, {
         TitleReignEventFields.titleId: titleId,
         TitleReignEventFields.eventType: eventChange,
@@ -129,6 +172,8 @@ class ReignsDatabaseHelper {
         TitleReignEventFields.holder1Name: winner[0]['name'],
         TitleReignEventFields.holder2Id: isTag ? winner[1]['id'] : null,
         TitleReignEventFields.holder2Name: isTag ? winner[1]['name'] : null,
+        TitleReignEventFields.teamId: isTag ? winningSide?.teamId : null,
+        TitleReignEventFields.teamName: isTag ? winningTeamName : null,
       });
       oldTitleIds.add(titleId);
     }
@@ -136,6 +181,16 @@ class ReignsDatabaseHelper {
     for (final id in oldTitleIds) {
       await _rebuildTitle(txn, id);
     }
+  }
+
+  static MatchSides? _winningTeam(MatchRecord match) {
+    if (match.winnerSideOrder == null) return null;
+    for (final side in match.sides) {
+      if (side.sideOrder == match.winnerSideOrder && side.teamId != null) {
+        return side;
+      }
+    }
+    return null;
   }
 
   static List<Map<String, Object?>> _winnerParticipants(MatchRecord match) {
@@ -189,6 +244,7 @@ class ReignsDatabaseHelper {
           ...active,
           ReignsFields.yearEnd: year,
           ReignsFields.weekEnd: week,
+          ReignsFields.dayEnd: event[TitleReignEventFields.dayOfWeek],
           ReignsFields.endReason: type == eventVacated ? 'vacated' : 'titleChange',
           ReignsFields.endMatchId: type == eventChange ? event[TitleReignEventFields.matchId] : null,
         });
@@ -201,10 +257,14 @@ class ReignsDatabaseHelper {
           ReignsFields.holder1Name: event[TitleReignEventFields.holder1Name],
           ReignsFields.holder2Id: event[TitleReignEventFields.holder2Id],
           ReignsFields.holder2Name: event[TitleReignEventFields.holder2Name],
+          ReignsFields.teamId: event[TitleReignEventFields.teamId],
+          ReignsFields.teamName: event[TitleReignEventFields.teamName],
           ReignsFields.yearStart: year,
           ReignsFields.weekStart: week,
+          ReignsFields.dayStart: event[TitleReignEventFields.dayOfWeek],
           ReignsFields.yearEnd: null,
           ReignsFields.weekEnd: null,
+          ReignsFields.dayEnd: null,
           ReignsFields.endReason: null,
           ReignsFields.startMatchId: event[TitleReignEventFields.matchId],
           ReignsFields.endMatchId: null,

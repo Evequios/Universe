@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/titles.dart';
+import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
+import 'package:wwe_universe/database/teams_database_helper.dart';
 import 'package:wwe_universe/database/reings_database_helper.dart';
 import 'package:wwe_universe/widget/wwe_date_dialog.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
@@ -35,6 +37,9 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
 
   List<Brands> listBrands = [];
   List<Superstars> listSuperstars = [];
+  List<Teams> listTeams = [];
+  Teams? championTeam;
+  int? _originalTeamId;
 
   String name = '';
   Brands? brand;
@@ -59,12 +64,19 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
 
       final loadedSuperstars = widget.listSuperstars ??
           await SuperstarsDatabaseHelper.readAllSuperstars();
+      final loadedTeams = await TeamsDatabaseHelper.readAllTeams();
+      final currentReign = widget.title?.id == null
+          ? null
+          : await ReignsDatabaseHelper.readCurrentReign(widget.title!.id!);
 
       if (!mounted) return;
 
       setState(() {
         listBrands = loadedBrands;
         listSuperstars = loadedSuperstars;
+        listTeams = loadedTeams;
+        _originalTeamId = currentReign?.teamId;
+        championTeam = _findTeam(currentReign?.teamId, loadedTeams);
 
         name = widget.title?.name ?? '';
         tag = widget.title?.tag ?? 0;
@@ -94,6 +106,14 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
         loadError = 'Unable to load the title form.';
       });
     }
+  }
+
+  Teams? _findTeam(int? id, List<Teams> items) {
+    if (id == null) return null;
+    for (final team in items) {
+      if (team.id == id) return team;
+    }
+    return null;
   }
 
   Brands? _findBrand(Brands? selected, List<Brands> items) {
@@ -225,6 +245,9 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
       child: TitlesFormWidget(
         listBrands: listBrands,
         listSuperstars: listSuperstars,
+        listTeams: listTeams,
+        championTeam: championTeam,
+        onChangedChampionTeam: (value) => setState(() => championTeam = value),
         name: name,
         brand: brand,
         tag: tag,
@@ -275,7 +298,8 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
     final newHolder1 = holder1?.id;
     final newHolder2 = tag == 1 ? holder2?.id : null;
     final championChanged = oldHolder1 != newHolder1 || oldHolder2 != newHolder2;
-    final assigningChampion = newHolder1 != null && championChanged;
+    final teamChanged = (championTeam?.id) != _originalTeamId;
+    final assigningChampion = newHolder1 != null && (championChanged || teamChanged);
     Map<String, int>? reignDate;
     if (assigningChampion) {
       reignDate = await _askWweDate();
@@ -311,6 +335,8 @@ class AddEditTitlesPageState extends State<AddEditTitlesPage> {
           holder1Id: holder1!.id!, holder1Name: holder1!.name,
           holder2Id: tag == 1 ? holder2?.id : null,
           holder2Name: tag == 1 ? holder2?.name : null,
+          teamId: tag == 1 ? championTeam?.id : null,
+          teamName: tag == 1 ? championTeam?.name : null,
         );
       }
 
