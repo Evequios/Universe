@@ -129,44 +129,37 @@ class MatchesDatabaseHelper {
       final hasSideWinner = match.winnerSideOrder != null;
       final hasIndividualWinner =
           match.winnerName != null && match.winnerName!.trim().isNotEmpty;
+      List<MatchParticipants> eligibleParticipants = allParticipants;
 
       if (hasSideWinner) {
-        if (!usesSides ||
-            hasIndividualWinner ||
-            match.winnerSuperstarId != null) {
-          throw ArgumentError(
-            'Le vainqueur par camp est incompatible avec ce format.',
-          );
+        if (!usesSides) {
+          throw ArgumentError('Un format sans camps ne peut pas avoir de camp gagnant.');
         }
-
-        if (!match.sides.any(
+        final winningSides = match.sides.where(
           (side) => side.sideOrder == match.winnerSideOrder,
-        )) {
+        );
+        if (winningSides.isEmpty) {
           throw ArgumentError('Le camp gagnant est introuvable.');
         }
-      } else {
-        if (!hasIndividualWinner) {
-          throw ArgumentError(
-            'Une victoire individuelle doit désigner une Superstar.',
-          );
-        }
+        eligibleParticipants = winningSides.first.participants;
+      } else if (!hasIndividualWinner) {
+        throw ArgumentError('Une victoire doit désigner un camp ou un vainqueur individuel.');
+      }
 
+      if (hasIndividualWinner) {
         final winnerName = match.winnerName!.trim();
-
-        final isParticipant = allParticipants.any((participant) {
+        final isEligible = eligibleParticipants.any((participant) {
           if (match.winnerSuperstarId != null) {
             return participant.superstarId == match.winnerSuperstarId &&
                 participant.superstarName == winnerName;
           }
-
           return participant.superstarName == winnerName;
         });
-
-        if (!isParticipant) {
-          throw ArgumentError(
-            'La Superstar gagnante doit participer au combat.',
-          );
+        if (!isEligible) {
+          throw ArgumentError('Le dernier tombé ou soumis doit appartenir au camp gagnant.');
         }
+      } else if (match.winnerSuperstarId != null) {
+        throw ArgumentError('Un identifiant de vainqueur individuel est incohérent.');
       }
     } else if (match.winnerSideOrder != null ||
         match.winnerSuperstarId != null ||

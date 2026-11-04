@@ -10,6 +10,10 @@ import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/pages/Superstars/add_edit_superstars_page.dart';
 import 'package:wwe_universe/pages/Superstars/superstar_relationships_page.dart';
 import 'package:wwe_universe/database/superstar_relationships_database_helper.dart';
+import 'package:wwe_universe/classes/titles.dart';
+import 'package:wwe_universe/database/titles_database_helper.dart';
+import 'package:wwe_universe/pages/Titles/titles_detail_page.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class SuperstarsDetailPage extends StatefulWidget {
   final int superstarId;
@@ -28,6 +32,7 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
   List<MatchRecord> listMatches = [];
   List<Brands> listBrands = [];
   List<Superstars> listSuperstars = [];
+  List<Titles> listTitles = [];
 
   bool isLoading = true;
   String? loadError;
@@ -59,6 +64,7 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
       final matches = await MatchesDatabaseHelper.readAllMatchesSuperstar(
         widget.superstarId,
       );
+      final titles = await TitlesDatabaseHelper.readTitlesForSuperstar(widget.superstarId);
 
       if (!mounted) return;
 
@@ -67,6 +73,7 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
         listBrands = brands;
         listSuperstars = superstars;
         listMatches = matches;
+        listTitles = titles;
         isLoading = false;
       });
     } catch (e) {
@@ -90,10 +97,8 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
     final id = superstar?.id;
     if (id == null) return 'Inconnu';
 
-    if (match.winnerSuperstarId != null) {
-      return match.winnerSuperstarId == id ? 'Victoire' : 'Défaite';
-    }
-
+    // Le résultat est attribué à tout le camp gagnant ; le dernier tombé
+    // ou soumis ne sert qu'à identifier le finisher.
     if (match.winnerSideOrder != null) {
       final winningSide = match.sides.where(
         (side) => side.sideOrder == match.winnerSideOrder,
@@ -103,6 +108,10 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
           (participant) => participant.superstarId == id,
         ) ? 'Victoire' : 'Défaite';
       }
+    }
+
+    if (match.winnerSuperstarId != null) {
+      return match.winnerSuperstarId == id ? 'Victoire' : 'Défaite';
     }
 
     final winnerName = match.winnerName?.trim();
@@ -200,6 +209,13 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
           _buildInformationCard(),
           const SizedBox(height: 20),
           _buildRelationshipsCard(),
+          const SizedBox(height: 28),
+          _buildSectionTitle('TITLES', '${listTitles.length} TITLES'),
+          const SizedBox(height: 12),
+          if (listTitles.isEmpty)
+            const Text('No title currently associated with this Superstar.', style: TextStyle(color: secondaryText))
+          else
+            ...listTitles.map(_buildTitleLink),
           const SizedBox(height: 28),
           _buildSectionTitle(
             'MATCH HISTORY',
@@ -491,16 +507,19 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
   Widget _buildMatchCard(MatchRecord match) {
     final currentSuperstarId = superstar!.id;
 
-    final allParticipants = match.sides
-        .expand((side) => side.participants)
-        .toList();
-
-    final opponents = allParticipants
+    final currentSide = match.sides.where((side) => side.participants.any(
+      (participant) => participant.superstarId == currentSuperstarId,
+    )).firstOrNull;
+    final allParticipants = match.allParticipants;
+    final opponentParticipants = currentSide == null
+        ? allParticipants
+        : match.sides.where((side) => side.sideOrder != currentSide.sideOrder)
+            .expand((side) => side.participants).toList();
+    final opponents = opponentParticipants
         .where((participant) => participant.superstarId != currentSuperstarId)
         .map((participant) => participant.superstarName)
         .toSet()
         .toList();
-
     final currentParticipant = allParticipants.any(
       (participant) => participant.superstarId == currentSuperstarId,
     );
@@ -620,6 +639,24 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildTitleLink(Titles title) {
+    final isTag = title.tag == 1;
+    final champion = title.holder1;
+    return Card(
+      color: surface,
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: champion == null
+            ? const CircleAvatar(child: Icon(Icons.emoji_events_outlined))
+            : SuperstarAvatar(superstar: champion, size: 46, radius: 12),
+        title: Text(title.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        subtitle: Text(isTag ? 'Tag Team title' : 'Singles title', style: const TextStyle(color: secondaryText)),
+        trailing: const Icon(Icons.chevron_right, color: secondaryText),
+        onTap: title.id == null ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => TitlesDetailPage(titleId: title.id!))),
       ),
     );
   }

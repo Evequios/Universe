@@ -57,6 +57,15 @@ class TitlesDatabaseHelper {
     }
   }
 
+  static Future<List<Titles>> readTitlesForSuperstar(int superstarId) async {
+    final db = await DatabaseService.instance.database;
+    final rows = await db.query(tableTitles,
+      where: '${TitlesFields.holder1} = ? OR ${TitlesFields.holder2} = ?',
+      whereArgs: [superstarId, superstarId],
+      orderBy: '${TitlesFields.name} ASC');
+    return Future.wait(rows.map((row) => _fromMap(row)).toList());
+  }
+
   static Future<List<Titles>> readAllTitles() async {
     final db = await DatabaseService.instance.database;
     const orderBy = '${TitlesFields.name} ASC';

@@ -71,7 +71,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       : ListView(padding: const EdgeInsets.all(16), children: [
         Text(news!.title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
         const SizedBox(height: 8),
-        Text('${news!.type}  •  ${news!.year ?? news!.createdTime.year}  •  S${news!.week ?? '—'}  •  J${news!.dayOfWeek ?? '—'}', style: const TextStyle(color: AppFormStyles.secondaryText)),
+        Text('${news!.type}  •  WWE Year ${news!.year ?? '—'}  •  S${news!.week ?? '—'}  •  J${news!.dayOfWeek ?? '—'}', style: const TextStyle(color: AppFormStyles.secondaryText)),
         const SizedBox(height: 20),
         AppDetailSection(title: 'Content', icon: Icons.article_outlined, child: SelectableText(news!.text, style: const TextStyle(color: Colors.white, height: 1.55, fontSize: 15))),
         const SizedBox(height: 14),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:wwe_universe/classes/storylines.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/teams.dart';
@@ -9,6 +8,7 @@ import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/teams_database_helper.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
 import 'package:wwe_universe/widget/superstar_picker.dart';
+import 'package:wwe_universe/widget/wwe_date_dialog.dart';
 
 class AddEditStorylinesPage extends StatefulWidget {
   final Storylines? storyline;
@@ -25,6 +25,8 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
   final _startWeek = TextEditingController();
   final _endYear = TextEditingController();
   final _endWeek = TextEditingController();
+  final _startDay = TextEditingController();
+  final _endDay = TextEditingController();
   String _status = StorylineStatus.ongoing;
   List<Superstars> _allSuperstars = [];
   List<Teams> _allTeams = [];
@@ -41,8 +43,10 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
     _description.text = s?.text ?? '';
     _startYear.text = s == null || s.yearStart == 0 ? '' : '${s.yearStart}';
     _startWeek.text = s == null || s.start == 0 ? '' : '${s.start}';
+    _startDay.text = s == null ? '' : '${s.dayStart}';
     _endYear.text = s == null || s.yearEnd == 0 ? '' : '${s.yearEnd}';
     _endWeek.text = s == null || s.end == 0 ? '' : '${s.end}';
+    _endDay.text = s == null || s.end == 0 ? '' : '${s.dayEnd}';
     _status = s?.status ?? StorylineStatus.ongoing;
     _load();
   }
@@ -65,18 +69,19 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
 
   @override
   void dispose() {
-    _title.dispose(); _description.dispose(); _startYear.dispose(); _startWeek.dispose(); _endYear.dispose(); _endWeek.dispose();
+    _title.dispose(); _description.dispose(); _startYear.dispose(); _startWeek.dispose(); _endYear.dispose(); _endWeek.dispose(); _startDay.dispose(); _endDay.dispose();
     super.dispose();
   }
 
   int? _number(TextEditingController c) => c.text.trim().isEmpty ? null : int.tryParse(c.text.trim());
 
-  String? _validateDate(TextEditingController year, TextEditingController week, String label, {bool required = false}) {
-    final y = _number(year); final w = _number(week);
-    if (required && (y == null || w == null)) return 'La date de début est obligatoire.';
-    if ((y == null) != (w == null)) return 'Renseigne l’année et la semaine ensemble.';
+  String? _validateDate(TextEditingController year, TextEditingController week, TextEditingController day, String label, {bool required = false}) {
+    final y = _number(year); final w = _number(week); final d = _number(day);
+    if (required && (y == null || w == null || d == null)) return 'La date de début est obligatoire.';
+    if ((y == null) != (w == null) || (y == null) != (d == null)) return 'Renseigne l’année, la semaine et le jour ensemble.';
     if (y != null && y < 1) return 'Année invalide.';
     if (w != null && (w < 1 || w > 48)) return 'La semaine doit être comprise entre 1 et 48.';
+    if (d != null && (d < 1 || d > 7)) return 'Le jour doit être compris entre 1 et 7.';
     return null;
   }
 
@@ -95,14 +100,16 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
   Future<void> _save() async {
     if (_saving || !_formKey.currentState!.validate()) return;
     final startYear = _number(_startYear)!; final startWeek = _number(_startWeek)!;
+    final startDay = _number(_startDay)!;
     final endYear = _number(_endYear) ?? 0; final endWeek = _number(_endWeek) ?? 0;
-    if (endYear != 0 && (endYear < startYear || (endYear == startYear && endWeek < startWeek))) {
+    final endDay = _number(_endDay) ?? 1;
+    if (endYear != 0 && (endYear < startYear || (endYear == startYear && (endWeek < startWeek || (endWeek == startWeek && endDay < startDay))))) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('La date de fin doit être postérieure ou égale à la date de début.'))); return;
     }
     setState(() => _saving = true);
     try {
       final existing = widget.storyline;
-      final value = Storylines(id: existing?.id, title: _title.text.trim(), text: _description.text.trim(), yearStart: startYear, yearEnd: endYear, start: startWeek, end: endWeek, status: _status);
+      final value = Storylines(id: existing?.id, title: _title.text.trim(), text: _description.text.trim(), yearStart: startYear, yearEnd: endYear, start: startWeek, end: endWeek, dayStart: startDay, dayEnd: endDay, status: _status);
       final saved = existing == null ? await StorylinesDatabaseHelper.createStoryline(value) : value;
       if (existing != null) await StorylinesDatabaseHelper.updateStoryline(value);
       await StorylineParticipantsDatabaseHelper.replace(storylineId: saved.id!, superstarIds: _selectedSuperstars.toList(), teamIds: _selectedTeams.toList());
@@ -112,11 +119,74 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
     } finally { if (mounted) setState(() => _saving = false); }
   }
 
-  Widget _dateField(String label, TextEditingController year, TextEditingController week, {bool required = false}) => Row(children: [
-    Expanded(child: TextFormField(controller: year, keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly], decoration: AppFormStyles.inputDecoration(label: '$label – année'), validator: (_) => _validateDate(year, week, label, required: required))),
-    const SizedBox(width: 10),
-    Expanded(child: TextFormField(controller: week, keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly], decoration: AppFormStyles.inputDecoration(label: '$label – semaine'), validator: (_) => _validateDate(year, week, label, required: required))),
-  ]);
+  Future<void> _selectStorylineDate(
+    String label,
+    TextEditingController year,
+    TextEditingController week,
+    TextEditingController day,
+  ) async {
+    final selected = await showDialog<Map<String, int>>(
+      context: context,
+      builder: (_) => WweDateDialog(
+        title: 'Date WWE – $label',
+        confirmLabel: 'Valider',
+        initialYear: _number(year),
+        initialWeek: _number(week),
+        initialDay: _number(day) ?? 1,
+      ),
+    );
+    if (selected == null || !mounted) return;
+    setState(() {
+      year.text = selected['year'].toString();
+      week.text = selected['week'].toString();
+      day.text = selected['day'].toString();
+    });
+  }
+
+  Widget _dateField(
+    String label,
+    TextEditingController year,
+    TextEditingController week,
+    TextEditingController day, {
+    bool required = false,
+  }) {
+    final hasDate = _number(year) != null && _number(week) != null && _number(day) != null;
+    return FormField<bool>(
+      validator: (_) => _validateDate(year, week, day, label, required: required),
+      builder: (field) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.calendar_month, color: AppFormStyles.primary),
+            title: Text(label),
+            subtitle: Text(hasDate
+                ? 'WWE Year ${year.text} • Week ${week.text} • Day ${day.text}'
+                : 'Sélectionner une date dans le calendrier WWE'),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+              if (hasDate && !required)
+                IconButton(
+                  tooltip: 'Effacer la date',
+                  icon: const Icon(Icons.clear),
+                  onPressed: () => setState(() { year.clear(); week.clear(); day.clear(); field.didChange(false); }),
+                ),
+              const Icon(Icons.chevron_right),
+            ]),
+            onTap: () async {
+              await _selectStorylineDate(label, year, week, day);
+              field.didChange(_number(year) != null && _number(week) != null && _number(day) != null);
+            },
+          ),
+          if (field.hasError)
+            Padding(
+              padding: const EdgeInsets.only(left: 12, bottom: 4),
+              child: Text(field.errorText!, style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12)),
+            ),
+        ],
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -131,8 +201,8 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
         DropdownButtonFormField<String>(value: _status, decoration: AppFormStyles.inputDecoration(label: 'Status'), items: StorylineStatus.values.map((v) => DropdownMenuItem(value: v, child: Text(StorylineStatus.label(v)))).toList(), onChanged: (v) => setState(() => _status = v ?? _status)),
       ]), const SizedBox(height: 16),
       AppFormSection(title: 'WWE Timeline', children: [
-        _dateField('Start', _startYear, _startWeek, required: true), const SizedBox(height: 12),
-        _dateField('End (optional)', _endYear, _endWeek),
+        _dateField('Start', _startYear, _startWeek, _startDay, required: true), const SizedBox(height: 12),
+        _dateField('End (optional)', _endYear, _endWeek, _endDay),
         const SizedBox(height: 8), const Text('Le calendrier WWE comporte 48 semaines. Laisser la fin vide pour une storyline sans date de clôture définie.', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 12)),
       ]), const SizedBox(height: 16),
       AppFormSection(title: 'Participants', children: [

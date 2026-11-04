@@ -45,7 +45,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 89,
+      version: 93,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -115,6 +115,8 @@ class DatabaseService {
         ${StorylinesFields.yearEnd} $intTypeNN,
         ${StorylinesFields.start} $intTypeNN,
         ${StorylinesFields.end} $intTypeNN,
+        ${StorylinesFields.dayStart} INTEGER NOT NULL DEFAULT 1,
+        ${StorylinesFields.dayEnd} INTEGER NOT NULL DEFAULT 1,
         ${StorylinesFields.status} TEXT NOT NULL DEFAULT 'ongoing'
       )
     ''');
@@ -181,7 +183,8 @@ class DatabaseService {
         ${ShowFields.year} $intTypeNN,
         ${ShowFields.week} $intTypeNN,
         ${ShowFields.dayOfWeek} $intTypeNN,
-        ${ShowFields.summary} $textType
+        ${ShowFields.summary} $textType,
+        ${ShowFields.isCompleted} INTEGER NOT NULL DEFAULT 0
       )
     ''');
 
@@ -384,10 +387,14 @@ class DatabaseService {
         ${ReignsFields.holder1Name} $textType,
         ${ReignsFields.holder2Id} $intType,
         ${ReignsFields.holder2Name} TEXT,
+        ${ReignsFields.teamId} $intType,
+        ${ReignsFields.teamName} TEXT,
         ${ReignsFields.yearStart} $intTypeNN,
         ${ReignsFields.weekStart} $intTypeNN,
+        ${ReignsFields.dayStart} INTEGER NOT NULL DEFAULT 1,
         ${ReignsFields.yearEnd} $intType,
         ${ReignsFields.weekEnd} $intType,
+        ${ReignsFields.dayEnd} INTEGER,
         ${ReignsFields.endReason} TEXT,
         ${ReignsFields.startMatchId} $intType,
         ${ReignsFields.endMatchId} $intType,
@@ -412,6 +419,8 @@ class DatabaseService {
         ${TitleReignEventFields.holder1Name} TEXT,
         ${TitleReignEventFields.holder2Id} $intType,
         ${TitleReignEventFields.holder2Name} TEXT,
+        ${TitleReignEventFields.teamId} $intType,
+        ${TitleReignEventFields.teamName} TEXT,
         FOREIGN KEY (${TitleReignEventFields.titleId}) REFERENCES $tableTitles (${TitlesFields.id}) ON DELETE CASCADE,
         FOREIGN KEY (${TitleReignEventFields.matchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE CASCADE
       )
@@ -546,6 +555,30 @@ class DatabaseService {
   }
 
   Future<void> _updateDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 93) {
+      final columns = await db.rawQuery('PRAGMA table_info($tableStorylines)');
+      final existing = columns.map((row) => row['name'] as String).toSet();
+      if (!existing.contains(StorylinesFields.dayStart)) {
+        await db.execute(
+          'ALTER TABLE $tableStorylines ADD COLUMN ${StorylinesFields.dayStart} INTEGER NOT NULL DEFAULT 1',
+        );
+      }
+      if (!existing.contains(StorylinesFields.dayEnd)) {
+        await db.execute(
+          'ALTER TABLE $tableStorylines ADD COLUMN ${StorylinesFields.dayEnd} INTEGER NOT NULL DEFAULT 1',
+        );
+      }
+    }
+    if (oldVersion < 91) {
+      final columns = await db.rawQuery('PRAGMA table_info($tableShows)');
+      final existing = columns.map((row) => row['name'] as String).toSet();
+      if (!existing.contains(ShowFields.isCompleted)) {
+        await db.execute(
+          'ALTER TABLE $tableShows ADD COLUMN ${ShowFields.isCompleted} INTEGER NOT NULL DEFAULT 0',
+        );
+      }
+    }
+
     if (oldVersion < 89) await _createLot22Tables(db);
     if (oldVersion < 88) {
       await _seedWwe26Catalog(db);
@@ -787,6 +820,8 @@ class DatabaseService {
         ${ReignsFields.holder1Name} TEXT NOT NULL,
         ${ReignsFields.holder2Id} INTEGER,
         ${ReignsFields.holder2Name} TEXT,
+        ${ReignsFields.teamId} INTEGER,
+        ${ReignsFields.teamName} TEXT,
         ${ReignsFields.yearStart} INTEGER NOT NULL,
         ${ReignsFields.weekStart} INTEGER NOT NULL,
         ${ReignsFields.yearEnd} INTEGER,
@@ -813,6 +848,8 @@ class DatabaseService {
         ${TitleReignEventFields.holder1Name} TEXT,
         ${TitleReignEventFields.holder2Id} INTEGER,
         ${TitleReignEventFields.holder2Name} TEXT,
+        ${TitleReignEventFields.teamId} INTEGER,
+        ${TitleReignEventFields.teamName} TEXT,
         FOREIGN KEY (${TitleReignEventFields.titleId}) REFERENCES $tableTitles (${TitlesFields.id}) ON DELETE CASCADE,
         FOREIGN KEY (${TitleReignEventFields.matchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE CASCADE
       )''');
@@ -820,6 +857,56 @@ class DatabaseService {
       await db.execute('CREATE INDEX idx_title_events_match ON $tableTitleReignEvents (${TitleReignEventFields.matchId})');
     }
 
+    if (oldVersion < 90) {
+      final reignColumns = await db.rawQuery('PRAGMA table_info($tableReigns)');
+      final existingReignColumns = reignColumns.map((row) => row['name'] as String).toSet();
+      if (!existingReignColumns.contains(ReignsFields.teamId)) {
+        await db.execute('ALTER TABLE $tableReigns ADD COLUMN ${ReignsFields.teamId} INTEGER');
+      }
+      if (!existingReignColumns.contains(ReignsFields.teamName)) {
+        await db.execute('ALTER TABLE $tableReigns ADD COLUMN ${ReignsFields.teamName} TEXT');
+      }
+      final eventColumns = await db.rawQuery('PRAGMA table_info($tableTitleReignEvents)');
+      final existingEventColumns = eventColumns.map((row) => row['name'] as String).toSet();
+      if (!existingEventColumns.contains(TitleReignEventFields.teamId)) {
+        await db.execute('ALTER TABLE $tableTitleReignEvents ADD COLUMN ${TitleReignEventFields.teamId} INTEGER');
+      }
+      if (!existingEventColumns.contains(TitleReignEventFields.teamName)) {
+        await db.execute('ALTER TABLE $tableTitleReignEvents ADD COLUMN ${TitleReignEventFields.teamName} TEXT');
+      }
+    }
+
+    if (oldVersion < 92) {
+      final columns = await db.rawQuery('PRAGMA table_info($tableReigns)');
+      final existing = columns.map((row) => row['name'] as String).toSet();
+      if (!existing.contains(ReignsFields.dayStart)) {
+        await db.execute('ALTER TABLE $tableReigns ADD COLUMN ${ReignsFields.dayStart} INTEGER NOT NULL DEFAULT 1');
+      }
+      if (!existing.contains(ReignsFields.dayEnd)) {
+        await db.execute('ALTER TABLE $tableReigns ADD COLUMN ${ReignsFields.dayEnd} INTEGER');
+      }
+      // Restore exact days from the event ledger for reigns created before Lot 26.
+      await db.execute('''UPDATE $tableReigns SET ${ReignsFields.dayStart} = COALESCE((
+        SELECT CASE WHEN e.${TitleReignEventFields.dayOfWeek} BETWEEN 1 AND 7 THEN e.${TitleReignEventFields.dayOfWeek} ELSE 1 END FROM $tableTitleReignEvents e
+        WHERE e.${TitleReignEventFields.titleId} = $tableReigns.${ReignsFields.titleId}
+          AND e.${TitleReignEventFields.eventType} = 'change'
+          AND e.${TitleReignEventFields.year} = $tableReigns.${ReignsFields.yearStart}
+          AND e.${TitleReignEventFields.week} = $tableReigns.${ReignsFields.weekStart}
+          AND (($tableReigns.${ReignsFields.startMatchId} IS NOT NULL AND e.${TitleReignEventFields.matchId} = $tableReigns.${ReignsFields.startMatchId}) OR ($tableReigns.${ReignsFields.startMatchId} IS NULL AND e.${TitleReignEventFields.matchId} IS NULL))
+          AND (e.${TitleReignEventFields.holder1Id} = $tableReigns.${ReignsFields.holder1Id} OR (e.${TitleReignEventFields.holder1Id} IS NULL AND $tableReigns.${ReignsFields.holder1Id} IS NULL))
+        ORDER BY CASE WHEN e.${TitleReignEventFields.dayOfWeek} BETWEEN 1 AND 7 THEN 0 ELSE 1 END, e.${TitleReignEventFields.dayOfWeek}, e.${TitleReignEventFields.matchOrder}, e.${TitleReignEventFields.id} LIMIT 1
+      ), 1)''');
+      await db.execute('''UPDATE $tableReigns SET ${ReignsFields.dayEnd} = (
+        SELECT CASE WHEN e.${TitleReignEventFields.dayOfWeek} BETWEEN 1 AND 7 THEN e.${TitleReignEventFields.dayOfWeek} ELSE 1 END FROM $tableTitleReignEvents e
+        WHERE e.${TitleReignEventFields.titleId} = $tableReigns.${ReignsFields.titleId}
+          AND e.${TitleReignEventFields.year} = $tableReigns.${ReignsFields.yearEnd}
+          AND e.${TitleReignEventFields.week} = $tableReigns.${ReignsFields.weekEnd}
+          AND (( $tableReigns.${ReignsFields.endMatchId} IS NOT NULL AND e.${TitleReignEventFields.matchId} = $tableReigns.${ReignsFields.endMatchId})
+            OR ($tableReigns.${ReignsFields.endMatchId} IS NULL AND $tableReigns.${ReignsFields.endReason} = 'vacated' AND e.${TitleReignEventFields.eventType} = 'vacated')
+            OR ($tableReigns.${ReignsFields.endMatchId} IS NULL AND $tableReigns.${ReignsFields.endReason} = 'titleChange' AND e.${TitleReignEventFields.eventType} = 'change' AND e.${TitleReignEventFields.matchId} IS NULL))
+        ORDER BY CASE WHEN e.${TitleReignEventFields.dayOfWeek} BETWEEN 1 AND 7 THEN 0 ELSE 1 END, e.${TitleReignEventFields.dayOfWeek}, e.${TitleReignEventFields.matchOrder}, e.${TitleReignEventFields.id} LIMIT 1
+      ) WHERE ${ReignsFields.yearEnd} IS NOT NULL''');
+    }
   }
 
 

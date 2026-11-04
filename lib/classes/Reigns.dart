@@ -8,10 +8,14 @@ class ReignsFields {
   static const String holder1Name = 'holder1Name';
   static const String holder2Id = 'holder2Id';
   static const String holder2Name = 'holder2Name';
+  static const String teamId = 'teamId';
+  static const String teamName = 'teamName';
   static const String yearStart = 'yearStart';
   static const String weekStart = 'weekStart';
+  static const String dayStart = 'dayStart';
   static const String yearEnd = 'yearEnd';
   static const String weekEnd = 'weekEnd';
+  static const String dayEnd = 'dayEnd';
   static const String endReason = 'endReason';
   static const String startMatchId = 'startMatchId';
   static const String endMatchId = 'endMatchId';
@@ -30,6 +34,8 @@ class TitleReignEventFields {
   static const String holder1Name = 'holder1Name';
   static const String holder2Id = 'holder2Id';
   static const String holder2Name = 'holder2Name';
+  static const String teamId = 'teamId';
+  static const String teamName = 'teamName';
 }
 
 class Reigns {
@@ -39,18 +45,22 @@ class Reigns {
   final String holder1Name;
   final int? holder2Id;
   final String? holder2Name;
+  final int? teamId;
+  final String? teamName;
   final int yearStart;
   final int weekStart;
+  final int dayStart;
   final int? yearEnd;
   final int? weekEnd;
+  final int? dayEnd;
   final String? endReason;
   final int? startMatchId;
   final int? endMatchId;
 
   const Reigns({this.id, required this.titleId, this.holder1Id,
     required this.holder1Name, this.holder2Id, this.holder2Name,
-    required this.yearStart, required this.weekStart, this.yearEnd,
-    this.weekEnd, this.endReason, this.startMatchId, this.endMatchId});
+    this.teamId, this.teamName, required this.yearStart, required this.weekStart, this.dayStart = 1, this.yearEnd,
+    this.weekEnd, this.dayEnd, this.endReason, this.startMatchId, this.endMatchId});
 
   bool get isCurrent => yearEnd == null && weekEnd == null;
 
@@ -61,10 +71,14 @@ class Reigns {
     holder1Name: map[ReignsFields.holder1Name] as String,
     holder2Id: map[ReignsFields.holder2Id] as int?,
     holder2Name: map[ReignsFields.holder2Name] as String?,
+    teamId: map[ReignsFields.teamId] as int?,
+    teamName: map[ReignsFields.teamName] as String?,
     yearStart: map[ReignsFields.yearStart] as int,
     weekStart: map[ReignsFields.weekStart] as int,
+    dayStart: (map[ReignsFields.dayStart] as int?) ?? 1,
     yearEnd: map[ReignsFields.yearEnd] as int?,
     weekEnd: map[ReignsFields.weekEnd] as int?,
+    dayEnd: map[ReignsFields.dayEnd] as int?,
     endReason: map[ReignsFields.endReason] as String?,
     startMatchId: map[ReignsFields.startMatchId] as int?,
     endMatchId: map[ReignsFields.endMatchId] as int?,

@@ -9,6 +9,7 @@ import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
 import 'package:wwe_universe/pages/Titles/add_edit_titles_page.dart';
 import 'package:wwe_universe/pages/Titles/titles_detail_page.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class TitlesPage extends StatefulWidget {
   const TitlesPage({super.key});
@@ -320,6 +321,16 @@ class TitlesPageState extends State<TitlesPage>
                     ),
                     const SizedBox(height: 7),
                     _buildChampions(championNames),
+                    if (title.holder1 != null || title.holder2 != null) ...[
+                      const SizedBox(height: 7),
+                      Row(children: [
+                        if (title.holder1 != null) SuperstarAvatar(superstar: title.holder1!, size: 30, radius: 8),
+                        if (title.tag == 1 && title.holder2 != null) ...[
+                          const SizedBox(width: 5),
+                          SuperstarAvatar(superstar: title.holder2!, size: 30, radius: 8),
+                        ],
+                      ]),
+                    ],
                     if (title.tag == 1) ...[
                       const SizedBox(height: 5),
                       _buildTagBadge(),

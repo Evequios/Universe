@@ -7,9 +7,10 @@ class ShowFields{
   static const String week = 'week';
   static const String dayOfWeek = 'dayOfWeek';
   static const String summary = 'summary';
+  static const String isCompleted = 'isCompleted';
 
   static const List<String> values = [
-    id, name, year, week, dayOfWeek, summary
+    id, name, year, week, dayOfWeek, summary, isCompleted
   ];
 }
 
@@ -20,6 +21,7 @@ class Show{
   final int week;
   final int dayOfWeek;
   final String summary;
+  final bool isCompleted;
 
   const Show({
     this.id,
@@ -27,7 +29,8 @@ class Show{
     required this.year,
     required this.week,
     required this.dayOfWeek,
-    required this.summary
+    required this.summary,
+    this.isCompleted = false,
   });
 
   // Returns the month of the show based on the week number
@@ -42,7 +45,8 @@ class Show{
     int? year,
     int? week,
     int? dayOfWeek,
-    String? summary
+    String? summary,
+    bool? isCompleted,
   }) {
     return Show(
       id: id ?? this.id,
@@ -50,7 +54,8 @@ class Show{
       year: year ?? this.year,
       week: week ?? this.week,
       dayOfWeek: dayOfWeek ?? this.dayOfWeek,
-      summary : summary ?? this.summary
+      summary: summary ?? this.summary,
+      isCompleted: isCompleted ?? this.isCompleted,
     );
   }
 
@@ -62,6 +67,7 @@ class Show{
       week: json[ShowFields.week] as int,
       dayOfWeek: json[ShowFields.dayOfWeek] as int,
       summary: json[ShowFields.summary] as String,
+      isCompleted: (json[ShowFields.isCompleted] as int? ?? 0) == 1,
     );
   }
 
@@ -73,6 +79,7 @@ class Show{
       ShowFields.week: week,
       ShowFields.dayOfWeek: dayOfWeek,
       ShowFields.summary: summary,
+      ShowFields.isCompleted: isCompleted ? 1 : 0,
     };
   }
 }

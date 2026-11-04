@@ -36,9 +36,9 @@ class _StorylinesPageState extends State<StorylinesPage> with AutomaticKeepAlive
       (q.isEmpty || s.title.toLowerCase().contains(q) || s.text.toLowerCase().contains(q))).toList();
     rows.sort((a, b) {
       switch (_sort) {
-        case 'oldest': return a.yearStart != b.yearStart ? a.yearStart.compareTo(b.yearStart) : a.start.compareTo(b.start);
+        case 'oldest': return a.yearStart != b.yearStart ? a.yearStart.compareTo(b.yearStart) : (a.start != b.start ? a.start.compareTo(b.start) : a.dayStart.compareTo(b.dayStart));
         case 'title': return a.title.toLowerCase().compareTo(b.title.toLowerCase());
-        default: return a.yearStart != b.yearStart ? b.yearStart.compareTo(a.yearStart) : b.start.compareTo(a.start);
+        default: return a.yearStart != b.yearStart ? b.yearStart.compareTo(a.yearStart) : (b.start != a.start ? b.start.compareTo(a.start) : b.dayStart.compareTo(a.dayStart));
       }
     });
     return rows;
@@ -54,7 +54,7 @@ class _StorylinesPageState extends State<StorylinesPage> with AutomaticKeepAlive
         ])),
         Expanded(child: _loading ? const Center(child: CircularProgressIndicator()) : _visible.isEmpty ? const Center(child: Text('Aucune storyline pour ce filtre.')) : RefreshIndicator(onRefresh: _refresh, child: ListView.builder(padding: const EdgeInsets.fromLTRB(12, 4, 12, 88), itemCount: _visible.length, itemBuilder: (context, index) {
           final item = _visible[index];
-          return Card(child: ListTile(onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => StorylinesDetailPage(storylineId: item.id!))); _refresh(); }, title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold)), subtitle: Text('Début : ${item.yearStart} · S${item.start}${item.end == 0 ? '' : '   •   Fin : ${item.yearEnd} · S${item.end}'}'), trailing: _statusChip(item.status)));
+          return Card(child: ListTile(onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => StorylinesDetailPage(storylineId: item.id!))); _refresh(); }, title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold)), subtitle: Text('Début : ${item.yearStart} · S${item.start} · J${item.dayStart}${item.end == 0 ? '' : '   •   Fin : ${item.yearEnd} · S${item.end} · J${item.dayEnd}'}'), trailing: _statusChip(item.status)));
         }))),
       ]), floatingActionButton: FloatingActionButton(onPressed: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => const AddEditStorylinesPage())); _refresh(); }, child: const Icon(Icons.add)));
   }

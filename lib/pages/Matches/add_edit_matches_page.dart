@@ -53,7 +53,6 @@ class _SideDraft {
 
 class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController orderController = TextEditingController();
 
   List<MatchTypes> types = [];
   List<MatchFormats> formats = [];
@@ -87,13 +86,11 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
   @override
   void initState() {
     super.initState();
-    orderController.text = (widget.match?.matchOrder ?? 0).toString();
     _loadData();
   }
 
   @override
   void dispose() {
-    orderController.dispose();
     super.dispose();
   }
 
@@ -267,6 +264,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
     required List<_ParticipantDraft> current,
     required int maximum,
     required Set<int> usedElsewhere,
+    Set<int>? allowedIds,
   }) async {
     final selected = current.where((p) => p.superstarId != null).map((p) => p.superstarId!).toSet();
     final historicalCount = current.where((p) => p.superstarId == null).length;
@@ -277,6 +275,7 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
           title: 'Select Match Participants',
           initiallySelected: selected,
           excludedIds: usedElsewhere,
+          allowedIds: allowedIds,
           maximumSelection: selectableMaximum,
         ),
       ),
@@ -289,11 +288,23 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
     ];
   }
 
+
+  Set<int>? _teamMemberIds(int? teamId) {
+    if (teamId == null) return null;
+    final team = teams.where((item) => item.id == teamId).firstOrNull;
+    if (team == null) return null;
+    return [team.member1, team.member2, team.member3, team.member4, team.member5]
+        .where((member) => member != null && member.id != null)
+        .map((member) => member!.id!)
+        .toSet();
+  }
+
   Future<void> _editSideParticipants(int index) async {
     final chosen = await _pickParticipants(
       current: sides[index].participants,
       maximum: _expectedForSide(index),
       usedElsewhere: _usedSuperstarIds(exceptSide: index),
+      allowedIds: _teamMemberIds(sides[index].teamId),
     );
     if (chosen == null || !mounted) return;
     setState(() {
@@ -372,18 +383,21 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
       final sideWinnerAllowed = format.usesSides && !isIndividualFormat;
       final hasSideWinner = winnerSideOrder != null;
       final hasIndividualWinner = winnerName != null && winnerName!.trim().isNotEmpty;
-      if (sideWinnerAllowed && hasSideWinner == hasIndividualWinner) {
-        _showMessage('Sélectionne un camp gagnant ou un vainqueur individuel.');
+      if (sideWinnerAllowed && !hasSideWinner) {
+        _showMessage('Sélectionne le camp gagnant.');
         return;
       }
-      if (!sideWinnerAllowed && (hasSideWinner || !hasIndividualWinner)) {
+      if (!sideWinnerAllowed && !hasIndividualWinner) {
         _showMessage('Sélectionne le vainqueur individuel.');
         return;
       }
-      if (hasIndividualWinner && !allDraftParticipants.any((p) =>
-          winnerSuperstarId != null ? p.superstarId == winnerSuperstarId && p.name == winnerName : p.name == winnerName)) {
-        _showMessage('Le vainqueur doit participer au combat.');
-        return;
+      if (hasIndividualWinner) {
+        final winningSide = winnerSideOrder == null ? null : sides.firstWhere((side) => sides.indexOf(side) == winnerSideOrder);
+        final eligible = winningSide == null ? allDraftParticipants : winningSide.participants;
+        if (!eligible.any((p) => winnerSuperstarId != null ? p.superstarId == winnerSuperstarId && p.name == winnerName : p.name == winnerName)) {
+          _showMessage('Le vainqueur individuel doit appartenir au camp gagnant.');
+          return;
+        }
       }
     }
 
@@ -413,7 +427,6 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         superstarName: entry.value.name,
       )).toList();
 
-      final parsedOrder = int.tryParse(orderController.text.trim()) ?? 0;
       final record = MatchRecord(
         id: widget.match?.id,
         format: format,
@@ -431,8 +444,8 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         resultStatus: resultStatus,
         winnerSideOrder: winnerSideOrder,
         winnerSuperstarId: winnerSuperstarId,
-        winnerName: resultStatus == MatchResultStatus.winner && winnerSideOrder == null ? winnerName : null,
-        matchOrder: parsedOrder < 0 ? 0 : parsedOrder,
+        winnerName: resultStatus == MatchResultStatus.winner ? winnerName : null,
+        matchOrder: widget.match?.matchOrder ?? 0,
         show: widget.show,
         title: selectedTitle,
         titleChange: titleChange,
@@ -471,7 +484,6 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
                   const SizedBox(height: 20),
                   _buildResultSection(),
                   const SizedBox(height: 20),
-                  _buildOrderSection(),
                   const SizedBox(height: 28),
                   _buildSaveButton(),
                   const SizedBox(height: 32),
@@ -518,10 +530,28 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
           style: const TextStyle(color: AppFormStyles.secondaryText, fontSize: 12),
         ),
         const SizedBox(height: 12),
-        ...specialParticipants.map((p) => _participantTile(p, () => setState(() {
-          specialParticipants.remove(p);
-          _resetWinnerIfInvalid();
-        }))),
+        if (specialParticipants.isNotEmpty)
+          ReorderableListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: true,
+            itemCount: specialParticipants.length,
+            onReorder: (oldIndex, newIndex) => setState(() {
+              if (newIndex > oldIndex) newIndex--;
+              final item = specialParticipants.removeAt(oldIndex);
+              specialParticipants.insert(newIndex, item);
+            }),
+            itemBuilder: (context, index) {
+              final participant = specialParticipants[index];
+              return KeyedSubtree(
+                key: ValueKey('special-${participant.superstarId ?? participant.name}'),
+                child: _participantTile(participant, () => setState(() {
+                  specialParticipants.remove(participant);
+                  _resetWinnerIfInvalid();
+                })),
+              );
+            },
+          ),
         OutlinedButton.icon(
           onPressed: () => _editSpecialParticipants(),
           icon: const Icon(Icons.person_add_alt_1),
@@ -557,7 +587,12 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
             items: teams, itemLabel: (e) => e.name, allowNull: true,
             onChanged: (team) => setState(() {
               side.teamId = team?.id;
-              if (team != null) side.name = team.name;
+              if (team != null) {
+                side.name = team.name;
+                final allowed = _teamMemberIds(team.id)!;
+                side.participants.removeWhere((p) => p.superstarId != null && !allowed.contains(p.superstarId));
+                _resetWinnerIfInvalid();
+              }
             }),
           ),
         ],
@@ -567,10 +602,27 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
         if (side.participants.isEmpty)
           const Text('Aucun participant sélectionné.', style: TextStyle(color: AppFormStyles.secondaryText))
         else
-          ...side.participants.map((p) => _participantTile(p, () => setState(() {
-            side.participants.remove(p);
-            _resetWinnerIfInvalid();
-          }))),
+          ReorderableListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: true,
+            itemCount: side.participants.length,
+            onReorder: (oldIndex, newIndex) => setState(() {
+              if (newIndex > oldIndex) newIndex--;
+              final item = side.participants.removeAt(oldIndex);
+              side.participants.insert(newIndex, item);
+            }),
+            itemBuilder: (context, participantIndex) {
+              final participant = side.participants[participantIndex];
+              return KeyedSubtree(
+                key: ValueKey('side-$index-${participant.superstarId ?? participant.name}'),
+                child: _participantTile(participant, () => setState(() {
+                  side.participants.remove(participant);
+                  _resetWinnerIfInvalid();
+                })),
+              );
+            },
+          ),
         OutlinedButton.icon(
           onPressed: side.participants.length >= expected ? null : () => _editSideParticipants(index),
           icon: const Icon(Icons.person_add_alt_1),
@@ -669,16 +721,15 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
           if (canChooseSideWinner)
             const SizedBox(height: 14),
           _dropdown<_ParticipantDraft>(
-            label: 'Vainqueur individuel',
+            label: canChooseSideWinner ? 'Dernier tombé / soumis (facultatif)' : 'Vainqueur individuel',
             value: winnerParticipant,
-            items: allDraftParticipants,
+            items: winnerSideOrder == null ? allDraftParticipants : sides[winnerSideOrder!].participants,
             itemLabel: (p) => p.name,
             allowNull: true,
             onChanged: (value) {
               setState(() {
                 winnerSuperstarId = value?.superstarId;
                 winnerName = value?.name;
-                winnerSideOrder = null;
               });
             },
           ),
@@ -686,19 +737,6 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
       ],
     );
   }
-
-  Widget _buildOrderSection() => AppFormSection(title: 'DISPLAY ORDER', children: [
-        TextFormField(
-          controller: orderController,
-          keyboardType: TextInputType.number,
-          style: const TextStyle(color: Colors.white),
-          decoration: AppFormStyles.inputDecoration(label: 'Ordre du combat', hint: '0'),
-          validator: (value) {
-            final parsed = int.tryParse(value ?? '');
-            return parsed == null || parsed < 0 ? 'Saisis un nombre positif' : null;
-          },
-        ),
-      ]);
 
   Widget _buildSaveButton() => SizedBox(
         height: 52,

@@ -68,7 +68,7 @@ class _StorylinesDetailPageState extends State<StorylinesDetailPage> {
     const SizedBox(height: 10),
     Align(alignment: Alignment.centerLeft, child: Chip(label: Text(StorylineStatus.label(s.status)))),
     const SizedBox(height: 12),
-    _section('PÉRIODE WWE', '${s.yearStart} · Semaine ${s.start}${s.end == 0 ? '  →  En cours / non définie' : '\n${s.yearEnd} · Semaine ${s.end}'}'),
+    _section('PÉRIODE WWE', '${s.yearStart} · Semaine ${s.start} · Jour ${s.dayStart}${s.end == 0 ? '  →  En cours / non définie' : '\n${s.yearEnd} · Semaine ${s.end} · Jour ${s.dayEnd}'}'),
     const SizedBox(height: 16),
     _section('DESCRIPTION', s.text),
     const SizedBox(height: 16),

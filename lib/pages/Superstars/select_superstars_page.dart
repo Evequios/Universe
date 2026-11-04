@@ -10,6 +10,7 @@ import 'package:wwe_universe/widget/superstar_avatar.dart';
 class SelectSuperstarsPage extends StatefulWidget {
   final Set<int> initiallySelected;
   final Set<int> excludedIds;
+  final Set<int>? allowedIds;
   final int? maximumSelection;
   final String title;
 
@@ -17,6 +18,7 @@ class SelectSuperstarsPage extends StatefulWidget {
     super.key,
     this.initiallySelected = const {},
     this.excludedIds = const {},
+    this.allowedIds,
     this.maximumSelection,
     this.title = 'Select Superstars',
   });
@@ -36,7 +38,8 @@ class _SelectSuperstarsPageState extends State<SelectSuperstarsPage> {
   @override
   void initState() {
     super.initState();
-    _selected.addAll(widget.initiallySelected);
+    _selected.addAll(widget.initiallySelected.where((id) =>
+        widget.allowedIds == null || widget.allowedIds!.contains(id)));
     _load();
   }
 
@@ -63,6 +66,7 @@ class _SelectSuperstarsPageState extends State<SelectSuperstarsPage> {
     final query = _searchController.text.trim().toLowerCase();
     return _all.where((s) {
       if (s.id == null || widget.excludedIds.contains(s.id)) return false;
+      if (widget.allowedIds != null && !widget.allowedIds!.contains(s.id)) return false;
       if (_brandFilter != null && s.brand?.id != _brandFilter) return false;
       return query.isEmpty || s.name.toLowerCase().contains(query);
     }).toList()

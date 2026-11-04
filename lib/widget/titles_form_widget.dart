@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
+import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
 import 'package:wwe_universe/widget/superstar_picker.dart';
 import 'package:wwe_universe/widget/superstar_avatar.dart';
@@ -9,6 +10,9 @@ import 'package:wwe_universe/widget/superstar_avatar.dart';
 class TitlesFormWidget extends StatelessWidget {
   final List<Superstars> listSuperstars;
   final List<Brands> listBrands;
+  final List<Teams> listTeams;
+  final Teams? championTeam;
+  final ValueChanged<Teams?> onChangedChampionTeam;
 
   final String name;
   final Brands? brand;
@@ -26,6 +30,9 @@ class TitlesFormWidget extends StatelessWidget {
     super.key,
     required this.listBrands,
     required this.listSuperstars,
+    required this.listTeams,
+    required this.championTeam,
+    required this.onChangedChampionTeam,
     required this.name,
     required this.brand,
     required this.tag,
@@ -161,6 +168,25 @@ class TitlesFormWidget extends StatelessWidget {
 
   Widget buildHolder2(BuildContext context) => _superstarField(
     context, label: 'Second champion', selected: holder2, onChanged: onChangedHolder2,
+  );
+
+  Widget buildChampionTeam() => DropdownButtonFormField<Teams?>(
+    value: championTeam,
+    isExpanded: true,
+    dropdownColor: AppFormStyles.surface,
+    style: const TextStyle(color: Colors.white),
+    decoration: AppFormStyles.inputDecoration(
+      label: 'Champion Team (optional)',
+      icon: Icons.groups_outlined,
+    ),
+    items: [
+      const DropdownMenuItem<Teams?>(value: null, child: Text('No Team linked')),
+      ...listTeams.map((team) => DropdownMenuItem<Teams?>(
+        value: team,
+        child: Text(team.name, overflow: TextOverflow.ellipsis),
+      )),
+    ],
+    onChanged: onChangedChampionTeam,
   );
 
   Widget _superstarField(BuildContext context, {required String label, required Superstars? selected, required ValueChanged<Superstars?> onChanged}) => FormField<Superstars>(
