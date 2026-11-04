@@ -6,6 +6,7 @@ import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/pages/Superstars/add_edit_superstars_page.dart';
 import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class SuperstarsPage extends StatefulWidget{
   const SuperstarsPage({super.key});
@@ -35,7 +36,7 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
   Future refreshSuperstars() async {
     setState(() => isLoading = true);
 
-    superstarsList = (await SuperstarsDatabaseHelper.readAllSuperstars()).cast<Superstars>();
+    superstarsList = (await SuperstarsDatabaseHelper.readAllSuperstarsSearch(searchString)).cast<Superstars>();
     brandsList = await BrandsDatabaseHelper.readAllBrands();
 
     setState(() => isLoading = false);
@@ -133,15 +134,7 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
           normalizedBrand == 'smackdown' ||
           normalizedBrand == 'nxt';
 
-      final trimmedName = superstar.name.trim();
-      final initials = trimmedName.isEmpty
-          ? '?'
-          : trimmedName
-              .split(RegExp(r'\s+'))
-              .map((part) => part[0])
-              .take(2)
-              .join()
-              .toUpperCase();
+
 
       return Card(
         margin: const EdgeInsets.symmetric(vertical: 5),
@@ -166,27 +159,7 @@ class SuperstarsPageState extends State<SuperstarsPage> with AutomaticKeepAliveC
             ),
             child: Row(
               children: [
-                Container(
-                  width: 54,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF35171D),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: const Color(0xFFE11D2E).withOpacity(0.55),
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    initials,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
+                SuperstarAvatar(superstar: superstar, size: 54, radius: 16),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(

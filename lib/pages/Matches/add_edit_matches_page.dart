@@ -17,6 +17,7 @@ import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/teams_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
+import 'package:wwe_universe/pages/Superstars/select_superstars_page.dart';
 
 class AddEditMatchesPage extends StatefulWidget {
   final MatchRecord? match;
@@ -270,52 +271,15 @@ class _AddEditMatchesPageState extends State<AddEditMatchesPage> {
     final selected = current.where((p) => p.superstarId != null).map((p) => p.superstarId!).toSet();
     final historicalCount = current.where((p) => p.superstarId == null).length;
     final selectableMaximum = (maximum - historicalCount).clamp(0, maximum);
-    final result = await showModalBottomSheet<List<int>>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppFormStyles.surface,
-      builder: (sheetContext) {
-        final temporary = Set<int>.from(selected);
-        return StatefulBuilder(builder: (context, setModalState) => SafeArea(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height * .78,
-            child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(children: [
-                  Expanded(child: Text('CHOISIR LES PARTICIPANTS (${temporary.length + historicalCount}/$maximum)',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))),
-                  TextButton(onPressed: () => Navigator.pop(sheetContext, temporary.toList()), child: const Text('VALIDER')),
-                ]),
-              ),
-              const Divider(color: AppFormStyles.border),
-              Expanded(child: ListView.builder(
-                itemCount: superstars.length,
-                itemBuilder: (context, index) {
-                  final superstar = superstars[index];
-                  final id = superstar.id;
-                  if (id == null) return const SizedBox.shrink();
-                  final alreadySelected = temporary.contains(id);
-                  final blocked = usedElsewhere.contains(id) || (!alreadySelected && temporary.length >= selectableMaximum);
-                  return CheckboxListTile(
-                    value: alreadySelected,
-                    activeColor: AppFormStyles.primary,
-                    title: Text(superstar.name, style: const TextStyle(color: Colors.white)),
-                    subtitle: Text(superstar.brand?.name ?? 'Aucune brand', style: const TextStyle(color: AppFormStyles.secondaryText)),
-                    onChanged: blocked ? null : (checked) => setModalState(() {
-                      if (checked == true) {
-                        temporary.add(id);
-                      } else {
-                        temporary.remove(id);
-                      }
-                    }),
-                  );
-                },
-              )),
-            ]),
-          ),
-        ));
-      },
+    final result = await Navigator.of(context).push<List<int>>(
+      MaterialPageRoute(
+        builder: (_) => SelectSuperstarsPage(
+          title: 'Select Match Participants',
+          initiallySelected: selected,
+          excludedIds: usedElsewhere,
+          maximumSelection: selectableMaximum,
+        ),
+      ),
     );
     if (result == null) return null;
     final historical = current.where((p) => p.superstarId == null).toList();

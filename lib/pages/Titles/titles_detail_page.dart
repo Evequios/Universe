@@ -9,6 +9,7 @@ import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/titles_database_helper.dart';
 import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
 import 'package:wwe_universe/pages/Titles/add_edit_titles_page.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class TitlesDetailPage extends StatefulWidget {
   final int titleId;
@@ -151,13 +152,13 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
               ),
               const SizedBox(height: 10),
               if (title.holder1 != null)
-                _buildChampionCard(h1.name)
+                _buildChampionCard(h1)
               else
                 _buildEmptyChampionCard(),
               if (title.tag == 1) ...[
                 const SizedBox(height: 10),
                 if (title.holder2 != null)
-                  _buildChampionCard(h2.name)
+                  _buildChampionCard(h2)
                 else
                   _buildEmptyChampionCard(),
               ],
@@ -269,7 +270,7 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
     );
   }
 
-  Widget _buildChampionCard(String name) {
+  Widget _buildChampionCard(Superstars champion) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -277,25 +278,16 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFF383838)),
       ),
-      child: Row(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: champion.id == null ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => SuperstarsDetailPage(superstarId: champion.id!))),
+        child: Row(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: const Color(0xFF351719),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.person,
-              color: Color(0xFFD71920),
-              size: 26,
-            ),
-          ),
+          SuperstarAvatar(superstar: champion, size: 52, radius: 13),
           const SizedBox(width: 14),
           Expanded(
             child: Text(
-              name,
+              champion.name,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 17,
@@ -309,7 +301,7 @@ class TitlesDetailPageState extends State<TitlesDetailPage> {
             size: 22,
           ),
         ],
-      ),
+      )),
     );
   }
 

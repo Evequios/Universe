@@ -38,12 +38,13 @@ class Superstars{
     Brands? brand,
     String? orientation,
     int? division,
-    String? photoUrl
+    String? photoUrl,
+    bool clearBrand = false
   }) {
     return Superstars(
         id: id ?? this.id,
         name: name ?? this.name,
-        brand: brand ?? this.brand,
+        brand: clearBrand ? null : (brand ?? this.brand),
         orientation: orientation ?? this.orientation,
         division: division ?? this.division,
         photoUrl: photoUrl ?? this.photoUrl,

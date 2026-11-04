@@ -10,6 +10,8 @@ import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/teams_database_helper.dart';
 import 'package:wwe_universe/pages/Teams/add_edit_teams_page.dart';
 import 'package:wwe_universe/pages/Matches/matches_detail_page.dart';
+import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class TeamsDetailPage extends StatefulWidget {
   final int teamId;
@@ -407,32 +409,24 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
   Widget _buildMemberCard(Superstars superstar, int index) {
     final brandName = superstar.brand?.name;
 
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: border),
-      ),
-      child: Row(
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: superstar.id == null ? null : () async {
+        await Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => SuperstarsDetailPage(superstarId: superstar.id!),
+        ));
+        if (mounted) await refreshTeam();
+      },
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: border),
+        ),
+        child: Row(
         children: [
-          Container(
-            width: 46,
-            height: 46,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: primary.withOpacity(0.13),
-              borderRadius: BorderRadius.circular(13),
-            ),
-            child: Text(
-              '${index + 1}',
-              style: const TextStyle(
-                color: primary,
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
+          SuperstarAvatar(superstar: superstar, size: 54, radius: 13),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -475,6 +469,7 @@ class TeamsDetailPageState extends State<TeamsDetailPage> {
             size: 20,
           ),
         ],
+        ),
       ),
     );
   }

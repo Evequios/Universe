@@ -5,6 +5,7 @@ import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/pages/Brands/add_edit_brands_page.dart';
 import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class BrandsDetailPage extends StatefulWidget {
   final int brandId;
@@ -82,6 +83,8 @@ class BrandsDetailPageState extends State<BrandsDetailPage> {
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
               child: Row(
                 children: [ 
+                  SuperstarAvatar(superstar: superstar, size: 58, radius: 14),
+                  const SizedBox(width: 14),
                   Expanded(
                     flex:10,
                     child: FittedBox(

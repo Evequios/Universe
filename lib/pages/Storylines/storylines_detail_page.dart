@@ -13,6 +13,8 @@ import 'package:wwe_universe/database/storylines_database_helper.dart';
 import 'package:wwe_universe/database/storyline_participants_database_helper.dart';
 import 'package:wwe_universe/database/storyline_events_database_helper.dart';
 import 'package:wwe_universe/pages/Storylines/add_edit_storylines_page.dart';
+import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class StorylinesDetailPage extends StatefulWidget {
   final int storylineId;
@@ -51,14 +53,14 @@ class _StorylinesDetailPageState extends State<StorylinesDetailPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xFF101010),
-    appBar: AppBar(backgroundColor: const Color(0xFF101010), foregroundColor: Colors.white, title: const Text('Détails storyline'), actions: [
+    appBar: AppBar(backgroundColor: const Color(0xFF101010), foregroundColor: Colors.white, title: const Text('Storyline Details'), actions: [
       if (_storyline != null) IconButton(icon: const Icon(Icons.edit_outlined), onPressed: _edit),
       if (_storyline != null) IconButton(icon: const Icon(Icons.delete_outline), onPressed: _confirmDelete),
     ]),
     floatingActionButton: _storyline == null || _loading ? null : FloatingActionButton.extended(
-      onPressed: _chooseEventType, icon: const Icon(Icons.add), label: const Text('Ajouter à la chronologie')),
+      onPressed: _chooseEventType, icon: const Icon(Icons.add), label: const Text('Add to Timeline')),
     body: _loading ? const Center(child: CircularProgressIndicator()) : _storyline == null
-      ? const Center(child: Text('Storyline introuvable.')) : _content(_storyline!),
+      ? const Center(child: Text('Storyline not found.')) : _content(_storyline!),
   );
 
   Widget _content(Storylines s) => ListView(padding: const EdgeInsets.fromLTRB(16, 16, 16, 96), children: [
@@ -70,14 +72,27 @@ class _StorylinesDetailPageState extends State<StorylinesDetailPage> {
     const SizedBox(height: 16),
     _section('DESCRIPTION', s.text),
     const SizedBox(height: 16),
-    _section('SUPERSTARS', _participants.superstars.isEmpty ? 'Aucune superstar associée' : _participants.superstars.map((e) => e.name).join(' · ')),
+    _superstarParticipantLinks(),
     const SizedBox(height: 16),
-    _section('ÉQUIPES', _participants.teams.isEmpty ? 'Aucune équipe associée' : _participants.teams.map((e) => e.name).join(' · ')),
+    _section('ÉQUIPES', _participants.teams.isEmpty ? 'No associated Teams' : _participants.teams.map((e) => e.name).join(' · ')),
     const SizedBox(height: 24),
     Row(children: [const Expanded(child: Text('CHRONOLOGIE', style: TextStyle(color: Color(0xFFD71920), fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2))), Text('${_events.length} événement(s)', style: Theme.of(context).textTheme.bodySmall)]),
     const SizedBox(height: 10),
     if (_events.isEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 20), child: Text('Aucun événement pour le moment. Ajoute les segments importants de cette storyline.'))
     else ..._groupedTimeline(),
+  ]);
+
+  Widget _superstarParticipantLinks() => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    const Text('SUPERSTARS', style: TextStyle(color: Color(0xFFD71920), fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.4)),
+    const SizedBox(height: 8),
+    if (_participants.superstars.isEmpty) const Text('No associated Superstars', style: TextStyle(color: Color(0xFFAAAAAA))),
+    ..._participants.superstars.map((s) => ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: SuperstarAvatar(superstar: s, size: 46),
+      title: Text(s.name, style: const TextStyle(color: Colors.white)),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: s.id == null ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => SuperstarsDetailPage(superstarId: s.id!))),
+    )),
   ]);
 
   List<Widget> _groupedTimeline() {
