@@ -18,6 +18,7 @@ import 'package:wwe_universe/classes/storyline_event.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/classes/titles.dart';
+import 'package:wwe_universe/classes/superstar_relationship.dart';
 
 class DatabaseService {
   static final DatabaseService instance = DatabaseService._init();
@@ -44,7 +45,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 88,
+      version: 89,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -485,7 +486,38 @@ class DatabaseService {
       );
     ''');
 
+    await _createLot22Tables(db);
     await _seedWwe26Catalog(db);
+  }
+
+  Future<void> _createLot22Tables(DatabaseExecutor db) async {
+    await db.execute('''CREATE TABLE IF NOT EXISTS $tableSuperstarRelationships (
+      ${SuperstarRelationshipFields.superstarId} INTEGER NOT NULL,
+      ${SuperstarRelationshipFields.relatedSuperstarId} INTEGER NOT NULL,
+      ${SuperstarRelationshipFields.type} TEXT NOT NULL CHECK (${SuperstarRelationshipFields.type} IN ('manager','ally','rival')),
+      PRIMARY KEY (${SuperstarRelationshipFields.superstarId}, ${SuperstarRelationshipFields.relatedSuperstarId}, ${SuperstarRelationshipFields.type}),
+      CHECK (${SuperstarRelationshipFields.superstarId} != ${SuperstarRelationshipFields.relatedSuperstarId}),
+      FOREIGN KEY (${SuperstarRelationshipFields.superstarId}) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE CASCADE,
+      FOREIGN KEY (${SuperstarRelationshipFields.relatedSuperstarId}) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE CASCADE
+    )''');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_superstar_relationship_related ON $tableSuperstarRelationships (${SuperstarRelationshipFields.relatedSuperstarId})');
+    await db.execute('''CREATE TABLE IF NOT EXISTS $tableMatchParticipantManagers (
+      ${MatchParticipantManagerFields.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+      ${MatchParticipantManagerFields.matchId} INTEGER NOT NULL,
+      ${MatchParticipantManagerFields.participantSuperstarId} INTEGER NOT NULL,
+      ${MatchParticipantManagerFields.managerSuperstarId} INTEGER NOT NULL,
+      UNIQUE (${MatchParticipantManagerFields.matchId}, ${MatchParticipantManagerFields.participantSuperstarId}, ${MatchParticipantManagerFields.managerSuperstarId}),
+      FOREIGN KEY (${MatchParticipantManagerFields.matchId}) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE CASCADE,
+      FOREIGN KEY (${MatchParticipantManagerFields.participantSuperstarId}) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE CASCADE,
+      FOREIGN KEY (${MatchParticipantManagerFields.managerSuperstarId}) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE CASCADE
+    )''');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_match_participant_managers_match ON $tableMatchParticipantManagers (${MatchParticipantManagerFields.matchId})');
+    await db.execute('''CREATE TABLE IF NOT EXISTS $tableMatchParticipantManagerOverrides (
+      match_id INTEGER NOT NULL, participant_superstar_id INTEGER NOT NULL,
+      PRIMARY KEY (match_id, participant_superstar_id),
+      FOREIGN KEY (match_id) REFERENCES $tableMatches (${MatchRecordFields.id}) ON DELETE CASCADE,
+      FOREIGN KEY (participant_superstar_id) REFERENCES $tableSuperstars (${SuperstarsFields.id}) ON DELETE CASCADE
+    )''');
   }
 
   Future<void> _createNewsAssociationTables(DatabaseExecutor db) async {
@@ -514,6 +546,7 @@ class DatabaseService {
   }
 
   Future<void> _updateDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 89) await _createLot22Tables(db);
     if (oldVersion < 88) {
       await _seedWwe26Catalog(db);
     }

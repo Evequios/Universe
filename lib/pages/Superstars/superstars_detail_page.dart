@@ -4,22 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/match_record.dart';
 import 'package:wwe_universe/classes/superstars.dart';
-import 'package:wwe_universe/classes/titles.dart';
-import 'package:wwe_universe/classes/reigns.dart';
-import 'package:wwe_universe/database/titles_database_helper.dart';
-import 'package:wwe_universe/database/reings_database_helper.dart';
-import 'package:wwe_universe/pages/Titles/titles_detail_page.dart';
 import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/database/matches_database_helper.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/pages/Superstars/add_edit_superstars_page.dart';
-
-class _TitleReignEntry {
-  final Titles title;
-  final Reigns reign;
-
-  const _TitleReignEntry({required this.title, required this.reign});
-}
+import 'package:wwe_universe/pages/Superstars/superstar_relationships_page.dart';
+import 'package:wwe_universe/database/superstar_relationships_database_helper.dart';
 
 class SuperstarsDetailPage extends StatefulWidget {
   final int superstarId;
@@ -38,8 +28,6 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
   List<MatchRecord> listMatches = [];
   List<Brands> listBrands = [];
   List<Superstars> listSuperstars = [];
-  List<Titles> listTitles = [];
-  List<_TitleReignEntry> titleReigns = [];
 
   bool isLoading = true;
   String? loadError;
@@ -71,17 +59,6 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
       final matches = await MatchesDatabaseHelper.readAllMatchesSuperstar(
         widget.superstarId,
       );
-      final titles = await TitlesDatabaseHelper.readAllTitles();
-      final reignResults = await Future.wait(titles.where((t) => t.id != null).map((t) async {
-        final reigns = await ReignsDatabaseHelper.readReigns(t.id!);
-        return reigns.where((r) => r.holder1Id == widget.superstarId || r.holder2Id == widget.superstarId)
-            .map((r) => _TitleReignEntry(title: t, reign: r)).toList();
-      }));
-      final allReigns = reignResults.expand((items) => items).toList()
-        ..sort((a, b) {
-          final year = b.reign.yearStart.compareTo(a.reign.yearStart);
-          return year != 0 ? year : b.reign.weekStart.compareTo(a.reign.weekStart);
-        });
 
       if (!mounted) return;
 
@@ -90,8 +67,6 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
         listBrands = brands;
         listSuperstars = superstars;
         listMatches = matches;
-        listTitles = titles;
-        titleReigns = allReigns;
         isLoading = false;
       });
     } catch (e) {
@@ -220,11 +195,11 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
           const SizedBox(height: 12),
           _buildStatistics(),
           const SizedBox(height: 26),
-          _buildTitleCareer(),
-          const SizedBox(height: 26),
           _buildSectionTitle('PROFILE INFORMATION'),
           const SizedBox(height: 12),
           _buildInformationCard(),
+          const SizedBox(height: 20),
+          _buildRelationshipsCard(),
           const SizedBox(height: 28),
           _buildSectionTitle(
             'MATCH HISTORY',
@@ -244,102 +219,37 @@ class SuperstarsDetailPageState extends State<SuperstarsDetailPage> {
     );
   }
 
-  int _reignWeeks(Reigns reign) {
-    if (reign.yearEnd == null || reign.weekEnd == null) return 0;
-    return (reign.yearEnd! - reign.yearStart) * 48 + reign.weekEnd! - reign.weekStart;
-  }
-
-  String _formatReignDuration(Reigns reign) {
-    if (reign.isCurrent) return 'Current reign';
-    final weeks = _reignWeeks(reign);
-    final years = weeks ~/ 48;
-    final remainingWeeks = weeks % 48;
-    if (years > 0) return '${years}y ${remainingWeeks}w';
-    return '${weeks}w';
-  }
-
-  Widget _buildTitleCareer() {
-    final id = superstar!.id;
-    final currentTitles = titleReigns
-        .where((item) => item.reign.isCurrent)
-        .map((item) => item.title)
-        .toList();
-    final completed = titleReigns.where((item) => !item.reign.isCurrent).toList();
-    final totalWeeks = completed.fold<int>(0, (sum, item) => sum + _reignWeeks(item.reign));
-    final longest = completed.isEmpty ? null : completed.reduce((a, b) =>
-      _reignWeeks(a.reign) >= _reignWeeks(b.reign) ? a : b);
-    final shortest = completed.isEmpty ? null : completed.reduce((a, b) =>
-      _reignWeeks(a.reign) <= _reignWeeks(b.reign) ? a : b);
-    final distinctTitles = titleReigns.map((item) => item.title.id).toSet().length;
-
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _buildSectionTitle('TITLE HISTORY', '${currentTitles.length} CURRENT'),
-      const SizedBox(height: 12),
-      Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(15), border: Border.all(color: border)),
-        child: Column(children: [
-          Row(children: [
-            Expanded(child: _statValue('REIGNS', '${titleReigns.length}')),
-            Expanded(child: _statValue('TITLES WON', '$distinctTitles')),
-            Expanded(child: _statValue('CURRENT', '${titleReigns.where((item) => item.reign.isCurrent).length}')),
-          ]),
-          const Divider(color: border, height: 24),
-          Row(children: [
-            Expanded(child: _statValue('COMPLETED WEEKS', '$totalWeeks')),
-            Expanded(child: _statValue('AVG. REIGN', completed.isEmpty ? '—' : '${(totalWeeks / completed.length).round()}w')),
-          ]),
-          if (longest != null || shortest != null) ...[
-            const Divider(color: border, height: 24),
-            if (longest != null) _statValue('LONGEST REIGN', '${longest.title.name} • ${_formatReignDuration(longest.reign)}'),
-            const SizedBox(height: 8),
-            if (shortest != null) _statValue('SHORTEST REIGN', '${shortest.title.name} • ${_formatReignDuration(shortest.reign)}'),
-          ],
-        ]),
-      ),
-      const SizedBox(height: 14),
-      Text('CURRENTLY HELD', style: const TextStyle(color: secondaryText, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1)),
-      const SizedBox(height: 8),
-      if (currentTitles.isEmpty)
-        _emptyTitleMessage('No titles currently held.')
-      else
-        ...currentTitles.map((title) => _titleLinkCard(title, 'CURRENT CHAMPION')),
-      const SizedBox(height: 14),
-      Text('REIGN HISTORY', style: const TextStyle(color: secondaryText, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1)),
-      const SizedBox(height: 8),
-      if (titleReigns.isEmpty)
-        _emptyTitleMessage('No title reign recorded yet.')
-      else
-        ...titleReigns.map((item) => _titleLinkCard(item.title,
-          'Year ${item.reign.yearStart} • Week ${item.reign.weekStart}  —  ${item.reign.isCurrent ? 'CURRENT' : 'Year ${item.reign.yearEnd} • Week ${item.reign.weekEnd}'}\n${_formatReignDuration(item.reign)}${item.reign.endReason == 'vacated' ? ' • VACATED' : ''}')),
-    ]);
-  }
-
-  Widget _emptyTitleMessage(String message) => Container(
-    width: double.infinity, padding: const EdgeInsets.all(15),
-    decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
-    child: Text(message, style: const TextStyle(color: secondaryText)),
-  );
-
-  Widget _titleLinkCard(Titles title, String subtitle) => InkWell(
-    borderRadius: BorderRadius.circular(12),
-    onTap: title.id == null ? null : () => Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => TitlesDetailPage(titleId: title.id!),
-    )),
-    child: Container(
-      width: double.infinity, margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(13),
-      decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
-      child: Row(children: [
-        const Icon(Icons.workspace_premium_outlined, color: primary, size: 25),
-        const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(subtitle, style: const TextStyle(color: secondaryText, fontSize: 11)),
-        ])),
-        const Icon(Icons.chevron_right, color: secondaryText),
+  Widget _buildRelationshipsCard() {
+    return FutureBuilder<List<List<int>>>(
+      future: Future.wait([
+        SuperstarRelationshipsDatabaseHelper.readRelatedIds(widget.superstarId, 'manager'),
+        SuperstarRelationshipsDatabaseHelper.readRelatedIds(widget.superstarId, 'ally'),
+        SuperstarRelationshipsDatabaseHelper.readRelatedIds(widget.superstarId, 'rival'),
       ]),
-    ),
+      builder: (context, snapshot) {
+        final ids = snapshot.data ?? const <List<int>>[[], [], []];
+        String names(List<int> values) {
+          final found = listSuperstars.where((s) => values.contains(s.id)).map((s) => s.name).toList();
+          return found.isEmpty ? 'None' : found.join(', ');
+        }
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(15), border: Border.all(color: border)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [const Expanded(child: Text('RELATIONSHIPS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1))), TextButton.icon(onPressed: () async { final changed = await Navigator.push(context, MaterialPageRoute(builder: (_) => SuperstarRelationshipsPage(superstar: superstar!))); if (changed == true) setState(() {}); }, icon: const Icon(Icons.edit_outlined, size: 16), label: const Text('EDIT'), style: TextButton.styleFrom(foregroundColor: primary))]),
+            const SizedBox(height: 8),
+            _relationshipLine('MANAGERS', names(ids[0])),
+            _relationshipLine('ALLIES', names(ids[1])),
+            _relationshipLine('RIVALS', names(ids[2])),
+          ]),
+        );
+      },
+    );
+  }
+
+  Widget _relationshipLine(String label, String value) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [SizedBox(width: 78, child: Text(label, style: const TextStyle(color: secondaryText, fontSize: 10, fontWeight: FontWeight.bold))), Expanded(child: Text(value, style: const TextStyle(color: Colors.white, fontSize: 13))) ]),
   );
 
   Widget _buildStatistics() {

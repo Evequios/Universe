@@ -11,7 +11,12 @@ import 'package:wwe_universe/database/storyline_relations_database_helper.dart';
 import 'package:wwe_universe/database/storylines_database_helper.dart';
 import 'package:wwe_universe/pages/Storylines/storylines_detail_page.dart';
 import 'package:wwe_universe/pages/Matches/add_edit_matches_page.dart';
+import 'package:wwe_universe/database/superstar_relationships_database_helper.dart';
+import 'package:wwe_universe/database/superstars_database_helper.dart';
+import 'package:wwe_universe/classes/superstars.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
+import 'package:wwe_universe/pages/Superstars/select_superstars_page.dart';
 
 class MatchesDetailPage extends StatefulWidget {
   final int matchId;
@@ -341,48 +346,109 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
 
   Widget _buildParticipant(MatchParticipants participant) {
     final currentMatch = match;
-
-    final isIndividualWinner =
-        currentMatch?.resultStatus == MatchResultStatus.winner &&
+    final isIndividualWinner = currentMatch?.resultStatus == MatchResultStatus.winner &&
         currentMatch?.winnerSideOrder == null &&
         (currentMatch?.winnerSuperstarId != null
             ? participant.superstarId == currentMatch!.winnerSuperstarId
-            : currentMatch?.winnerName != null &&
-                participant.superstarName == currentMatch!.winnerName);
+            : currentMatch?.winnerName != null && participant.superstarName == currentMatch!.winnerName);
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(8),
-      onTap: participant.superstarId == null ? null : () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => SuperstarsDetailPage(superstarId: participant.superstarId!),
-        ));
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-        children: [
-          Icon(
-            Icons.person_outline,
-            color: isIndividualWinner ? primary : secondaryText,
-            size: 19,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              participant.superstarName,
-              style: TextStyle(
-                color: isIndividualWinner ? Colors.white : secondaryText,
-                fontWeight:
-                    isIndividualWinner ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ),
-          if (isIndividualWinner)
-            const Icon(Icons.emoji_events, color: primary, size: 18),
-        ],
-        ),
-      ),
+    final superstarFuture = participant.superstarId == null
+        ? null
+        : SuperstarsDatabaseHelper.readSuperstar(participant.superstarId!);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(color: const Color(0xFF222222), borderRadius: BorderRadius.circular(10)),
+      child: Column(children: [
+        Row(children: [
+          if (superstarFuture != null)
+            FutureBuilder<Superstars>(
+              future: superstarFuture,
+              builder: (context, snapshot) => snapshot.hasData
+                  ? SuperstarAvatar(superstar: snapshot.data!, size: 48, radius: 12)
+                  : CircleAvatar(radius: 24, backgroundColor: const Color(0xFF35171D), child: Text(participant.superstarName.isEmpty ? '?' : participant.superstarName[0].toUpperCase(), style: const TextStyle(color: Colors.white))),
+            )
+          else
+            const CircleAvatar(radius: 24, backgroundColor: Color(0xFF292929), child: Icon(Icons.person_outline, color: secondaryText)),
+          const SizedBox(width: 10),
+          Expanded(child: InkWell(
+            onTap: participant.superstarId == null ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => SuperstarsDetailPage(superstarId: participant.superstarId!))),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(participant.superstarName, style: TextStyle(color: isIndividualWinner ? Colors.white : secondaryText, fontWeight: isIndividualWinner ? FontWeight.bold : FontWeight.w600)),
+              if (participant.superstarId != null) const Text('View Superstar profile', style: TextStyle(color: primary, fontSize: 11)),
+              if (participant.superstarId == null) const Text('Historical participant', style: TextStyle(color: secondaryText, fontSize: 11)),
+            ]),
+          )),
+          if (isIndividualWinner) const Icon(Icons.emoji_events, color: primary, size: 18),
+          if (participant.superstarId != null)
+            IconButton(tooltip: 'Match managers', icon: const Icon(Icons.groups_outlined, color: secondaryText), onPressed: () => _editParticipantManagers(participant)),
+        ]),
+        if (participant.superstarId != null && currentMatch?.id != null)
+          _buildParticipantManagers(participant, currentMatch!),
+      ]),
     );
+  }
+
+  Widget _buildParticipantManagers(MatchParticipants participant, MatchRecord current) {
+    return FutureBuilder<List<Superstars>>(
+      future: _loadEffectiveManagers(current.id!, participant.superstarId!),
+      builder: (context, snapshot) {
+        final managers = snapshot.data ?? const <Superstars>[];
+        if (snapshot.connectionState == ConnectionState.waiting || managers.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: 8, left: 58),
+          child: Row(children: [
+            const Icon(Icons.groups_outlined, color: secondaryText, size: 15),
+            const SizedBox(width: 6),
+            Expanded(child: Wrap(spacing: 6, runSpacing: 5, children: managers.map((manager) => InkWell(
+              onTap: manager.id == null ? null : () => Navigator.push(context, MaterialPageRoute(builder: (_) => SuperstarsDetailPage(superstarId: manager.id!))),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                SuperstarAvatar(superstar: manager, size: 25, radius: 7),
+                const SizedBox(width: 4),
+                Text(manager.name, style: const TextStyle(color: secondaryText, fontSize: 11)),
+              ]),
+            )).toList())),
+          ]),
+        );
+      },
+    );
+  }
+
+  Future<List<Superstars>> _loadEffectiveManagers(int matchId, int participantId) async {
+    final hasOverride = await SuperstarRelationshipsDatabaseHelper.hasMatchManagerOverride(matchId, participantId);
+    final ids = hasOverride
+        ? await SuperstarRelationshipsDatabaseHelper.readMatchManagers(matchId, participantId)
+        : await SuperstarRelationshipsDatabaseHelper.readRelatedIds(participantId, 'manager');
+    final values = await Future.wait(ids.map((id) async {
+      try { return await SuperstarsDatabaseHelper.readSuperstar(id); } catch (_) { return null; }
+    }));
+    return values.whereType<Superstars>().toList();
+  }
+
+  Future<void> _editParticipantManagers(MatchParticipants participant) async {
+    final current = match;
+    final superstarId = participant.superstarId;
+    if (current == null || current.id == null || superstarId == null) return;
+    try {
+      final roster = await SuperstarsDatabaseHelper.readAllSuperstars();
+      final hasOverride = await SuperstarRelationshipsDatabaseHelper.hasMatchManagerOverride(current.id!, superstarId);
+      final usual = await SuperstarRelationshipsDatabaseHelper.readRelatedIds(superstarId, 'manager');
+      final saved = await SuperstarRelationshipsDatabaseHelper.readMatchManagers(current.id!, superstarId);
+      final selected = hasOverride ? saved : usual;
+      if (!mounted) return;
+      final result = await Navigator.push<List<int>>(context, MaterialPageRoute(builder: (_) => SelectSuperstarsPage(
+        title: 'Select match managers',
+        initiallySelected: Set<int>.from(selected),
+        excludedIds: {superstarId},
+      )));
+      if (result != null) {
+        await SuperstarRelationshipsDatabaseHelper.replaceMatchManagers(current.id!, superstarId, result);
+        if (mounted) setState(() {});
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Unable to load managers: $e')));
+    }
   }
 
   Widget _buildSectionTitle(String title) {
