@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/pages/Brands/brands_page.dart';
 import 'package:wwe_universe/pages/Draft/draft_page.dart';
 import 'package:wwe_universe/pages/News/news_page.dart';
+import 'package:wwe_universe/pages/dashboard_page.dart';
 import 'package:wwe_universe/pages/Settings/settings_page.dart';
 import 'package:wwe_universe/pages/Shows/shows_page.dart';
 import 'package:wwe_universe/pages/Storylines/storylines_page.dart';
@@ -99,6 +100,7 @@ class Navbar extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 children: [
                   sectionLabel('Universe'),
+                  destination(icon: Icons.dashboard_rounded, label: 'Dashboard', page: const DashboardPage()),
                   destination(icon: Icons.dynamic_feed_rounded, label: 'News', page: const NewsPage()),
                   destination(icon: Icons.event_note_rounded, label: 'Shows & results', page: const ShowsPage()),
                   destination(icon: Icons.account_tree_rounded, label: 'Storylines', page: const StorylinesPage()),
