@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/classes/titles.dart';
@@ -165,11 +164,24 @@ class SuperstarsDatabaseHelper {
 
 
 
-  static Future draft(HashMap map) async {
+  /// Applies a complete Draft atomically. Either every Superstar is updated,
+  /// or SQLite rolls the whole operation back.
+  static Future<void> draft(Map<int, int> assignments) async {
+    if (assignments.isEmpty) return;
+
     final db = await DatabaseService.instance.database;
-      
-    map.forEach((i, value) {
-      db.rawUpdate('UPDATE $tableSuperstars SET ${SuperstarsFields.brand} = ? WHERE ${SuperstarsFields.id} = ?', [value, i]);
+    await db.transaction((txn) async {
+      for (final entry in assignments.entries) {
+        final updated = await txn.update(
+          tableSuperstars,
+          {SuperstarsFields.brand: entry.value},
+          where: '${SuperstarsFields.id} = ?',
+          whereArgs: [entry.key],
+        );
+        if (updated != 1) {
+          throw StateError('Superstar ${entry.key} introuvable pendant le Draft.');
+        }
+      }
     });
-  }  
+  }
 }
