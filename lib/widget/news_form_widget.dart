@@ -5,6 +5,7 @@ import 'package:wwe_universe/classes/teams.dart';
 import 'package:wwe_universe/classes/titles.dart';
 import 'package:wwe_universe/classes/show.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
+import 'package:wwe_universe/widget/superstar_picker.dart';
 
 const List<String> listCategories = <String>['Announcement', 'Injury', 'Return', 'Other'];
 
@@ -87,10 +88,22 @@ class NewsFormWidget extends StatelessWidget {
     );
   }
 
+  Future<void> _chooseSuperstars(BuildContext context) async {
+    final picked = await pickSuperstars(
+      context: context,
+      available: superstars,
+      selectedIds: selectedEntities['superstars'] ?? <int>{},
+      title: 'Select News Superstars',
+    );
+    final next = Map<String, Set<int>>.from(selectedEntities);
+    next['superstars'] = picked.map((s) => s.id!).toSet();
+    onChangedEntities(next);
+  }
+
   Widget _associationTile(BuildContext context, String key, String label, IconData icon,
       List<int> ids, Future<void> Function() onTap) => ListTile(
     contentPadding: EdgeInsets.zero, leading: Icon(icon, color: AppFormStyles.primary),
-    title: Text(label), subtitle: Text('${ids.length} sélectionné(s)'),
+    title: Text(label), subtitle: Text('${ids.length} selected'),
     trailing: const Icon(Icons.chevron_right), onTap: onTap);
 
   @override
@@ -99,26 +112,26 @@ class NewsFormWidget extends StatelessWidget {
     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       AppFormSection(title: 'Informations', children: [
         TextFormField(initialValue: title, textCapitalization: TextCapitalization.sentences,
-          decoration: AppFormStyles.inputDecoration(label: 'Titre', icon: Icons.newspaper_outlined),
+          decoration: AppFormStyles.inputDecoration(label: 'Title', icon: Icons.newspaper_outlined),
           validator: (v) => v == null || v.trim().isEmpty ? 'Le titre est obligatoire' : null, onChanged: onChangedTitle),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(isExpanded: true, value: listCategories.contains(type) ? type : listCategories.first,
-          decoration: AppFormStyles.inputDecoration(label: 'Catégorie', icon: Icons.category_outlined),
+          decoration: AppFormStyles.inputDecoration(label: 'Category', icon: Icons.category_outlined),
           items: listCategories.map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(), onChanged: onChangedType),
         const SizedBox(height: 12),
         TextFormField(initialValue: text, minLines: 6, maxLines: null,
-          decoration: AppFormStyles.inputDecoration(label: 'Contenu', icon: Icons.notes_outlined),
+          decoration: AppFormStyles.inputDecoration(label: 'Content', icon: Icons.notes_outlined),
           validator: (v) => v == null || v.trim().isEmpty ? 'Le contenu est obligatoire' : null, onChanged: onChangedText),
       ]), const SizedBox(height: 16),
-      AppFormSection(title: 'Date WWE', children: [
+      AppFormSection(title: 'WWE Date', children: [
         Row(children: [
           Expanded(flex: 2, child: DropdownButtonFormField<int>(isExpanded: true, value: year,
-            decoration: AppFormStyles.inputDecoration(label: 'Année'),
+            decoration: AppFormStyles.inputDecoration(label: 'Year'),
             items: List.generate(31, (i) => year - 15 + i).map((v) => DropdownMenuItem(value: v, child: Text('$v'))).toList(),
             onChanged: (v) { if (v != null) onChangedYear(v); })),
           const SizedBox(width: 8),
           Expanded(child: DropdownButtonFormField<int>(isExpanded: true, value: week,
-            decoration: AppFormStyles.inputDecoration(label: 'Semaine'),
+            decoration: AppFormStyles.inputDecoration(label: 'Week'),
             items: List.generate(48, (i) => i + 1).map((v) => DropdownMenuItem(value: v, child: Text('$v'))).toList(),
             onChanged: (v) { if (v != null) onChangedWeek(v); })),
           const SizedBox(width: 8),
@@ -129,17 +142,17 @@ class NewsFormWidget extends StatelessWidget {
         ]),
       ]), const SizedBox(height: 16),
       AppFormSection(title: 'Storyline', child: DropdownButtonFormField<int?>(isExpanded: true, value: storylineId,
-        decoration: AppFormStyles.inputDecoration(label: 'Storyline associée (facultatif)'),
-        items: [const DropdownMenuItem<int?>(value: null, child: Text('Aucune storyline')), ...storylines.map((s) => DropdownMenuItem<int?>(value: s.id, child: Text(s.title, overflow: TextOverflow.ellipsis)))], onChanged: onChangedStoryline)),
+        decoration: AppFormStyles.inputDecoration(label: 'Related Storyline (optional)'),
+        items: [const DropdownMenuItem<int?>(value: null, child: Text('No Storyline')), ...storylines.map((s) => DropdownMenuItem<int?>(value: s.id, child: Text(s.title, overflow: TextOverflow.ellipsis)))], onChanged: onChangedStoryline)),
       const SizedBox(height: 16),
-      AppFormSection(title: 'Entités associées', children: [
-        _associationTile(context, 'superstars', 'Superstars', Icons.person_outline, selectedEntities['superstars']?.toList() ?? [], () => _choose(context: context, key: 'superstars', label: 'Superstars associées', items: superstars, idOf: (v) => v.id, nameOf: (v) => v.name)),
+      AppFormSection(title: 'Related Entities', children: [
+        _associationTile(context, 'superstars', 'Superstars', Icons.person_outline, selectedEntities['superstars']?.toList() ?? [], () => _chooseSuperstars(context)),
         const Divider(height: 1),
-        _associationTile(context, 'teams', 'Équipes', Icons.groups_outlined, selectedEntities['teams']?.toList() ?? [], () => _choose(context: context, key: 'teams', label: 'Équipes associées', items: teams, idOf: (v) => v.id, nameOf: (v) => v.name)),
+        _associationTile(context, 'teams', 'Teams', Icons.groups_outlined, selectedEntities['teams']?.toList() ?? [], () => _choose(context: context, key: 'teams', label: 'Teams associées', items: teams, idOf: (v) => v.id, nameOf: (v) => v.name)),
         const Divider(height: 1),
-        _associationTile(context, 'titles', 'Titres', Icons.workspace_premium_outlined, selectedEntities['titles']?.toList() ?? [], () => _choose(context: context, key: 'titles', label: 'Titres associés', items: titles, idOf: (v) => v.id, nameOf: (v) => v.name)),
+        _associationTile(context, 'titles', 'Titles', Icons.workspace_premium_outlined, selectedEntities['titles']?.toList() ?? [], () => _choose(context: context, key: 'titles', label: 'Titles associés', items: titles, idOf: (v) => v.id, nameOf: (v) => v.name)),
         const Divider(height: 1),
-        _associationTile(context, 'shows', 'Shows', Icons.event_outlined, selectedEntities['shows']?.toList() ?? [], () => _choose(context: context, key: 'shows', label: 'Shows associés', items: shows, idOf: (v) => v.id, nameOf: (v) => '${v.name} • ${v.year} S${v.week}')),
+        _associationTile(context, 'shows', 'Shows', Icons.event_outlined, selectedEntities['shows']?.toList() ?? [], () => _choose(context: context, key: 'shows', label: 'Related Shows', items: shows, idOf: (v) => v.id, nameOf: (v) => '${v.name} • ${v.year} S${v.week}')),
       ]),
     ]));
 }

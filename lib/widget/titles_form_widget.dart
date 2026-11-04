@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
+import 'package:wwe_universe/widget/superstar_picker.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class TitlesFormWidget extends StatelessWidget {
   final List<Superstars> listSuperstars;
@@ -60,10 +62,10 @@ class TitlesFormWidget extends StatelessWidget {
             title: tag == 1 ? 'Champions' : 'Champion',
             child: Column(
               children: [
-                buildHolder1(),
+                buildHolder1(context),
                 if (tag == 1) ...[
                   const SizedBox(height: 16),
-                  buildHolder2(),
+                  buildHolder2(context),
                 ],
               ],
             ),
@@ -153,51 +155,32 @@ class TitlesFormWidget extends StatelessWidget {
     );
   }
 
-  Widget buildHolder1() {
-    return DropdownButtonFormField<Superstars>(
-      initialValue: _findSuperstarInList(holder1),
-      isExpanded: true,
-      dropdownColor: AppFormStyles.surface,
-      style: const TextStyle(color: Colors.white),
-      decoration: AppFormStyles.inputDecoration(
-        label: 'Champion',
-        icon: Icons.person_outline,
-      ),
-      items: listSuperstars.map((item) {
-        return DropdownMenuItem<Superstars>(
-          value: item,
-          child: Text(
-            item.name,
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      }).toList(),
-      onChanged: onChangedHolder1,
-    );
-  }
+  Widget buildHolder1(BuildContext context) => _superstarField(
+    context, label: 'Champion', selected: holder1, onChanged: onChangedHolder1,
+  );
 
-  Widget buildHolder2() {
-    return DropdownButtonFormField<Superstars>(
-      initialValue: _findSuperstarInList(holder2),
-      isExpanded: true,
-      dropdownColor: AppFormStyles.surface,
-      style: const TextStyle(color: Colors.white),
-      decoration: AppFormStyles.inputDecoration(
-        label: 'Second champion',
-        icon: Icons.person_outline,
+  Widget buildHolder2(BuildContext context) => _superstarField(
+    context, label: 'Second champion', selected: holder2, onChanged: onChangedHolder2,
+  );
+
+  Widget _superstarField(BuildContext context, {required String label, required Superstars? selected, required ValueChanged<Superstars?> onChanged}) => FormField<Superstars>(
+    initialValue: selected,
+    validator: (value) => value == null ? 'Please select a Superstar' : null,
+    builder: (state) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: selected == null ? const CircleAvatar(child: Icon(Icons.person_outline)) : SuperstarAvatar(superstar: selected, size: 48),
+        title: Text(label, style: const TextStyle(color: Colors.white)),
+        subtitle: Text(selected?.name ?? 'Select a Superstar', style: TextStyle(color: state.hasError ? Colors.redAccent : AppFormStyles.secondaryText)),
+        trailing: const Icon(Icons.search),
+        onTap: () async {
+          final value = await pickOneSuperstar(context: context, available: listSuperstars, selectedId: selected?.id, title: label);
+          if (value != null) { onChanged(value); state.didChange(value); }
+        },
       ),
-      items: listSuperstars.map((item) {
-        return DropdownMenuItem<Superstars>(
-          value: item,
-          child: Text(
-            item.name,
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      }).toList(),
-      onChanged: onChangedHolder2,
-    );
-  }
+      if (state.hasError) Padding(padding: const EdgeInsets.only(left: 12), child: Text(state.errorText!, style: const TextStyle(color: Colors.redAccent, fontSize: 12))),
+    ]),
+  );
 
   Brands? _findBrandInList(Brands? selected) {
     if (selected == null) return null;

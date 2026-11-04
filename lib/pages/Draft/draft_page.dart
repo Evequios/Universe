@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:wwe_universe/navbar.dart';
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/database/brands_database_helper.dart';
@@ -110,6 +111,8 @@ class DraftPageState extends State<DraftPage> with AutomaticKeepAliveClientMixin
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
               child: Row(
                 children: [ 
+                  SuperstarAvatar(superstar: superstar, size: 58, radius: 14),
+                  const SizedBox(width: 14),
                   Expanded(
                     flex:10,
                     child: FittedBox(

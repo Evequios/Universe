@@ -11,6 +11,7 @@ import 'package:wwe_universe/database/storyline_relations_database_helper.dart';
 import 'package:wwe_universe/database/storylines_database_helper.dart';
 import 'package:wwe_universe/pages/Storylines/storylines_detail_page.dart';
 import 'package:wwe_universe/pages/Matches/add_edit_matches_page.dart';
+import 'package:wwe_universe/pages/Superstars/superstars_detail_page.dart';
 
 class MatchesDetailPage extends StatefulWidget {
   final int matchId;
@@ -349,9 +350,16 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
             : currentMatch?.winnerName != null &&
                 participant.superstarName == currentMatch!.winnerName);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: participant.superstarId == null ? null : () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => SuperstarsDetailPage(superstarId: participant.superstarId!),
+        ));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
         children: [
           Icon(
             Icons.person_outline,
@@ -372,6 +380,7 @@ class MatchesDetailPageState extends State<MatchesDetailPage> {
           if (isIndividualWinner)
             const Icon(Icons.emoji_events, color: primary, size: 18),
         ],
+        ),
       ),
     );
   }

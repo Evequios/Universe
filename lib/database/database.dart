@@ -44,7 +44,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 87,
+      version: 88,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -484,6 +484,8 @@ class DatabaseService {
         ${MatchParticipantsFields.superstarId}
       );
     ''');
+
+    await _seedWwe26Catalog(db);
   }
 
   Future<void> _createNewsAssociationTables(DatabaseExecutor db) async {
@@ -512,6 +514,9 @@ class DatabaseService {
   }
 
   Future<void> _updateDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 88) {
+      await _seedWwe26Catalog(db);
+    }
     if (oldVersion < 87) {
       await _createNewsAssociationTables(db);
     }
@@ -782,6 +787,113 @@ class DatabaseService {
       await db.execute('CREATE INDEX idx_title_events_match ON $tableTitleReignEvents (${TitleReignEventFields.matchId})');
     }
 
+  }
+
+
+  /// Ajoute le catalogue WWE 2K26 sans modifier les entrées déjà présentes.
+  /// Les noms alternatifs/personas sont conservés comme entrées distinctes.
+  Future<void> _seedWwe26Catalog(DatabaseExecutor db) async {
+    const brandNames = ['Raw', 'SmackDown', 'NXT', 'AAA', 'ECW', 'WCW'];
+    final brandIds = <String, int>{};
+    for (final name in brandNames) {
+      final rows = await db.query(tableBrands, columns: [BrandsFields.id],
+          where: 'LOWER(${BrandsFields.name}) = LOWER(?)', whereArgs: [name], limit: 1);
+      final id = rows.isNotEmpty ? rows.first[BrandsFields.id] as int :
+          await db.insert(tableBrands, {BrandsFields.name: name}, conflictAlgorithm: ConflictAlgorithm.ignore);
+      final refreshed = await db.query(tableBrands, columns: [BrandsFields.id],
+          where: 'LOWER(${BrandsFields.name}) = LOWER(?)', whereArgs: [name], limit: 1);
+      brandIds[name] = refreshed.isNotEmpty ? refreshed.first[BrandsFields.id] as int : id;
+    }
+
+    // Nom, brand. Les personnages historiques/DLC non rattachés à une brand
+    // actuelle restent sans brand afin de ne pas inventer d'affiliation.
+    const raw = <String>[
+      'AJ Styles','AJ Styles ’16','AJ Lee','AJ Lee ’15','Akam','Akira Tozawa','Alba Fyre','Aleister Black','Alexa Bliss','Alexa Bliss ’25','Alicia Taylor','Alundra Blayze','Alundra Blayze ’94','Andre Chase','André the Giant','Angel','Angelo Dawkins','Apollo Crews','Asuka','Austin Theory','Ava','Axiom','B-Fab','Bayley','Becky Lynch','Berto','Bianca Belair','Big E','Blake Monroe','Bron Breakker','Bronson Reed','Brooks Jensen','Brutus Creed','Carmelo Hayes','Candice LeRae','Chad Gable','Channing Lorenzo','Charlie Dempsey','Charlotte Flair','Chelsea Green','Chris Sabin','CM Punk','Cody Rhodes','Cruz Del Toro','Damian Priest','Dexter Lumis','Dominik Mysterio','Dominik Mysterio (Masked)','Dragon Lee','Drew McIntyre','Drew McIntyre ’10','El Grande Americano','Elton Prince','Erick Rowan','Erik','Ethan Page','Fallon Henley','Finn Bálor','Giulia','Grayson Waller','Gunther','Hank Walker','Ilja Dragunov','Ivar','Ivy Nile','Iyo Sky','Izzi Dame','Jacob Fatu','Jacy Jayne','Jade Cargill','Jaida Parker','Jazmyn Nyx','JC Mateo','JD McDonagh','Je’Von Evans','Jey Uso','Jimmy Uso','Joaquin Wilde','Joe Gacy','Johnny Gargano','Jordynne Grace','Josh Briggs','Julius Creed','Kairi Sane','Karmen Petrovic','Kelani Jordan','Kiana James','Kit Wilson','Kofi Kingston','LA Knight','Lash Legend','Lexis King','Liv Morgan','Logan Paul','Lola Vice','Ludwig Kaiser','Lyra Valkyria','Maxxine Dupri','Michin','Montez Ford','Myles Borne','Naomi','Natalya','Nathan Frazer','Nia Jax','Nick Aldis','Nikki Bella','Nikki Cross','Nikkita Lyons','Noam Dar','Oba Femi','Omos','Otis','Penta','Pete Dunne','Piper Niven','R-Truth','Raquel Rodriguez','Randy Orton','Randy Orton ’11','Randy Orton ’14','Rey Fenix','Rey Mysterio','Rey Mysterio ’08','Rhea Ripley','Ricky Saints','Ridge Holland','Roman Reigns','Roxanne Perez','Rusev','Sami Zayn','Santos Escobar','Seth Rollins','Seth Rollins ’15','Seth Rollins ’25','Seth Rollins WM41','Shawn Spears','Sheamus','Shinsuke Nakamura','Sol Ruca','Solo Sikoa','Stephanie Vaquer','Talla Tonga','Tama Tonga','Tank Ledger','Tatum Paxley','Tavion Heights','The Miz','The Miz ’17','Thea Hail','Tiffany Stratton','Tommaso Ciampa','Tony D’Angelo','Trick Williams','Tyler Bate','Tyler Breeze','Wendy Choo','Wren Sinclair','Xavier Woods','Yoshiki Inamura','Zaria','Zelina Vega','Zoey Stark',
+      'Abyss','Afa','“Badd Ass” Billy Gunn','Bam Bam Bigelow','Batista','Bobby Heenan','Boogeyman','Booker T','Booker T ’01','Bray Wyatt','Bret Hart','Brian Pillman','British Bulldog','Brock Lesnar','Brock Lesnar ’01','Brock Lesnar ’13','Bubba Ray Dudley','Bull Nakano','Cactus Jack','Captain Lou Albano','Chyna','Chyna ’97','CM Punk ’08','CM Punk ’11','CM Punk ’13','CM Punk Retro','CM Punk Bad Blood 2024','CM Punk WrestleMania 41','Crush','D-Von Dudley','D’Lo Brown','DDP','DDP ’98','“Demon” Finn Bálor','Diesel','Doink The Clown','Dude Love','Dusty Rhodes','Dusty Rhodes ’89','Earthquake','Eddie Guerrero','Eddie Guerrero ’97','Eric Bischoff','Eve Torres','Faarooq','The Fiend Bray Wyatt','The Fiend Bray Wyatt ’23','The Fiend Bray Wyatt (Burned)','Flammer','Goldberg','The Great Khali','The Great Muta','Haku','Hollywood Hogan','The Honky Tonk Man','Hulk Hogan','Hulk Hogan ’02','Hunter Hearst Helmsley','The Hurricane','The Iron Sheik','JBL','Jean Paul Levesque','Jeff Hardy','Jelly Roll','Jesse Ventura','Jim Neidhart','Jimmy Hart','Joe Hendry','John Cena','John Cena ’13','John Cena ’15','Kane','Kane ’08','Kane ’98','Kelly Kelly','Ken Shamrock','Kevin Nash','Kevin Owens','Kurt Angle','Kurt Angle ’19','La Parka','Lady Shani','Lex Luger','Lita','“Macho Man” Randy Savage','“Macho Man” Randy Savage ’98','Mankind','Mark Henry','Maryse','Matt Cardona','Matt Hardy','Michelle McCool','Mick Foley','Miss Elizabeth','Molly Holly','Mosh','Mr. Fuji','Mr. Iguana','Mr. Perfect','Paul Orndorff','New Jack','Octagon Jr.','Pagano','Pat McAfee','Paul Bearer','Paul Heyman','Psycho Clown','“Ravishing” Rick Rude','Razor Ramon','The Sandman','Scott Hall','Scott Steiner ’03','Scott Steiner ’93','Sensational Sherri','Shawn Michaels','Shawn Michaels ’05','Shawn Michaels ’94','Shawn Michaels ’97','Shawn Michaels DX','Sid Justice','Sika','Smash','Stacy Keibler','Stephanie McMahon','Stephanie McMahon-Helmsley','“Stone Cold” Steve Austin','“Superstar” Billy Graham','Syxx','Tama','Terry Funk','Thrasher','Tito Santana','Torrie Wilson','Triple H','Triple H ’08','Triple H ’14','Triple H ’98','Triple H ’99','Trish Stratus','Typhoon','Ultimate Warrior','Umaga','Uncle Howdy','Undertaker','Undertaker ’03','Undertaker ’13','Undertaker ’98','Vader','Victoria','William Regal','X-Pac','Yokozuna','Rocky Maivia','The Rock','The Rock ’01','The Rock ’13','The Rock ’99','Rowdy Roddy Piper','Rowdy Roddy Piper ’98','Road Dogg Jesse James','Rob Van Dam','Rob Van Dam ’97','Rikishi','Rosey','Royce Keys','Tonga Loa','Teddy Long','The Great Khali','The Lock','Original El Grande Americano'
+    ];
+    const extras = <String>[
+      'Adam Pearce','Adam Pearce ’12','Adrian Butler','Armando Alejandro Estrada','Ax','Bobby Newton','Bronze Breakker','Buzz','Brother Love','Byron Saxton','The Captain','Carly Prime','Cathy Kelley','Chad Patton','Charles Robinson','Chase','Chip Danning','Chosen','CM Hart','Cole Quinn','Corey Graves','Crush','Dahlia Hex','Dallas Irvin','Dan Engler','Danilo Anfibio','Daphanie LaShaunn','The Dark Horse','Delilah Hex','Derek Sanders','El Mago Jr.','El Ordinario','Felix Hernandez','Gabriel Slade','Gary Wilson','Geneva Rose','Hector Flores','Hector Flores (Wyatt Sicks)','Jason Ayers','Jeremy Marcus','Jessika Carr','Joey Gonzales','Josie Jane','Juggernaut Grace','Justine','Justine ’99','La Congrejita Loca','LJ','Main Event R-Truth','Marshall Thompson','Meilee Fanny Fan','Michael Cole','Mike Rome','Moreno','Moreno (Wyatt Sicks)','MyRISE 2K22 Female Player','MyRISE 2K22 Male Player','Odette Beaumont','Odyssey Rift','Original El Grande Americano','Paragon Jay Pearce','Psycho Sally','Red','Road Dogg','Shawn Bennett','Slade','Tavish','Tre','Victoria D’Ericco','Wade Barrett','Rezar','Brie Bella','Akam','Afa','Sika','Tama','Tonga Loa','Talla Tonga'
+    ];
+    final superstarIds = <String, int>{};
+    for (final name in [...raw, ...extras].toSet()) {
+      final existing = await db.query(tableSuperstars, columns: [SuperstarsFields.id],
+          where: 'LOWER(${SuperstarsFields.name}) = LOWER(?)', whereArgs: [name], limit: 1);
+      int id;
+      if (existing.isNotEmpty) {
+        id = existing.first[SuperstarsFields.id] as int;
+      } else {
+        // Tweener est une valeur neutre de repli : l'alignement exact n'est pas
+        // documenté de façon stable pour chaque personnage et reste éditable.
+        id = await db.insert(tableSuperstars, {
+          SuperstarsFields.name: name,
+          SuperstarsFields.brand: null,
+          SuperstarsFields.orientation: 'Tweener',
+          SuperstarsFields.division: null,
+          SuperstarsFields.photoUrl: null,
+        });
+      }
+      superstarIds[name] = id;
+    }
+
+    const titles = <String>[
+      'Undisputed WWE Championship','World Heavyweight Championship','WWE Intercontinental Championship','WWE United States Championship','WWE Tag Team Championship','World Tag Team Championship','WWE Women’s Championship','Women’s World Championship','Women’s Intercontinental Championship','Women’s United States Championship','Women’s Tag Team Championship','NXT Championship','NXT North American Championship','NXT Tag Team Championship','NXT Women’s Championship','NXT Women’s North American Championship','WWE Crown Jewel Championship','AAA Mega Championship','AAA Reina De Reinas Championship',
+      'WWE Championship ’14-’22','WWE Universal Championship ’20-’22 (SmackDown)','WWE Universal Championship ’16-’19 (Raw)','World Heavyweight Championship ’02-’13','WWE Championship ’13-’14','WWE Championship ’05-’13','WWE Undisputed Championship','WWE Championship ’98-’02','WWE Championship ’88-’98','WWF Championship (’87 - Andre)','WWWF Heavyweight Championship','Raw Women’s Championship','SmackDown Women’s Championship','WWE Divas Championship','WWE Women’s Championship ’98-’10','WWE Cruiserweight Championship ’01-’07','WWE Light Heavyweight Championship','WWE European Championship','WWE Hardcore Championship','WWE 24/7 Championship','Raw Tag Team Championship','SmackDown Tag Team Championship','WWE Tag Team Championship ’10-’16','WWE Tag Team Championship ’02-’10','World Tag Team Championship ’02-’10','World Tag Team Championship ’97-’02','WWE Intercontinental Championship ’11-’19','WWE Intercontinental Championship ’98-’11','WWE Intercontinental Championship ’94','WWE Intercontinental Championship ’90','WWE United States Championship ’03-’20','WWE U.S. Championship (Spinner - John Cena)','NXT Championship ’22-’24','NXT Championship ’17-’21','NXT Championship ’12-’17','NXT Tag Team Championship ’13-’17','NXT Women’s Championship ’22-’24','NXT Women’s Championship ’17-’21','NXT Women’s Championship ’13-’17','NXT Women’s Tag Team Championship','NXT Cruiserweight Championship','WWE United Kingdom Championship','NXT United Kingdom Championship','NXT UK Tag Team Championship','NXT UK Women’s Championship','Smoking Skull WWE Championship','Brahma Bull WWE Championship','Million Dollar Championship','The Fiend Universal Championship',
+      'ECW Championship ’08-’10 (WWE)','ECW Championship ’06-’08 (WWE)','ECW World Championship ’94-’01','ECW World Television Championship','ECW World Tag Team Championship','WCW World Championship ’91-’93','WCW nWo World Championship','WCW nWo Legacy Championship','WCW United States Championship','WCW Hardcore Championship','WCW Cruiserweight Championship','WCW World Tag Team Championship','WCW World Tag Team Championship ’91-’96','WCW Women’s Championship',
+      'UpUpDownDown Championship','LeftRightLeftRight Championship','PC Championship (Performance Center)','John Cena Legacy Championship','Multiverse Infinite Championship','Multiverse Infinite Cardboard Championship','NXT Mutiny Championship','NXT Mutiny Championship (Destroyed)','NXT Mutiny Tag Team Championship','NXT Mutiny Women’s Championship','NXT Mutiny Women’s Tag Team Championship','NXT Unity North American Championship','NXT Unity Tag Championship','Unify Tag Team Championship','TBD Championship','The People’s Championship','WrestleMania 39 X WWE Championship (Snoop Dogg)','Archetype WWE Universal Championship','Archetype Raw Women’s Championship','One v. One Championship','Two v. Two Championship','Money in the Bank (Men)','Money in the Bank (Women)'
+    ];
+    const tagTitleNames = <String>{'WWE Tag Team Championship','World Tag Team Championship','Women’s Tag Team Championship','NXT Tag Team Championship','Raw Tag Team Championship','SmackDown Tag Team Championship','WWE Tag Team Championship ’10-’16','WWE Tag Team Championship ’02-’10','World Tag Team Championship ’02-’10','World Tag Team Championship ’97-’02','NXT Tag Team Championship ’13-’17','NXT Women’s Tag Team Championship','NXT UK Tag Team Championship','ECW World Tag Team Championship','WCW World Tag Team Championship','WCW World Tag Team Championship ’91-’96','NXT Mutiny Tag Team Championship','NXT Mutiny Women’s Tag Team Championship','NXT Unity Tag Championship','Unify Tag Team Championship','Two v. Two Championship'};
+    for (final name in titles) {
+      final existing = await db.query(tableTitles, columns: [TitlesFields.id],
+          where: 'LOWER(${TitlesFields.name}) = LOWER(?)', whereArgs: [name], limit: 1);
+      if (existing.isNotEmpty) continue;
+      final brandName = name.startsWith('NXT') ? 'NXT' : name.startsWith('AAA') ? 'AAA' :
+          (name.contains('Raw') ? 'Raw' : name.contains('SmackDown') ? 'SmackDown' : null);
+      await db.insert(tableTitles, {
+        TitlesFields.name: name,
+        TitlesFields.tag: tagTitleNames.contains(name) ? 1 : 0,
+        TitlesFields.brand: brandName == null ? null : brandIds[brandName],
+        TitlesFields.holder1: null,
+        TitlesFields.holder2: null,
+      });
+    }
+
+    // Équipes dont les deux membres figurent dans le roster ci-dessus.
+    const teams = <String, List<String>>{
+      'The Usos':['Jey Uso','Jimmy Uso'],
+      'The New Day':['Kofi Kingston','Xavier Woods','Big E'],
+      'The Street Profits':['Angelo Dawkins','Montez Ford'],
+      'The Creed Brothers':['Brutus Creed','Julius Creed'],
+      'Pretty Deadly':['Elton Prince','Kit Wilson'],
+      'The Motor City Machine Guns':['Alex Shelley','Chris Sabin'],
+      'The Dudley Boyz':['Bubba Ray Dudley','D-Von Dudley'],
+      'The Hardy Boyz':['Jeff Hardy','Matt Hardy'],
+      'The Outsiders':['Kevin Nash','Scott Hall'],
+      'Demolition':['Ax','Smash'],
+      'The Authors of Pain':['Akam','Rezar'],
+      'The Wyatt Sicks':['Uncle Howdy','Erick Rowan','Dexter Lumis'],
+      'The Bloodline':['Roman Reigns','Jey Uso','Jimmy Uso'],
+      'The Kabuki Warriors':['Asuka','Kairi Sane'],
+      'Damage CTRL':['Iyo Sky','Asuka','Kairi Sane'],
+      'DIY':['Johnny Gargano','Tommaso Ciampa'],
+      'The Viking Raiders':['Erik','Ivar'],
+      'The Bella Twins':['Nikki Bella','Brie Bella'],
+      'The Natural Disasters':['Earthquake','Typhoon'],
+      'The Brothers of Destruction':['Undertaker','Kane'],
+    };
+    for (final entry in teams.entries) {
+      final ids = entry.value.map((name) => superstarIds[name]).whereType<int>().toList();
+      if (ids.length < 2) continue;
+      final existing = await db.query(tableTeams, columns: [TeamsFields.id],
+          where: 'LOWER(${TeamsFields.name}) = LOWER(?)', whereArgs: [entry.key], limit: 1);
+      if (existing.isNotEmpty) continue;
+      await db.insert(tableTeams, {
+        TeamsFields.name: entry.key,
+        TeamsFields.member1: ids[0], TeamsFields.member2: ids[1],
+        TeamsFields.member3: ids.length > 2 ? ids[2] : null,
+        TeamsFields.member4: ids.length > 3 ? ids[3] : null,
+        TeamsFields.member5: ids.length > 4 ? ids[4] : null,
+      });
+    }
   }
 
   Future<void> _seedMatchCatalog(DatabaseExecutor db) async {

@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
@@ -78,6 +79,8 @@ class DraftResultsState extends State<DraftResults> {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child : Row (
                 children: [ 
+                SuperstarAvatar(superstar: superstar, size: 58, radius: 14),
+                const SizedBox(width: 14),
                 Expanded(
                   flex: 10,
                   child: FittedBox(

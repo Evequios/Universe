@@ -8,6 +8,7 @@ import 'package:wwe_universe/database/storyline_participants_database_helper.dar
 import 'package:wwe_universe/database/superstars_database_helper.dart';
 import 'package:wwe_universe/database/teams_database_helper.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
+import 'package:wwe_universe/widget/superstar_picker.dart';
 
 class AddEditStorylinesPage extends StatefulWidget {
   final Storylines? storyline;
@@ -120,24 +121,24 @@ class _AddEditStorylinesPageState extends State<AddEditStorylinesPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xFF101010),
-    appBar: AppBar(title: Text(widget.storyline == null ? 'Nouvelle storyline' : 'Modifier la storyline'), actions: [TextButton(onPressed: _saving || _loading ? null : _save, child: _saving ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('ENREGISTRER'))]),
+    appBar: AppBar(title: Text(widget.storyline == null ? 'New Storyline' : 'Edit Storyline'), actions: [TextButton(onPressed: _saving || _loading ? null : _save, child: _saving ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('SAVE'))]),
     body: _loading ? const Center(child: CircularProgressIndicator()) : Form(key: _formKey, child: ListView(padding: const EdgeInsets.all(16), children: [
-      AppFormSection(title: 'Informations', children: [
-        TextFormField(controller: _title, decoration: AppFormStyles.inputDecoration(label: 'Titre'), validator: (v) => v == null || v.trim().isEmpty ? 'Le titre est obligatoire.' : null),
+      AppFormSection(title: 'Information', children: [
+        TextFormField(controller: _title, decoration: AppFormStyles.inputDecoration(label: 'Title'), validator: (v) => v == null || v.trim().isEmpty ? 'Le titre est obligatoire.' : null),
         const SizedBox(height: 12),
-        TextFormField(controller: _description, minLines: 4, maxLines: 8, decoration: AppFormStyles.inputDecoration(label: 'Description / résumé'), validator: (v) => v == null || v.trim().isEmpty ? 'La description est obligatoire.' : null),
+        TextFormField(controller: _description, minLines: 4, maxLines: 8, decoration: AppFormStyles.inputDecoration(label: 'Description / Summary'), validator: (v) => v == null || v.trim().isEmpty ? 'La description est obligatoire.' : null),
         const SizedBox(height: 12),
-        DropdownButtonFormField<String>(value: _status, decoration: AppFormStyles.inputDecoration(label: 'Statut'), items: StorylineStatus.values.map((v) => DropdownMenuItem(value: v, child: Text(StorylineStatus.label(v)))).toList(), onChanged: (v) => setState(() => _status = v ?? _status)),
+        DropdownButtonFormField<String>(value: _status, decoration: AppFormStyles.inputDecoration(label: 'Status'), items: StorylineStatus.values.map((v) => DropdownMenuItem(value: v, child: Text(StorylineStatus.label(v)))).toList(), onChanged: (v) => setState(() => _status = v ?? _status)),
       ]), const SizedBox(height: 16),
-      AppFormSection(title: 'Période WWE', children: [
-        _dateField('Début', _startYear, _startWeek, required: true), const SizedBox(height: 12),
-        _dateField('Fin (facultative)', _endYear, _endWeek),
+      AppFormSection(title: 'WWE Timeline', children: [
+        _dateField('Start', _startYear, _startWeek, required: true), const SizedBox(height: 12),
+        _dateField('End (optional)', _endYear, _endWeek),
         const SizedBox(height: 8), const Text('Le calendrier WWE comporte 48 semaines. Laisser la fin vide pour une storyline sans date de clôture définie.', style: TextStyle(color: AppFormStyles.secondaryText, fontSize: 12)),
       ]), const SizedBox(height: 16),
       AppFormSection(title: 'Participants', children: [
-        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.person_outline), title: const Text('Superstars'), subtitle: Text('${_selectedSuperstars.length} sélectionnée(s)'), trailing: const Icon(Icons.chevron_right), onTap: () => _chooseParticipants<Superstars>(title: 'Superstars participantes', items: _allSuperstars, selected: _selectedSuperstars, idOf: (v) => v.id, nameOf: (v) => v.name, onChanged: (v) => setState(() => _selectedSuperstars = v))),
+        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.person_outline), title: const Text('Superstars'), subtitle: Text('${_selectedSuperstars.length} sélectionnée(s)'), trailing: const Icon(Icons.chevron_right), onTap: () async { final picked = await pickSuperstars(context: context, available: _allSuperstars, selectedIds: _selectedSuperstars, title: 'Select Storyline Superstars'); setState(() => _selectedSuperstars = picked.map((e) => e.id!).toSet()); }),
         const Divider(height: 1),
-        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.groups_outlined), title: const Text('Équipes'), subtitle: Text('${_selectedTeams.length} sélectionnée(s)'), trailing: const Icon(Icons.chevron_right), onTap: () => _chooseParticipants<Teams>(title: 'Équipes participantes', items: _allTeams, selected: _selectedTeams, idOf: (v) => v.id, nameOf: (v) => v.name, onChanged: (v) => setState(() => _selectedTeams = v))),
+        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.groups_outlined), title: const Text('Teams'), subtitle: Text('${_selectedTeams.length} sélectionnée(s)'), trailing: const Icon(Icons.chevron_right), onTap: () => _chooseParticipants<Teams>(title: 'Teams participantes', items: _allTeams, selected: _selectedTeams, idOf: (v) => v.id, nameOf: (v) => v.name, onChanged: (v) => setState(() => _selectedTeams = v))),
       ]),
     ])),
   );

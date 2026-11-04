@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/widget/app_form_widgets.dart';
+import 'package:wwe_universe/widget/superstar_picker.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
 class TeamsFormWidget extends StatelessWidget {
   final List<Superstars> listSuperstars;
@@ -90,35 +92,35 @@ class TeamsFormWidget extends StatelessWidget {
             title: 'Team members',
             child: Column(
               children: [
-                buildMember(
+                buildMember(context,
                   number: 1,
                   selectedId: m1,
                   required: true,
                   onChanged: onChangedM1,
                 ),
                 const SizedBox(height: 16),
-                buildMember(
+                buildMember(context,
                   number: 2,
                   selectedId: m2,
                   required: true,
                   onChanged: onChangedM2,
                 ),
                 const SizedBox(height: 16),
-                buildMember(
+                buildMember(context,
                   number: 3,
                   selectedId: m3,
                   required: false,
                   onChanged: onChangedM3,
                 ),
                 const SizedBox(height: 16),
-                buildMember(
+                buildMember(context,
                   number: 4,
                   selectedId: m4,
                   required: false,
                   onChanged: onChangedM4,
                 ),
                 const SizedBox(height: 16),
-                buildMember(
+                buildMember(context,
                   number: 5,
                   selectedId: m5,
                   required: false,
@@ -144,53 +146,34 @@ class TeamsFormWidget extends StatelessWidget {
     );
   }
 
-  Widget buildMember({
+  Widget buildMember(BuildContext context, {
     required int number,
     required int? selectedId,
     required bool required,
     required ValueChanged<int?> onChanged,
   }) {
-    final options = availableMembers(selectedId);
-
-    return DropdownButtonFormField<int?>(
-      key: ValueKey('member-$number-$selectedId'),
+    final matches = listSuperstars.where((s) => s.id == selectedId);
+    final selected = matches.isEmpty ? null : matches.first;
+    return FormField<int>(
       initialValue: selectedId,
-      isExpanded: true,
-      dropdownColor: AppFormStyles.surface,
-      style: const TextStyle(color: Colors.white),
-      decoration: AppFormStyles.inputDecoration(
-        label: 'Member $number${required ? ' *' : ' (optional)'}',
-        icon: Icons.person_outline,
-      ),
-      items: [
-        DropdownMenuItem<int?>(
-          value: null,
-          child: Text(
-            required ? 'Select a Superstar' : 'No member',
-            style: const TextStyle(
-              color: AppFormStyles.secondaryText,
-            ),
-          ),
+      validator: required ? (value) => value == null ? 'Please select a Superstar' : null : null,
+      builder: (state) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: selected == null ? const CircleAvatar(child: Icon(Icons.person_outline)) : SuperstarAvatar(superstar: selected, size: 46),
+          title: Text('Member $number${required ? ' *' : ' (optional)'}'),
+          subtitle: Text(selected?.name ?? (required ? 'Select a Superstar' : 'No member'), style: TextStyle(color: state.hasError ? Colors.redAccent : AppFormStyles.secondaryText)),
+          trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+            if (!required && selectedId != null) IconButton(icon: const Icon(Icons.clear), onPressed: () { onChanged(null); state.didChange(null); }),
+            const Icon(Icons.search),
+          ]),
+          onTap: () async {
+            final chosen = await pickOneSuperstar(context: context, available: availableMembers(selectedId), selectedId: selectedId, title: 'Select Team Member $number');
+            if (chosen != null) { onChanged(chosen.id); state.didChange(chosen.id); }
+          },
         ),
-        ...options.map(
-          (superstar) => DropdownMenuItem<int?>(
-            value: superstar.id,
-            child: Text(
-              superstar.name,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ),
-      ],
-      validator: required
-          ? (value) {
-              if (value == null) {
-                return 'Please select a Superstar';
-              }
-              return null;
-            }
-          : null,
-      onChanged: onChanged,
+        if (state.hasError) Padding(padding: const EdgeInsets.only(left: 12), child: Text(state.errorText!, style: const TextStyle(color: Colors.redAccent, fontSize: 12))),
+      ]),
     );
   }
 }
