@@ -4,121 +4,90 @@ import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/database/brands_database_helper.dart';
 import 'package:wwe_universe/pages/Draft/draft_results.dart';
 
-class DraftBrands extends StatefulWidget{
+class DraftBrands extends StatefulWidget {
   final List<Superstars> selectedSuperstars;
-  const DraftBrands({super.key, required this.selectedSuperstars });
+  const DraftBrands({super.key, required this.selectedSuperstars});
 
   @override
-  DraftBrandsState createState() => DraftBrandsState();
+  State<DraftBrands> createState() => _DraftBrandsState();
 }
 
-class DraftBrandsState extends State<DraftBrands> {
-  late List<Brands> brandsList;
-  // late List<UniverseSuperstars> selectedSuperstars;
-  List<Brands> selectedBrands = [];
-  bool isLoading = false;
+class _DraftBrandsState extends State<DraftBrands> {
+  List<Brands> _brands = [];
+  final Set<int> _selectedIds = {};
+  bool _loading = true;
+  String? _error;
 
   @override
-  void initState() {
-    super.initState();
-    
-    refreshBrands();
+  void initState() { super.initState(); _loadBrands(); }
+
+  Future<void> _loadBrands() async {
+    setState(() { _loading = true; _error = null; });
+    try {
+      final brands = await BrandsDatabaseHelper.readAllBrands();
+      if (!mounted) return;
+      setState(() { _brands = brands; _loading = false; });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() { _error = e.toString(); _loading = false; });
+    }
   }
 
-  Future refreshBrands() async {
-    setState(() => isLoading = true);
+  Future<void> _startDraft() async {
+    final selected = _brands.where((b) => b.id != null && _selectedIds.contains(b.id)).toList();
+    if (selected.isEmpty) return;
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => DraftResults(selectedSuperstars: widget.selectedSuperstars, selectedBrands: selected),
+    ));
+  }
 
-    brandsList = await BrandsDatabaseHelper.readAllBrands();
-
-    setState(() => isLoading = false);
+  Widget _brandLogo(Brands brand) {
+    final key = brand.name.toLowerCase();
+    if (const ['raw', 'smackdown', 'nxt'].contains(key)) {
+      return Image.asset('assets/$key.png', width: 64, height: 42, fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => Text(brand.name, style: const TextStyle(fontWeight: FontWeight.bold)));
+    }
+    return Text(brand.name, style: const TextStyle(fontWeight: FontWeight.w800));
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text(
-        'Select brands',
-      ), 
-      actions: [buildButton()],
-      centerTitle: true,
-    ),
-    body: Center(
-      child: isLoading
-      ? const CircularProgressIndicator()
-      : brandsList.isEmpty
-        ? const Text(
-            'No created brands'
-          )
-        : buildUniverseBrands(),
-    ),
-   );
-
-  Widget buildUniverseBrands() => ListView.builder(
-    padding : const EdgeInsets.all(8),
-    itemCount:  brandsList.length,
-    itemBuilder: (context, index){
-      final brand = brandsList[index];
-      return GestureDetector(
-         onTap: () {
-          setState(() {
-            if(selectedBrands.contains(brand)){
-              selectedBrands.remove(brand);
-            }
-            else{
-              selectedBrands.add(brand);
-            }
-          });
-        },
-        child : SizedBox(
-          height: 100,
-          child : Card(
-            color : selectedBrands.contains(brand) == true ? const Color(0xFF30303A) : Colors.white,
-            shape : RoundedRectangleBorder(
-              side : const BorderSide(color : Color(0xFF30303A)),
-              borderRadius: BorderRadius.circular(16.0)
-            ),
-            elevation: selectedBrands.contains(brand) == true ? 0 : 2,
-            child: Padding (
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child : Row (
-                children: [ 
-                Expanded(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(brand.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
-                  )
-                ),
-                const Spacer(),
-                Container(child : ((){ if(brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt') return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));}()))
-              ],
-              )
-            ),
-          )
-        )
-      );
-    },
-  );
-
-  Widget buildButton() {
-    final isFormValid = selectedBrands.isNotEmpty;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white, 
-          backgroundColor: isFormValid ? null : Colors.grey.shade700,
-        ),
-        onPressed: () async {
-          if(isFormValid){
-            await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => DraftResults(selectedSuperstars : widget.selectedSuperstars, selectedBrands : selectedBrands),
+    appBar: AppBar(title: const Text('Choisir les Brands'), centerTitle: false),
+    body: _loading ? const Center(child: CircularProgressIndicator())
+      : _error != null ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_error!), const SizedBox(height: 12), FilledButton(onPressed: _loadBrands, child: const Text('Réessayer'))]))
+      : _brands.isEmpty ? const Center(child: Text('Aucune Brand disponible.'))
+      : Column(children: [
+          Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 8), child: Row(children: [
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Brands participantes', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+              Text('${widget.selectedSuperstars.length} Superstars à répartir', style: const TextStyle(color: Colors.white60)),
+            ])),
+            TextButton(onPressed: () => setState(() => _selectedIds.addAll(_brands.where((b) => b.id != null).map((b) => b.id!))), child: const Text('Tout')),
+            TextButton(onPressed: () => setState(_selectedIds.clear), child: const Text('Aucun')),
+          ])),
+          Expanded(child: ListView.builder(padding: const EdgeInsets.all(12), itemCount: _brands.length, itemBuilder: (_, i) {
+            final brand = _brands[i];
+            final selected = brand.id != null && _selectedIds.contains(brand.id);
+            return Card(child: CheckboxListTile(
+              value: selected,
+              onChanged: (_) => setState(() {
+                if (selected) {
+                  _selectedIds.remove(brand.id);
+                } else if (brand.id != null) {
+                  _selectedIds.add(brand.id!);
+                }
+              }),
+              title: _brandLogo(brand),
+              subtitle: Text(selected ? 'Incluse dans le tirage' : 'Non sélectionnée', style: const TextStyle(color: Colors.white54)),
+              controlAffinity: ListTileControlAffinity.trailing,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             ));
-          }
-        },
-        child: const Text('Draft'),
-      ),
-    );
-  }
+          })),
+        ]),
+    bottomNavigationBar: !_loading && _error == null && _brands.isNotEmpty ? SafeArea(child: Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      child: FilledButton.icon(onPressed: _selectedIds.isEmpty ? null : _startDraft,
+        icon: const Icon(Icons.shuffle), label: Text('Lancer le Draft (${_selectedIds.length} Brands)')),
+    )) : null,
+  );
 }

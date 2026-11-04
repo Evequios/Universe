@@ -1,196 +1,105 @@
-import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:wwe_universe/widget/superstar_avatar.dart';
 import 'package:wwe_universe/classes/brands.dart';
 import 'package:wwe_universe/classes/superstars.dart';
 import 'package:wwe_universe/database/superstars_database_helper.dart';
-import 'dart:math';
-
-import 'package:wwe_universe/pages/Draft/draft_page.dart';
 import 'package:wwe_universe/pages/Superstars/superstars_page.dart';
+import 'package:wwe_universe/widget/superstar_avatar.dart';
 
-
-class DraftResults extends StatefulWidget{
+class DraftResults extends StatefulWidget {
   final List<Superstars> selectedSuperstars;
   final List<Brands> selectedBrands;
-  const DraftResults({
-    super.key, 
-    required this.selectedSuperstars,
-    required this.selectedBrands});
+  const DraftResults({super.key, required this.selectedSuperstars, required this.selectedBrands});
 
   @override
-  DraftResultsState createState() => DraftResultsState();
+  State<DraftResults> createState() => _DraftResultsState();
 }
 
-class DraftResultsState extends State<DraftResults> {
-  List<Superstars> selectedSuperstars = [];
-  List<Brands> selectedBrands = [];
-  HashMap<int, int> draftResults = HashMap();
-  bool isLoading = false;
+class _DraftResultsState extends State<DraftResults> {
+  late Map<int, int> _assignments;
+  bool _saving = false;
 
   @override
-  void initState() {
-    super.initState();
-    
-    refreshResults();
+  void initState() { super.initState(); _reroll(); }
+
+  void _reroll() {
+    final wrestlers = List<Superstars>.from(widget.selectedSuperstars)..shuffle(Random());
+    final brands = widget.selectedBrands.where((b) => b.id != null).toList();
+    final counts = <int, int>{for (final b in brands) b.id!: 0};
+    final result = <int, int>{};
+    final random = Random();
+    for (final superstar in wrestlers) {
+      if (superstar.id == null || brands.isEmpty) continue;
+      final minimum = counts.values.reduce(min);
+      final leastUsed = brands.where((b) => counts[b.id] == minimum).toList()..shuffle(random);
+      final chosen = leastUsed.first;
+      result[superstar.id!] = chosen.id!;
+      counts[chosen.id!] = counts[chosen.id!]! + 1;
+    }
+    setState(() => _assignments = result);
   }
 
-  Future refreshResults() async {
-    setState(() => isLoading = true);
+  Future<void> _confirm() async {
+    if (_saving || _assignments.isEmpty) return;
+    final confirmed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
+      title: const Text('Confirmer le Draft ?'),
+      content: Text('${_assignments.length} Superstar(s) vont être affectées à leur nouvelle Brand. Les équipes existantes conserveront leurs membres : leur Brand sera celle de leurs Superstars.'),
+      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Annuler')), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Confirmer'))],
+    ));
+    if (confirmed != true || !mounted) return;
+    setState(() => _saving = true);
+    try {
+      await SuperstarsDatabaseHelper.draft(_assignments);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Draft enregistré avec succès.')));
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const SuperstarsPage()), (route) => route.isFirst);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Échec de l’enregistrement : $e')));
+    }
+  }
 
-    selectedBrands = widget.selectedBrands;
-    selectedSuperstars = widget.selectedSuperstars;
-
-    setState(() => isLoading = false);
+  Widget _brandMark(Brands brand) {
+    final key = brand.name.toLowerCase();
+    if (const ['raw', 'smackdown', 'nxt'].contains(key)) {
+      return Image.asset('assets/$key.png', width: 76, height: 48, fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => Text(brand.name, style: const TextStyle(fontWeight: FontWeight.w800)));
+    }
+    return Text(brand.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16));
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      actions: [buildCancel(), buildReroll(),buildButton()],
-      centerTitle: true,
-    ),
-    body: Center(
-      child: isLoading
-      ? const CircularProgressIndicator()
-      : buildDraftResults(),
-    ),
-   );
-
-  Widget buildDraftResults() => ListView.builder(
-    padding : const EdgeInsets.all(8),
-    itemCount:  selectedSuperstars.length,
-    itemBuilder: (context, index){
-      final superstar = selectedSuperstars[index];
-      Random r = Random();
-      int randomBrand = r.nextInt(selectedBrands.length);
-      final brand = selectedBrands[randomBrand];
-      draftResults.addAll({superstar.id! : brand.id!});
-      return SizedBox(
-          height: 100,
-          child : Card(
-            shape : RoundedRectangleBorder(
-              side : const BorderSide(color : Color(0xFF30303A)),
-              borderRadius: BorderRadius.circular(16.0)
-            ),
-            elevation: 2,
-            child: Padding (
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child : Row (
-                children: [ 
-                SuperstarAvatar(superstar: superstar, size: 58, radius: 14),
-                const SizedBox(width: 14),
-                Expanded(
-                  flex: 10,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(superstar.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
-                  )
-                ),
-                const Spacer(),
-                const Icon(Icons.arrow_right_outlined),
-                const Spacer(), 
-                Container(child : ((){ if(brand.name.toLowerCase() == 'raw' || brand.name.toLowerCase() == 'smackdown' || brand.name.toLowerCase() == 'nxt') {
-                  return Image(image: AssetImage('assets/${brand.name.toLowerCase()}.png'));
-                } else {
-                  return Text(brand.name);
-                }}()))
-              ],
-              )
-            ),
-          )
-      );
-    },
-  );
-
-  Widget buildCancel() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white, 
-        ),
-        onPressed: () {
-          if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const DraftPage(),));
-        },
-        child: const Text('Cancel'),
-      ),
-    );
-  }
-
-  Widget buildReroll() {
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-        ),
-        onPressed: () {
-          setState(() {
-            
-          }); 
-        },
-        child: const Text('Reroll'),
-      ),
-    );
-  }
-
-  Widget buildButton() {
-    final isFormValid = selectedBrands.isNotEmpty;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white, 
-          backgroundColor: isFormValid ? null : Colors.grey.shade700,
-        ),
-        onPressed: () {
-          if(isFormValid){
-            showAlertDialog(context);
-          }
-          
-        },
-        child: const Text('Confirm'),
-      ),
-    );
-  }
-
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: const Text("Cancel"),
-      onPressed:  () {
-        if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const SuperstarsPage(),));
-      },
-    );
-    Widget continueButton = TextButton(
-      child: const Text("Continue"),
-      onPressed:  () async {
-        await SuperstarsDatabaseHelper.draft(draftResults);
-        if(context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) => const SuperstarsPage(),));
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text("Confirmation"),
-      content: const Text("Are you sure you want to confirm this draft ?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
+  Widget build(BuildContext context) {
+    final brandsById = {for (final brand in widget.selectedBrands) if (brand.id != null) brand.id!: brand};
+    final counts = <int, int>{for (final brand in widget.selectedBrands) if (brand.id != null) brand.id!: 0};
+    for (final id in _assignments.values) { counts[id] = (counts[id] ?? 0) + 1; }
+    return Scaffold(
+      appBar: AppBar(title: const Text('Résultat du Draft'), actions: [
+        IconButton(tooltip: 'Relancer le tirage', onPressed: _saving ? null : _reroll, icon: const Icon(Icons.shuffle)),
+      ]),
+      body: Column(children: [
+        Padding(padding: const EdgeInsets.fromLTRB(16, 14, 16, 8), child: Wrap(spacing: 8, runSpacing: 8, children: [
+          for (final brand in widget.selectedBrands) Chip(avatar: const Icon(Icons.flag, size: 16), label: Text('${brand.name} · ${counts[brand.id] ?? 0}')),
+        ])),
+        Expanded(child: ListView.builder(padding: const EdgeInsets.fromLTRB(12, 4, 12, 12), itemCount: widget.selectedSuperstars.length, itemBuilder: (_, index) {
+          final superstar = widget.selectedSuperstars[index];
+          final brand = brandsById[_assignments[superstar.id]];
+          return Card(child: ListTile(
+            leading: SuperstarAvatar(superstar: superstar, size: 48, radius: 12),
+            title: Text(superstar.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.arrow_forward, color: Colors.white54), const SizedBox(width: 10), if (brand != null) _brandMark(brand)]),
+          ));
+        })),
+      ]),
+      bottomNavigationBar: SafeArea(child: Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 12), child: Row(children: [
+        OutlinedButton(onPressed: _saving ? null : () => Navigator.pop(context), child: const Text('Retour')),
+        const SizedBox(width: 12),
+        Expanded(child: FilledButton.icon(onPressed: _saving ? null : _confirm,
+          icon: _saving ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.check),
+          label: Text(_saving ? 'Enregistrement…' : 'Confirmer le Draft'))),
+      ]))),
     );
   }
 }
